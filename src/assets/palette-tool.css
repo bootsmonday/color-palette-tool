@@ -1,0 +1,21 @@
+.corn-margin-bottom {
+  margin-bottom: var(--cc-size-0);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+}
+.corn-form--item,
+.corn-text-input input{
+  max-width: 100%;
+}
+.corn-text-input--sm input {
+  padding: 0 var(--cc-size--3);
+}
+ 
+
+  /* --cc-form--item--size--xs: var(--cc-size-2);
+  --cc-form--item--size--sm: var(--cc-size-4);
+  --cc-form--item--size--md: var(--cc-size-5);
+  --cc-form--item--size--lg: var(--cc-size-6);
+  --cc-form--item--size--xl: var(--cc-size-7); */
