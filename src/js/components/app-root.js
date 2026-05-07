@@ -11,8 +11,8 @@ class AppRoot extends HTMLElement {
   }
 
   connectedCallback() {
-    this.render();
-    this.unsubscribe = store.subscribe(() => this.render());
+    //this.render();
+    this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
 
     // Register routes
     router.register('/', 'home-page');
@@ -22,6 +22,9 @@ class AppRoot extends HTMLElement {
     router.init();
   }
 
+  storeUpdate() {
+    this.render();
+  }
   disconnectedCallback() {
     this.unsubscribe?.();
   }

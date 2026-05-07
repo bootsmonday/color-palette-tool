@@ -1,11 +1,38 @@
-import { store } from "../store.js";
-import bootstrapIconsSprite from "bootstrap-icons/bootstrap-icons.svg";
+import { store } from '../store.js';
+import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 class PalettePage extends HTMLElement {
   connectedCallback() {
     this.render();
+    // this.unsubscribe = store.subscribeTo('colorSpace', () => this.render());
+    this.addEventListeners();
+  }
+  addEventListeners() {
+    this.addEventListener('change', this);
   }
 
+  handleEvent(event) {
+    // console.log('PalettePage event:', event.type, 'target:', event.target);
+    // event.stopPropagation();
+    // event.preventDefault();
+    if (event.type === 'change') {
+      const target = event.target;
+      if (target.name === 'color-space') {
+        store.setState({ colorSpace: target.value });
+      }
+    }
+  }
+  removeEventListeners() {
+    this.removeEventListener('change', this);
+  }
+  disconnectedCallback() {
+    // if (this.unsubscribe) {
+    //   this.unsubscribe();
+    // }
+    this.removeEventListeners();
+  }
   render() {
+    console.log('Rendering PalettePage');
+    const { colorSpace } = store.getState();
     this.innerHTML = `
       <div class="corn-row">
         <div class="corn-col-12">
@@ -16,7 +43,21 @@ class PalettePage extends HTMLElement {
         <div class="corn-col-4">
           <div class="corn-panel">
           <p>Detail</p>
-          <p>My awesome palette</p>          
+          <p>My awesome palette</p>
+          
+            <fieldset class="corn-form--item corn-toggle-group corn-toggle--xs color-space-toggle" aria-labelledby="legend1">
+              <legend id="legend1">Choose Color Space</legend>
+              <div class="corn-toggles">
+                <div class="corn-toggle">
+                  <input type="radio" id="colospace1" name="color-space" value="hsluv" ${colorSpace === 'hsluv' ? 'checked' : ''} />
+                  <label for="colospace1">hsluv</label>
+                </div>
+                <div class="corn-toggle">
+                  <input type="radio" id="colospace2" name="color-space" value="okhsl" ${colorSpace === 'okhsl' ? 'checked' : ''} />
+                  <label for="colospace2">okhsl</label>
+                </div>
+              </div>
+            </fieldset>        
             <corn-expandable class="corn-expandable">
               <details slot="details">
                 <summary class="corn-expandable-button">
@@ -39,50 +80,7 @@ class PalettePage extends HTMLElement {
           
           <div class="corn-panel">
           <color-form>test</color-form>
-            <div class="corn-accordion">
-              <corn-expandable class="corn-expandable">
-                <details slot="details">
-                  <summary class="corn-expandable-button">
-                    New Color
-                    <svg class="corn-icon" aria-hidden="true">
-                      <use href="${bootstrapIconsSprite}#chevron-right"></use>
-                    </svg>
-                  </summary>
-                  <div class="corn-expandable--content">
-                    <div class="corn-row">
-                      <div class="corn-col-8">
-                    <div class="corn-form--item">
-                      <div class="corn-text-input">
-                        <input id="color-name" name="color-name" placeholder="Enter Color Name..." />
-                        <label for="color-name">Color Name</label>
-                      </div>
-                    </div>
-                    <div class="corn-slider corn-slider--sm">
-                      <label for="hue">Hue:</label>
-                      <input type="range" min="0" max="100" value="50" id="hue" name="hue"/>
-                    </div>
-                    <div class="corn-slider corn-slider--sm">
-                      <label for="saturation">Saturation:</label>
-                      <input type="range" min="0" max="100" value="50" id="saturation" name="saturation"/>
-                    </div>    
-
-                        
-              
-                  </div>
-                </details>
-              </corn-expandable>
-              <corn-expandable class="corn-expandable">
-                <details slot="details">
-                  <summary class="corn-expandable-button">
-                    Edit Color
-                    <svg class="corn-icon" aria-hidden="true">
-                      <use href="${bootstrapIconsSprite}#chevron-right"></use>
-                    </svg>
-                  </summary>
-                  <div class="corn-expandable--content">Choose a color to edit</div>
-                </details>
-              </corn-expandable>
-            </div>
+            
             <h3>Palette Preview</h3>
             <div>Palette preview will go here</div>
           </div>          
@@ -92,4 +90,4 @@ class PalettePage extends HTMLElement {
   }
 }
 
-customElements.define("palette-page", PalettePage);
+customElements.define('palette-page', PalettePage);
