@@ -1,15 +1,26 @@
 class ColorModel {
   constructor(modeOrObj, hue = 180, saturation = 50, lightness = 47.5) {
     if (typeof modeOrObj === 'object' && modeOrObj !== null) {
-      Object.assign(this, modeOrObj);
+      const source = modeOrObj;
+      const colorSpace = source.colorSpace ?? source._colorSpace ?? 'okhsl';
+      this.colorSpace = colorSpace;
+      this.hue = source.hue ?? source._hue ?? hue;
+
+      const saturationValue = source._saturation ?? source.saturation ?? saturation;
+      const lightnessValue = source._lightness ?? source.lightness ?? lightness;
+
+      this.saturation = colorSpace === 'hsluv' ? saturationValue : saturationValue <= 1 ? saturationValue * 100 : saturationValue;
+      this.lightness = colorSpace === 'hsluv' ? lightnessValue : lightnessValue <= 1 ? lightnessValue * 100 : lightnessValue;
+
+      this.id = source.id ?? crypto.randomUUID();
     } else {
       this.colorSpace = modeOrObj;
       this.hue = hue;
       this.saturation = saturation;
       this.lightness = lightness;
+      this.id = crypto.randomUUID();
     }
     this.fixedLightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
-    this.id = crypto.randomUUID();
   }
   set colorSpace(value) {
     this._colorSpace = value;
@@ -27,6 +38,7 @@ class ColorModel {
     this._saturation = value;
   }
   get saturation() {
+    console.log('Getting saturation for color space:', this._colorSpace, 'raw value:', this._saturation);
     return this._colorSpace === 'hsluv' ? this._saturation : this._saturation / 100;
   }
   set lightness(value) {
@@ -35,18 +47,17 @@ class ColorModel {
   get lightness() {
     return this._colorSpace === 'hsluv' ? this._lightness : this._lightness / 100;
   }
+  toJSON() {
+    return {
+      id: this.id,
+      colorSpace: this._colorSpace,
+      hue: this._hue,
+      saturation: this._saturation,
+      lightness: this._lightness,
+    };
+  }
   set hex(value) {
     this._hex = value;
-    this.color = new Color(value);
-  }
-  toHex() {
-    return this.color.toString({ format: 'hex' });
-  }
-  toHSLuv() {
-    return this.color.to('hsluv');
-  }
-  toOKHSL() {
-    return this.color.to('okhsl');
   }
 }
 

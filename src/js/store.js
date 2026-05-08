@@ -1,3 +1,5 @@
+import { ColorModel } from './models/ColorModel.js';
+
 export const store = {
   state: {
     colorSpace: 'okhsl',
@@ -126,6 +128,11 @@ export const store = {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+
+        if (parsed.previewColor) {
+          parsed.previewColor = new ColorModel(parsed.previewColor);
+        }
+
         this.state = { ...this.state, ...parsed };
         console.log('✅ State loaded from LocalStorage');
       }
@@ -145,7 +152,7 @@ export const store = {
     }
   },
 };
-// store.loadFromStorage();
+store.loadFromStorage();
 export default store;
 
 /***
