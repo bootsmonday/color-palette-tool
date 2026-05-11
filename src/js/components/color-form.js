@@ -100,9 +100,9 @@ class ColorForm extends HTMLElement {
   getColorCategory(hue) {
     hue = ((hue % 360) + 360) % 360;
 
-    if (hue >= 350 || hue < 35) return 'Red';
-    if (hue >= 35 && hue < 90) return 'Orange';
-    if (hue >= 90 && hue < 115) return 'Yellow';
+    if (hue >= 350 || hue < 40) return 'Red';
+    if (hue >= 40 && hue < 85) return 'Orange';
+    if (hue >= 85 && hue < 115) return 'Yellow';
     if (hue >= 115 && hue < 170) return 'Green';
     if (hue >= 170 && hue < 270) return 'Blue';
 
@@ -154,13 +154,13 @@ class ColorForm extends HTMLElement {
   }
 
   update(changes, newState) {
-    console.log('ZZZZZZZZ ColorForm update called with changes:', changes);
+    // console.log('ZZZZZZZZ ColorForm update called with changes:', changes);
     // console.log('Current preview color in state: ------->', this.previewColor);
     if (changes.colorSpace) {
       this.updateColorSpace();
-      console.log('preview color', this.previewColor);
+      // console.log('preview color', this.previewColor);
       if (this.previewColor && !changes.previewColor) {
-        console.log('XXXXXXX ------>', this.previewColor);
+        // console.log('XXXXXXX ------>', this.previewColor);
         this.previewColor.colorSpace = newState.colorSpace;
         queueMicrotask(() => store.setState({ previewColor: this.previewColor }));
       }
@@ -169,7 +169,7 @@ class ColorForm extends HTMLElement {
 
     if (changes.previewColor && newState.previewColor) {
       this.previewColor = newState.previewColor;
-      console.log('YYYYYYY Updated preview color from state change:', this.previewColor.toJSON());
+      // console.log('YYYYYYY Updated preview color from state change:', this.previewColor.toJSON());
       this.updatePreview();
     }
   }
@@ -197,7 +197,7 @@ class ColorForm extends HTMLElement {
   updateHueSlider() {
     const _previewColor = this.previewColor.getColor();
     const gradientValues = [];
-    console.log('Updating hue slider with preview color:', this.previewColor.toJSON());
+    // console.log('Updating hue slider with preview color:', this.previewColor.toJSON());
     for (let i = 0; i < 21; i++) {
       _previewColor.h = (18 * i) % 360;
       gradientValues.push(_previewColor.toString({ format: 'hex' }));
@@ -212,7 +212,7 @@ class ColorForm extends HTMLElement {
   updateSaturationSlider() {
     const _previewColor = this.previewColor.getColor();
     const gradientValues = [];
-    console.log('Updating saturation slider with preview color:', this.previewColor.toJSON());
+    // console.log('Updating saturation slider with preview color:', this.previewColor.toJSON());
     for (let i = 0; i <= 100; i += 10) {
       _previewColor.s = this.previewColor.colorSpace === 'okhsl' ? i / 100 : i;
       gradientValues.push(_previewColor.toString({ format: 'hex' }));
@@ -304,6 +304,7 @@ class ColorForm extends HTMLElement {
   }
 
   handleEvent(e) {
+    console.log('ColorForm event:', e.target?.value);
     if (e.type === 'change') {
       if (e.target.name === 'palette-name') {
         store.setState({ paletteName: e.target.value });
@@ -314,6 +315,8 @@ class ColorForm extends HTMLElement {
         this.hueInput.value = e.target.value;
         this.changeHue(e);
       } else if (e.target.name === 'saturation-slider') {
+        // this.commitPreviewColor({ saturation: parseFloat(e.target.value) });
+        console.log('Saturation slider input value:', e.target.value);
         this.saturationInput.value = e.target.value;
         this.changeSaturation(e);
       }
