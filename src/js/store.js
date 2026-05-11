@@ -3,7 +3,10 @@ import { ColorModel } from './models/ColorModel.js';
 export const store = {
   state: {
     colorSpace: 'okhsl',
-    colorCollection: [],
+    workingPalette: null,
+    paletteCollection: [],
+    paletteName: 'Working Palette',
+    colorCollectionId: null,
     previewColor: null,
     count: 0,
     todos: [],
@@ -134,7 +137,6 @@ export const store = {
         }
 
         this.state = { ...this.state, ...parsed };
-        console.log('✅ State loaded from LocalStorage');
       }
     } catch (e) {
       console.warn('Failed to load state from LocalStorage:', e);

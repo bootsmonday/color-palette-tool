@@ -1,15 +1,42 @@
 import { store } from '../store.js';
 import { ColorModel } from '../models/ColorModel.js';
+import { ColorSteps } from '../models/ColorSteps.js';
+import { ColorPalette } from '../models/ColorPalette.js';
 import Color from 'colorjs.io';
 
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
-
+const categoryRanges = {
+  Red: [350, 35],
+  Orange: [35, 90],
+  Yellow: [90, 115],
+  Green: [115, 170],
+  Blue: [170, 270],
+  Purple: [270, 350],
+};
 class ColorForm extends HTMLElement {
   constructor() {
     super();
     this.unsubscribe = null;
   }
+  circularRangePercentage(start, end, value, maxVal = 360) {
+    const rangeLength = (end - start + maxVal) % maxVal;
+    const distance = (value - start + maxVal) % maxVal;
+    let percentage = (distance / rangeLength) * 100;
+    return Math.max(0, Math.min(100, percentage)); // clamp 0-100
+  }
+  valueAtPercentage(start, end, percentage, maxVal = 360, isWrapping = false) {
+    const pct = Math.max(0, Math.min(100, percentage)) / 100; // normalize 0-1
 
+    if (!isWrapping) {
+      // Simple linear range (like Green [115, 170])
+      return start + pct * (end - start);
+    } else {
+      // Wrapping range (like Red [350, 35])
+      const rangeLength = (end - start + maxVal) % maxVal;
+      const distance = pct * rangeLength;
+      return (start + distance) % maxVal;
+    }
+  }
   calculateVortexHues(startHue) {
     const vortexOrder = [1, 2, 4, 8, 7, 5];
     const offsets = { 1: 0, 2: 40, 4: 120, 8: 280, 7: 240, 5: 160 };
@@ -20,8 +47,10 @@ class ColorForm extends HTMLElement {
     }
 
     const startCategory = this.getColorCategory(startHue);
+    // console.log('Start hue:', startHue, 'Category:', startCategory);
+    const startOffset = this.circularRangePercentage(categoryRanges[startCategory][0], categoryRanges[startCategory][1], startHue);
 
-    const categoryCenters = {
+    const categoryCenters2 = {
       Red: 15,
       Orange: 65,
       Yellow: 90,
@@ -30,6 +59,16 @@ class ColorForm extends HTMLElement {
       Purple: 320,
     };
 
+    const categoryCenters = {
+      Red: this.valueAtPercentage(categoryRanges['Red'][0], categoryRanges['Red'][1], startOffset, 360, true).toFixed(2),
+      Orange: this.valueAtPercentage(categoryRanges['Orange'][0], categoryRanges['Orange'][1], startOffset, 360, false).toFixed(2),
+      Yellow: this.valueAtPercentage(categoryRanges['Yellow'][0], categoryRanges['Yellow'][1], startOffset, 360, false).toFixed(2),
+      Green: this.valueAtPercentage(categoryRanges['Green'][0], categoryRanges['Green'][1], startOffset, 360, false).toFixed(2),
+      Blue: this.valueAtPercentage(categoryRanges['Blue'][0], categoryRanges['Blue'][1], startOffset, 360, false).toFixed(2),
+      Purple: this.valueAtPercentage(categoryRanges['Purple'][0], categoryRanges['Purple'][1], startOffset, 360, false).toFixed(2),
+    };
+
+    // console.log('Category centers based on percentage offset:', categoryCenters2);
     const availableCats = Object.keys(categoryCenters).filter((cat) => cat !== startCategory);
 
     const sortedVortex = vortexOrder
@@ -90,7 +129,8 @@ class ColorForm extends HTMLElement {
     };
 
     this.previewColor = store.getState().previewColor || null;
-
+    this.workingPalette = new ColorPalette('Working Palette', this.colorSpace, []);
+    // console.log('Initialized working palette:', this.workingPalette);
     if (!this.previewColor) {
       const defaultPreviewColor = new ColorModel({
         colorSpace: this.colorSpace,
@@ -114,23 +154,22 @@ class ColorForm extends HTMLElement {
   }
 
   update(changes, newState) {
+    console.log('ZZZZZZZZ ColorForm update called with changes:', changes);
+    // console.log('Current preview color in state: ------->', this.previewColor);
     if (changes.colorSpace) {
       this.updateColorSpace();
-
-      if (this.previewColor) {
-        const updatedPreviewColor = new ColorModel({
-          ...this.previewColor,
-          colorSpace: this.colorSpace,
-        });
-
-        // Defer setState to avoid re-entrant notifications while listeners are running.
-        queueMicrotask(() => store.setState({ previewColor: updatedPreviewColor }));
+      console.log('preview color', this.previewColor);
+      if (this.previewColor && !changes.previewColor) {
+        console.log('XXXXXXX ------>', this.previewColor);
+        this.previewColor.colorSpace = newState.colorSpace;
+        queueMicrotask(() => store.setState({ previewColor: this.previewColor }));
       }
-      return;
+      // return;
     }
 
     if (changes.previewColor && newState.previewColor) {
       this.previewColor = newState.previewColor;
+      console.log('YYYYYYY Updated preview color from state change:', this.previewColor.toJSON());
       this.updatePreview();
     }
   }
@@ -156,26 +195,33 @@ class ColorForm extends HTMLElement {
   }
 
   updateHueSlider() {
-    const previewColor = new Color(this.previewColor.colorSpace, [this.previewColor.hue, this.previewColor.saturation, this.previewColor.lightness]);
+    const _previewColor = this.previewColor.getColor();
     const gradientValues = [];
-
+    console.log('Updating hue slider with preview color:', this.previewColor.toJSON());
     for (let i = 0; i < 21; i++) {
-      previewColor.h = (18 * i) % 360;
-      gradientValues.push(previewColor.toString({ format: 'hex' }));
+      _previewColor.h = (18 * i) % 360;
+      gradientValues.push(_previewColor.toString({ format: 'hex' }));
     }
-
+    if (this.hueSlider.value !== this.previewColor.hue.toFixed(2)) {
+      this.hueSlider.value = this.previewColor.hue.toFixed(2);
+      this.hueInput.value = this.previewColor.hue.toFixed(2);
+    }
     this.hueSlider.style.setProperty('background', `linear-gradient(to right, ${gradientValues.join(',')})`);
   }
 
   updateSaturationSlider() {
-    const previewColor = new Color(this.previewColor.colorSpace, [this.previewColor.hue, this.previewColor.saturation, this.previewColor.lightness]);
+    const _previewColor = this.previewColor.getColor();
     const gradientValues = [];
-
+    console.log('Updating saturation slider with preview color:', this.previewColor.toJSON());
     for (let i = 0; i <= 100; i += 10) {
-      previewColor.s = this.previewColor.colorSpace === 'okhsl' ? i / 100 : i;
-      gradientValues.push(previewColor.toString({ format: 'hex' }));
+      _previewColor.s = this.previewColor.colorSpace === 'okhsl' ? i / 100 : i;
+      gradientValues.push(_previewColor.toString({ format: 'hex' }));
     }
 
+    if (this.saturationSlider.value !== this.previewColor.saturation.toFixed(2)) {
+      this.saturationSlider.value = this.previewColor.saturation.toFixed(2);
+      this.saturationInput.value = this.previewColor.saturation.toFixed(2);
+    }
     this.saturationSlider.style.setProperty('background', `linear-gradient(to right, ${gradientValues.join(',')})`);
   }
 
@@ -187,31 +233,62 @@ class ColorForm extends HTMLElement {
       default: 50,
     };
   }
+  //[321.03, 0.7399, 0.475] a040b2
+  // [336.61, 0.7374, 0.475]
+  normalizeValue(colorSpace, value) {
+    if (colorSpace === 'okhsl') {
+      return value <= 1 ? +(value * 100).toFixed(4) : value;
+    } else {
+      return value;
+    }
+  }
 
   updateColorPreview() {
-    const previewColor = new Color(this.previewColor.colorSpace, [this.previewColor.hue, this.previewColor.saturation, this.previewColor.lightness]);
+    const previewColor = this.previewColor.getColor();
+
     this.colorPreview.style.backgroundColor = `${previewColor.toString({ format: 'hex' })}`;
+    this.colorPreview.innerText = previewColor.toString({ format: 'hex' });
 
-    const saturation = this.previewColor.colorSpace === 'okhsl' ? this.saturationInput.value / 100 : this.saturationInput.value;
+    // const saturation = this.normalizeValue(this.previewColor.colorSpace, this.saturationInput.value);
     let stepsContainer = '';
-
+    const hueCategory = this.getColorCategory(this.hueInput.value);
+    let colorSteps = new ColorSteps(hueCategory, this.previewColor.colorSpace, []);
     lightnessSteps.forEach((lightness, i) => {
-      const stepColor = new Color(this.previewColor.colorSpace, [this.hueInput.value || 0, saturation || 0, lightness]);
-      const hueCategory = this.getColorCategory(this.hueInput.value);
-      stepColor.l = this.previewColor.colorSpace === 'okhsl' ? lightness / 100 : lightness;
-      stepsContainer += `<div class="color-step-preview" style="background-color: ${stepColor.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">${i === 0 ? hueCategory : ''}</div>`;
+      const colorModel = new ColorModel({
+        colorSpace: this.previewColor.colorSpace,
+        hue: this.hueInput.value || 0,
+        saturation: this.saturationInput.value || 0,
+        lightness: lightness,
+      });
+      colorSteps.colors.push(colorModel);
     });
-
+    this.workingPalette.steps = [];
+    this.workingPalette.steps.push(colorSteps);
     const vortexHues = this.calculateVortexHues(this.hueInput.value || 0);
 
     vortexHues.forEach((hue) => {
+      let colorSteps = new ColorSteps(hue.category, this.previewColor.colorSpace, []);
       lightnessSteps.forEach((lightness, i) => {
-        const vortexColor = new Color(this.previewColor.colorSpace, [hue.hue, saturation || 0, lightness]);
-        vortexColor.l = this.previewColor.colorSpace === 'okhsl' ? lightness / 100 : lightness;
-        stepsContainer += `<div class="color-step-preview" style="background-color: ${vortexColor.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">${i === 0 ? hue.category : ''}</div>`;
+        const colorModel = new ColorModel({
+          colorSpace: this.previewColor.colorSpace,
+          hue: hue.hue,
+          saturation: this.saturationInput.value || 0,
+          lightness: lightness,
+        });
+        colorSteps.colors.push(colorModel);
+      });
+      this.workingPalette.steps.push(colorSteps);
+    });
+    this.workingPalette.steps.sort((a, b) => {
+      const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
+      return categoryOrder.indexOf(a.colorName) - categoryOrder.indexOf(b.colorName);
+    });
+    this.workingPalette.steps.forEach((step) => {
+      step.colors.forEach((color, i) => {
+        const colorPreview = color.getColor();
+        stepsContainer += `<div class="color-step-preview" style="background-color: ${colorPreview.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">${i === 0 ? step.colorName : ''}</div>`;
       });
     });
-
     this.colorStepsPreview.innerHTML = stepsContainer;
   }
 
@@ -223,9 +300,15 @@ class ColorForm extends HTMLElement {
 
     this.addEventListener('input', this);
     this.addEventListener('keydown', this);
+    this.addEventListener('change', this);
   }
 
   handleEvent(e) {
+    if (e.type === 'change') {
+      if (e.target.name === 'palette-name') {
+        store.setState({ paletteName: e.target.value });
+      }
+    }
     if (e.type === 'input') {
       if (e.target.name === 'hue-slider') {
         this.hueInput.value = e.target.value;
@@ -308,7 +391,7 @@ class ColorForm extends HTMLElement {
     const saturationMax = 100;
     const saturationStep = 0.01;
     const defaultSaturation = 50;
-    const defaultColor = new Color(colorSpace, [this.previewColor.hue, this.previewColor.saturation, this.previewColor.lightness]);
+    const defaultColor = this.previewColor.getColor();
 
     this.innerHTML = `
       <div class="corn-row corn-margin-bottom">
@@ -316,8 +399,8 @@ class ColorForm extends HTMLElement {
           <form class="corn-form">
             <div class="corn-form--item">
               <div class="corn-text-input">
-                <input id="color-name" name="color-name" placeholder="Color Name..." />
-                <label for="color-name">Enter Color Name</label>
+                <input id="palette-name" name="palette-name" placeholder="Palette Name..." value="${store.getState().paletteName}" />
+                <label for="palette-name">Enter Palette Name</label>
               </div>
             </div>
             <div class="corn-row">
@@ -353,7 +436,7 @@ class ColorForm extends HTMLElement {
               </div>
             </div>
             <div class="corn-button-group">
-              <button type="submit" class="corn-button corn-button--sm">Add Color</button>
+              <button type="submit" class="corn-button corn-button--sm">Save Palette</button>
             </div>
           </form>
         </div>
@@ -364,7 +447,7 @@ class ColorForm extends HTMLElement {
           </div>
         </div>
         <div class="corn-col-12">
-          Lightness Steps Preview:
+          Pallette Preview:
           <div id="color-steps-container" class="color-steps-container"></div>
         </div>
       </div>

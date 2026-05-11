@@ -10,14 +10,33 @@ fieldset.color-space-toggle {
   margin-bottom: var(--cc-size-0);
 }
 
+
 .corn-form--item,
 .corn-text-input input{
   max-width: 100%;
+  width: 100%;
 }
 .corn-text-input--sm input {
   padding: 0 var(--cc-size--3);
 }
- 
+
+.islight .hex-preview {
+  color: var(--cc-gray-90);
+  
+}
+
+.isdark .hex-preview {
+  color: var(--cc-gray-10);
+}
+#hex-preview {
+  display: none;
+}
+.hex-preview {
+  padding: var(--cc-size--4);
+  border-radius: var(--cc-border--radius);
+}
+
+
 .corn-slider input[type=range] {
   --cc-slider--thumb--background--border:transparent;
   --cc-slider--thumb--background: transparent;
