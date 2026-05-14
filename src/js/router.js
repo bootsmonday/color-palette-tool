@@ -1,4 +1,4 @@
-import { store } from "./store.js";
+import { store } from './store.js';
 
 export const router = {
   routes: {},
@@ -8,16 +8,16 @@ export const router = {
   },
 
   navigate(path) {
-    history.pushState({}, "", path);
-    store.setState({ currentRoute: path });
+    history.pushState({}, '', path);
+    store.setState({ normalizedRoute: normalizedRoute });
   },
 
   init() {
-    window.addEventListener("popstate", () => {
-      store.setState({ currentRoute: window.location.pathname || "/" });
+    window.addEventListener('popstate', () => {
+      store.setState({ currentRoute: window.location.pathname || '/' });
     });
 
     // Initial route
-    store.setState({ currentRoute: window.location.pathname || "/" });
+    store.setState({ currentRoute: window.location.pathname || '/' });
   },
 };

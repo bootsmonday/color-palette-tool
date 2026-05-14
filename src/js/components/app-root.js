@@ -19,6 +19,7 @@ class AppRoot extends HTMLElement {
     router.register('/counter', 'counter-page');
     router.register('/new-palette', 'palette-page');
     router.register('/todos', 'todo-page');
+    router.register('/edit-palette', 'edit-palette-page');
     router.init();
   }
 
@@ -31,7 +32,21 @@ class AppRoot extends HTMLElement {
 
   render() {
     const { currentRoute } = store.getState();
-    const pageTag = router.routes[currentRoute] || 'home-page';
+    console.log('Current route:', currentRoute);
+    let normalizedRoute = '/' + (currentRoute || '/').split(/\//).filter(Boolean)[0]; // Get the first segment for dynamic routes
+
+    if (currentRoute.split('/')[1] === 'edit-palette') {
+      normalizedRoute = '/edit-palette';
+      const id = currentRoute.split('/')[2]; // Get the ID from the URL
+      store.getState().paletteCollection.forEach((palette) => {
+        if (palette.id === id) {
+          store.setState({ workingPalette: palette, paletteName: palette.name, colorSpace: palette.colorSpace });
+        }
+      });
+      store.setState({ editingPaletteId: id }); // Store the ID in the state for the edit page to use
+    }
+
+    const pageTag = router.routes[normalizedRoute] || 'home-page';
 
     this.shadowRoot.innerHTML = `
     <style>
@@ -49,7 +64,6 @@ class AppRoot extends HTMLElement {
         <corn-button-bar class="corn-button-bar">
           <a href="/" class="corn-button corn-button--sm">Home</a>
           <a href="/new-palette" class="corn-button corn-button--sm">New Palette</a>
-          <a href="/about" class="corn-button corn-button--sm">About</a>
           <div class="corn-popover--anchor corn-button-bar--more">
             <button class="corn-button corn-button--sm corn-pop" aria-controls="button-bar-popover" aria-label="more items">&middot;&middot;&middot;</button>
             <corn-popover position="bottom" id="button-bar-popover" class="corn-popover"></corn-popover>
@@ -67,6 +81,7 @@ class AppRoot extends HTMLElement {
     this.shadowRoot.querySelectorAll('a[data-link]').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
+        console.log('Link clicked:', link.getAttribute('href'));
         router.navigate(link.getAttribute('href'));
       });
     });

@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
 import { ColorSteps } from '../models/ColorSteps.js';
 import { ColorPalette } from '../models/ColorPalette.js';
@@ -168,15 +169,72 @@ function renderPaletteStepsHtml(steps) {
 
   steps.forEach((step) => {
     step.colors.forEach((color, i) => {
+      let lightText = step.colors[0].getColor();
+      let darkText = step.colors[9].getColor();
+      let j = (i + 1) * 10;
       const colorPreview = color.getColor();
-      stepsHtml += `<div class="color-step-preview" style="background-color: ${colorPreview.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">${i === 0 ? step.colorName : ''}</div>`;
+      if (i === 0) {
+        let stepColor;
+        if (step.colorName === 'Yellow') {
+          stepColor = step.colors[2].getColor();
+        } else {
+          stepColor = step.colors[4].getColor();
+        }
+
+        //stepsHtml += `<button class="corn-button" style="background-color: ${stepColor.toString({ format: 'hex' })}; color: var(--cc-gray-100);">${i === 0 ? step.colorName : ''}</button>`;
+        stepsHtml += `<div class="color-step-preview" style="box-shadow:inset 0 0 0 2px ${stepColor.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">
+        <label for="lock-${step.colorName}">${i === 0 ? step.colorName : ''}</label>
+          <input type="checkbox" name="color-lock" id="lock-${step.colorName}" class="corn-assistive-text" />
+          <svg class="lock-icon" width="16" height="16" fill="currentColor">
+            <use href="/node_modules/bootstrap-icons/bootstrap-icons.svg#lock"/>
+          </svg>          
+        </div>`;
+      }
+
+      if (i < 5) {
+        //wcag ${colorPreview.contrast(darkText, 'WCAG21').toFixed(2)}
+        stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${darkText.toString({ format: 'hex' })};">
+        
+        ${j}
+        </div>`;
+      } else {
+        //wcag ${colorPreview.contrast(lightText, 'WCAG21').toFixed(2)}
+        stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${lightText.toString({ format: 'hex' })};">
+        
+        ${j}
+        </div>`;
+      }
+      // stepsHtml += `<div class="color-step-preview" style="background-color: ${colorPreview.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">${j}</div>`;
     });
   });
-
+  let contrastSteps = steps.find((step) => step.colorName === 'Gray');
+  let darkText = contrastSteps.colors[9].getColor();
+  let lightText = contrastSteps.colors[0].getColor();
+  contrastSteps.colors.forEach((color, i) => {
+    let colorPreview = color.getColor();
+    if (i === 0) {
+      stepsHtml += `<div style="box-shadow: inset 0 0 0 2px ${darkText.toString({ format: 'hex' })}; color: ${darkText.toString({ format: 'hex' })};"> WCAG2.1 </div>`;
+    }
+    if (i < 5) {
+      //wcag ${colorPreview.contrast(darkText, 'WCAG21').toFixed(2)}
+      stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${darkText.toString({ format: 'hex' })};">
+        ${colorPreview.contrast(darkText, 'WCAG21').toFixed(2)}
+        </div>`;
+    } else {
+      //wcag ${colorPreview.contrast(lightText, 'WCAG21').toFixed(2)}
+      stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${lightText.toString({ format: 'hex' })};">
+        ${colorPreview.contrast(lightText, 'WCAG21').toFixed(2)}
+        </div>`;
+    }
+  });
+  console.log(
+    'gray',
+    steps.find((step) => step.colorName === 'Gray')
+  );
   return stepsHtml;
 }
 
-class ColorForm extends HTMLElement {
+class EditColorForm extends HTMLElement {
   constructor() {
     super();
     this.unsubscribe = null;
@@ -192,11 +250,7 @@ class ColorForm extends HTMLElement {
 
   connectedCallback() {
     this.initialize();
-    if (this.type === 'edit') {
-      this.renderEditMode();
-    } else {
-      this.render();
-    }
+    this.render();
 
     this.unsubscribe = store.subscribeTo(['colorSpace', 'previewColor'], (changes, newState) => this.update(changes, newState), { batch: true });
     this.cacheElements();
@@ -205,19 +259,12 @@ class ColorForm extends HTMLElement {
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'type' && oldValue !== newValue) {
-      if (this.type === 'edit') {
-        this.renderEditMode();
-      } else {
-        this.render();
-      }
+      this.render();
       this.cacheElements();
       this.updatePreview();
     }
   }
   initialize() {
-    this.type = this.getAttribute('type') || 'new';
-    console.log('Initializing ColorForm', this.type, store.getState());
-
     this.saturation = {
       min: 0,
       max: 100,
@@ -227,12 +274,7 @@ class ColorForm extends HTMLElement {
     this.colorSpace = store.getState().colorSpace;
     this.previewColor = store.getState().previewColor || null;
 
-    if (this.type === 'edit') {
-      // Additional initialization for edit mode
-      this.workingPalette = store.getState().workingPalette;
-    } else {
-      this.workingPalette = new ColorPalette('Working Palette', this.colorSpace, []);
-    }
+    this.workingPalette = store.getState().workingPalette;
 
     if (!this.previewColor) {
       const defaultPreviewColor = new ColorModel({
@@ -278,7 +320,7 @@ class ColorForm extends HTMLElement {
   }
 
   updatePreview() {
-    if (!this.previewColor || !this.hueSlider || !this.saturationSlider || !this.colorPreview || !this.colorStepsPreview) {
+    if (!this.previewColor || !this.hueSlider || !this.saturationSlider || !this.colorStepsPreview) {
       return;
     }
 
@@ -339,9 +381,9 @@ class ColorForm extends HTMLElement {
   updateColorPreview() {
     const previewColor = this.previewColor.getColor();
 
-    this.colorPreview.style.backgroundColor = `${previewColor.toString({ format: 'hex' })}`;
+    // this.colorPreview.style.backgroundColor = `${previewColor.toString({ format: 'hex' })}`;
 
-    this.colorPreview.innerText = this.getColorCategory(this.previewColor.hue);
+    // this.colorPreview.innerText = this.getColorCategory(this.previewColor.hue);
 
     const currentHue = Number(this.hueInput.value || 0);
     const currentSaturation = Number(this.saturationInput.value || 0);
@@ -483,80 +525,6 @@ class ColorForm extends HTMLElement {
     this.unsubscribe?.();
   }
 
-  renderEditMode() {
-    const { colorSpace } = store.getState();
-    const saturationMin = 0;
-    const saturationMax = 100;
-    const saturationStep = 0.01;
-    const defaultSaturation = 50;
-    const defaultColor = this.previewColor.getColor();
-
-    this.innerHTML = `
-      <div class="corn-row corn-margin-bottom">
-        <div class="corn-col-12">
-          <form class="corn-form">
-            <div class="corn-form--item">
-              <div class="corn-text-input">
-                <input id="palette-name" name="palette-name" placeholder="Palette Name..." value="${store.getState().paletteName}" />
-                <label for="palette-name">Enter Palette Name</label>
-              </div>
-            </div>
-            <div class="corn-row">
-              <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
-                <div class="corn-form--item">
-                  <div class="corn-text-input corn-text-input--sm">
-                    <input id="hue-value" name="hue-value" placeholder="Hue" value="${this.previewColor.hue.toFixed(2)}" />
-                    <label for="hue-value" class="corn-assistive-text">Hue Value</label>
-                  </div>
-                </div>
-              </div>
-              <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
-                <div class="corn-slider corn-slider--sm">
-                  <label for="hue-slider">Hue:</label>
-                  <input type="range" min="0" max="360" step="0.01" value="${this.previewColor.hue.toFixed(2)}" id="hue-slider" name="hue-slider"/>
-                </div>
-              </div>
-            </div>
-            <div class="corn-row">
-              <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
-                <div class="corn-form--item">
-                  <div class="corn-text-input corn-text-input--sm">
-                    <input id="saturation-value" name="saturation-value" placeholder="Saturation" value="${this.previewColor.saturation.toFixed(2)}" />
-                    <label for="saturation-value" class="corn-assistive-text">Saturation Value</label>
-                  </div>
-                </div>
-              </div>
-              <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
-                <div class="corn-slider corn-slider--sm">
-                  <label for="saturation-slider">Saturation:</label>
-                  <input type="range" min="${saturationMin}" max="${saturationMax}" step="${saturationStep}" value="${this.previewColor.saturation.toFixed(2)}" id="saturation-slider" name="saturation-slider"/>
-                </div>
-              </div>
-            </div>
-            <div class="corn-button-group">
-              <button type="submit" class="corn-button corn-button--sm">Save Palette</button>
-            </div>
-          </form>
-        </div>
-        <div class="corn-col-lg-4 corn-col-12">
-          <div class="corn-panel">
-            <h3>Color Preview</h3>
-            <div id="color-preview" class="corn-color-preview corn-margin-bottom" style="background-color: ${defaultColor.toString({ format: 'hex' })}; height: 100px; border-radius: var(--cc-border--radius);"></div>
-          </div>
-        </div>
-        <div class="corn-col-12">
-          <p>Saving the Palette will allow you to make fine-tuning adjustments or export options available.</p>
-        </div>
-      </div>
-      <div class="corn-row">
-        <div class="corn-col-12">
-          <h2>Palette</h2>
-          <div id="color-steps-container" class="color-steps-container"></div>
-        </div>
-      </div>
-    `;
-  }
-
   render() {
     const { colorSpace } = store.getState();
     const saturationMin = 0;
@@ -567,69 +535,81 @@ class ColorForm extends HTMLElement {
 
     this.innerHTML = `
       <div class="corn-row corn-margin-bottom">
-        <div class="corn-col-lg-8 corn-col-12">
+        <div class="corn-col-12">
           <form class="corn-form">
-            <div class="corn-form--item">
-              <div class="corn-text-input">
-                <input id="palette-name" name="palette-name" placeholder="Palette Name..." value="${store.getState().paletteName}" />
-                <label for="palette-name">Enter Palette Name</label>
-              </div>
-            </div>
             <div class="corn-row">
-              <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
+              <div class="corn-col-3 corn-form">
                 <div class="corn-form--item">
-                  <div class="corn-text-input corn-text-input--sm">
-                    <input id="hue-value" name="hue-value" placeholder="Hue" value="${this.previewColor.hue.toFixed(2)}" />
-                    <label for="hue-value" class="corn-assistive-text">Hue Value</label>
+                  <div class="corn-text-input">
+                    <input id="palette-name" name="palette-name" placeholder="Palette Name..." value="${store.getState().paletteName}" />
+                    <label for="palette-name">Enter Palette Name</label>
                   </div>
                 </div>
+                <fieldset class="corn-toggle-group corn-toggle--xl color-space-toggle" aria-labelledby="legend1">
+                  <legend id="legend1" class="corn-assistive-text">Color Space</legend>
+                  <div class="corn-toggles">
+                    <div class="corn-toggle">
+                      <input type="radio" id="colospace1" name="color-space" value="hsluv" ${colorSpace === 'hsluv' ? 'checked' : ''} />
+                      <label for="colospace1">hsluv</label>
+                    </div>
+                    <div class="corn-toggle">
+                      <input type="radio" id="colospace2" name="color-space" value="okhsl" ${colorSpace === 'okhsl' ? 'checked' : ''} />
+                      <label for="colospace2">okhsl</label>
+                    </div>
+                  </div>
+                </fieldset>                   
               </div>
-              <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
-                <div class="corn-slider corn-slider--sm">
-                  <label for="hue-slider">Hue:</label>
-                  <input type="range" min="0" max="360" step="0.01" value="${this.previewColor.hue.toFixed(2)}" id="hue-slider" name="hue-slider"/>
-                </div>
-              </div>
-            </div>
-            <div class="corn-row">
-              <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
-                <div class="corn-form--item">
-                  <div class="corn-text-input corn-text-input--sm">
-                    <input id="saturation-value" name="saturation-value" placeholder="Saturation" value="${this.previewColor.saturation.toFixed(2)}" />
-                    <label for="saturation-value" class="corn-assistive-text">Saturation Value</label>
+              <div class="corn-col-9 corn-form">
+                <div class="corn-row">
+                  <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
+                    <div class="corn-form--item">
+                      <div class="corn-text-input">
+                        <input id="hue-value" name="hue-value" placeholder="Hue" value="${this.previewColor.hue.toFixed(2)}" />
+                        <label for="hue-value">Hue Value</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
+                    <div class="corn-slider ">
+                      <label for="hue-slider">Hue:</label>
+                      <input type="range" min="0" max="360" step="0.01" value="${this.previewColor.hue.toFixed(2)}" id="hue-slider" name="hue-slider"/>
+                    </div>
                   </div>
                 </div>
+                <div class="corn-row">
+                  <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
+                    <div class="corn-form--item">
+                      <div class="corn-text-input">
+                        <input id="saturation-value" name="saturation-value" placeholder="Saturation" value="${this.previewColor.saturation.toFixed(2)}" />
+                        <label for="saturation-value">Saturation Value</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
+                    <div class="corn-slider">
+                      <label for="saturation-slider">Saturation:</label>
+                      <input type="range" min="${saturationMin}" max="${saturationMax}" step="${saturationStep}" value="${this.previewColor.saturation.toFixed(2)}" id="saturation-slider" name="saturation-slider"/>
+                    </div>
+                  </div>
+                </div>                
               </div>
-              <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
-                <div class="corn-slider corn-slider--sm">
-                  <label for="saturation-slider">Saturation:</label>
-                  <input type="range" min="${saturationMin}" max="${saturationMax}" step="${saturationStep}" value="${this.previewColor.saturation.toFixed(2)}" id="saturation-slider" name="saturation-slider"/>
-                </div>
-              </div>
+
             </div>
+
             <div class="corn-button-group">
               <button type="submit" class="corn-button corn-button--sm">Save Palette</button>
             </div>
           </form>
         </div>
-        <div class="corn-col-lg-4 corn-col-12">
-          <div class="corn-panel">
-            <h3>Color Preview</h3>
-            <div id="color-preview" class="corn-color-preview corn-margin-bottom" style="background-color: ${defaultColor.toString({ format: 'hex' })}; height: 100px; border-radius: var(--cc-border--radius);"></div>
-          </div>
-        </div>
-        <div class="corn-col-12">
-          <p>Saving the Palette will allow you to make fine-tuning adjustments or export options available.</p>
-        </div>
       </div>
       <div class="corn-row">
         <div class="corn-col-12">
-          <h2>Generated Palette</h2>
-          <div id="color-steps-container" class="color-steps-container"></div>
+          <h2>Palette</h2>
+          <div id="color-steps-container" class="color-steps-container edit-mode"></div>
         </div>
       </div>
     `;
   }
 }
 
-customElements.define('color-form', ColorForm);
+customElements.define('edit-color-form', EditColorForm);

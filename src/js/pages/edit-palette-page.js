@@ -1,10 +1,12 @@
 import { store } from '../store.js';
 import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
+
 import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
-class PalettePage extends HTMLElement {
+class EditPalettePage extends HTMLElement {
   connectedCallback() {
+    console.log('EditPalettePage connected', store.getState().editingPaletteId);
     this.closestHsluvColor = null;
     this.closestOkhslColor = null;
     this.render();
@@ -17,7 +19,7 @@ class PalettePage extends HTMLElement {
   }
 
   handleEvent(event) {
-    // console.log('PalettePage event:', event.type, 'target:', event.target);
+    // console.log('EditPalettePage event:', event.type, 'target:', event.target);
     // event.stopPropagation();
     // event.preventDefault();
     if (event.type === 'change') {
@@ -121,71 +123,15 @@ class PalettePage extends HTMLElement {
     this.innerHTML = `
       <div class="corn-row">
         <div class="corn-col-12">
-          <h1>New Palette Page</h1>
+          <h1>Edit ${paletteName}</h1>
         </div>
       </div>
       <div class="corn-row">
-        <div class="corn-col-4">
+        <div class="corn-col-12"> 
           <div class="corn-panel">
-          <h2>Details</h2>
-          <p id="palette-name">${paletteName}</p>
-          
-            <fieldset class="corn-form--item corn-toggle-group corn-toggle--xs color-space-toggle" aria-labelledby="legend1">
-              <legend id="legend1">Choose Color Space</legend>
-              <div class="corn-toggles">
-                <div class="corn-toggle">
-                  <input type="radio" id="colospace1" name="color-space" value="hsluv" ${colorSpace === 'hsluv' ? 'checked' : ''} />
-                  <label for="colospace1">hsluv</label>
-                </div>
-                <div class="corn-toggle">
-                  <input type="radio" id="colospace2" name="color-space" value="okhsl" ${colorSpace === 'okhsl' ? 'checked' : ''} />
-                  <label for="colospace2">okhsl</label>
-                </div>
-              </div>
-            </fieldset>        
-            <p>If you would like to generate a palette based on a hex seed, enter the value below.</p>
-            <form class="corn-form" id="hex-seed-form">
-              <div class="corn-form--item" id="hex-seed-item">
-                <div class="corn-text-input corn-text-input--sm">
-                  <input id="hex-seed-input" name="input" placeholder="Hex Seed" value="#b840a0"/>
-                  <label for="hex-seed-input" class="corn-assistive-text">
-                    Enter a hex seed value
-                  </label>
-                </div>
-                <div class="corn-status"></div>
-              </div>
-              <div class="corn-button-group">
-                <button class="corn-button corn-button--sm" type="submit">Validate</button>
-              </div>
-            </form>
-            <div id="hex-preview" style="margin-top: var(--cc-size-0);">
-              <form class="corn-form" id="hex-preview-form">
-                <div class="corn-row">
-                  <div class="corn-col-12">
-                    <div id="base-hex-color" class="hex-preview"></div>
-                  </div>
-                  <div class="corn-col-6">
-                    <div id="closest-hsluv-preview" class="hex-preview">
-                      <p></p>
-                      <button type="submit" class="corn-button corn-button--xs" id="copy-hsluv-hex" value="hsluv">HSLUV</button>
-                    </div>
-                  </div>
-                  <div class="corn-col-6">
-                    <div id="closest-okhsl-preview" class="hex-preview">
-                      <p></p>                    
-                      <button type="submit" class="corn-button corn-button--xs" id="copy-okhsl-hex" value="okhsl">OKHSL</button>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>      
-        </div>
-        <div class="corn-col-8"> 
-          <div class="corn-panel">
-          <color-form></color-form>
+          <edit-color-form></edit-color-form>
           <p>The palette is generated based on the hue, saturation and color space of the preview color. Adjust the sliders or input values to see changes in real time.</p>
-          <p>Saving the Palette will allow you to make fine-tuning adjustments or export options available.</p>
+          <p>The WCAG2.1 is calculated based on the contrast ratio between the colors in the palette. Where background values 10 - 50 are tested against 100 value and 60-100 are tested against 10 value.</p>
           </div>          
         </div>
       </div>
@@ -193,4 +139,4 @@ class PalettePage extends HTMLElement {
   }
 }
 
-customElements.define('palette-page', PalettePage);
+customElements.define('edit-palette-page', EditPalettePage);

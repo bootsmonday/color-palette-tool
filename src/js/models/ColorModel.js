@@ -14,13 +14,13 @@ class ColorModel {
       this.saturation = colorSpace === 'hsluv' ? saturationValue : saturationValue <= 1 ? saturationValue * 100 : saturationValue;
       this.lightness = colorSpace === 'hsluv' ? lightnessValue : lightnessValue <= 1 ? lightnessValue * 100 : lightnessValue;
 
-      this.id = source.id ?? crypto.randomUUID();
+      this.id = source.id ?? 'color-' + crypto.randomUUID().slice(0, 8);
     } else {
       this.colorSpace = modeOrObj;
       this.hue = hue;
       this.saturation = saturation;
       this.lightness = lightness;
-      this.id = crypto.randomUUID();
+      this.id = 'color-' + crypto.randomUUID().slice(0, 8);
     }
     this.fixedLightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
   }

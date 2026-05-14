@@ -61,7 +61,23 @@ fieldset.color-space-toggle {
     width: var(--cc-size--3);
   }
 }
+
+.color-step-preview {
+  position: relative;
+}
+.lock-icon {
+  position:absolute;
+  top: var(--cc-size--4);
+  right: var(--cc-size--5);
+}
+input[name="color-lock"]:checked + .lock-icon {
+  display: block;
+}
+
 .color-steps-container {
+  &.edit-mode {
+    grid-template-columns: repeat(11, 1fr);
+  } 
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: var(--cc-size--5);
@@ -75,6 +91,20 @@ fieldset.color-space-toggle {
     padding-left: var(--cc-size--4);
     border-radius: var(--cc-border--radius);
   }
+}
+
+.corn-toggle-group:has(.corn-assistive-text) {
+  max-width: max-content;
+} 
+.corn-assistive-text {
+  border: 0;
+  display:block !important;
+  overflow: hidden;
+  height: 1px !important;
+  width: 1px !important;
+  position: absolute !important;
+  white-space: nowrap !important; 
+  margin: -1px;    
 }
   /* --cc-form--item--size--xs: var(--cc-size-2);
   --cc-form--item--size--sm: var(--cc-size-4);

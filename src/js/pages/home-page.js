@@ -1,6 +1,21 @@
+import { store } from '../store.js';
+
 class HomePage extends HTMLElement {
   connectedCallback() {
     this.render();
+    store.getState().paletteCollection.forEach((palette) => {
+      console.log('Rendering palette:', palette);
+      const paletteElement = document.createElement('div');
+      paletteElement.classList.add('corn-palette');
+      paletteElement.innerHTML = `
+        <h3>${palette.name}</h3>
+        <div class="corn-palette-colors">
+          ${palette.steps.map((step) => `<div class="corn-palette-color" style="background-color: ${step.hex};"></div>`).join('')}
+        </div>
+        <a href="/edit-palette/${palette.id}" class="corn-link">View Palette</a>
+      `;
+      this.querySelector('.corn-panel').appendChild(paletteElement);
+    });
   }
 
   render() {
@@ -25,4 +40,4 @@ class HomePage extends HTMLElement {
   }
 }
 
-customElements.define("home-page", HomePage);
+customElements.define('home-page', HomePage);
