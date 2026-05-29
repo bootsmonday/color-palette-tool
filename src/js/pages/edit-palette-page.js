@@ -130,6 +130,7 @@ class EditPalettePage extends HTMLElement {
         <div class="corn-col-12"> 
           <div class="corn-panel">
           <edit-color-form></edit-color-form>
+          <sample-image></sample-image>
           <p>The palette is generated based on the hue, saturation and color space of the preview color. Adjust the sliders or input values to see changes in real time.</p>
           <p>The WCAG2.1 is calculated based on the contrast ratio between the colors in the palette. Where background values 10 - 50 are tested against 100 value and 60-100 are tested against 10 value.</p>
           </div>          

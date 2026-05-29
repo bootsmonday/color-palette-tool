@@ -19,8 +19,8 @@ const categoryRangesHSLUV = {
 const categoryRangesOKHSL = {
   Red: [345, 15],
   Orange: [15, 50],
-  Yellow: [50, 95],
-  Green: [95, 170],
+  Yellow: [50, 90],
+  Green: [90, 170],
   Blue: [170, 273],
   Purple: [273, 345],
 };

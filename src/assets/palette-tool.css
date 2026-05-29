@@ -74,6 +74,51 @@ input[name="color-lock"]:checked + .lock-icon {
   display: block;
 }
 
+.color-examples {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+}
+.color-example-row:has([name="color-category"]:checked) {
+  div {
+    color: transparent !important;
+    height: var(--cc-size-0);
+  }
+}
+  
+.color-example-row, 
+.color-examples-toolbar {
+  display: grid;
+  grid-template-columns:  minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--cc-size--5);
+  margin-top: var(--cc-size--5);
+  transition: grid-template-columns var(--cc-transition--time--fast) var(--cc-transition--easing);
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all var(--cc-transition--time--fast) var(--cc-transition--easing);
+    flex: 1;
+    height: 50px;
+    padding-left: var(--cc-size--4);
+    border-radius: var(--cc-border--radius);
+  }
+}
+
+.color-example-row .selected { 
+  color:transparent !important;
+}
+.color-examples-toolbar div {
+  height: var(--cc-size-2);
+  transition: transform var(--cc-transition--time--fast) var(--cc-transition--easing);
+  
+}
+.color-examples-toolbar div:has([type="checkbox"]:checked) {
+  
+  transform: translateY(0) translateX(calc(var(--cc-size--4) * -1));
+
+
+}
+
 .color-steps-container {
   &.edit-mode {
     grid-template-columns: repeat(11, 1fr);
@@ -92,10 +137,19 @@ input[name="color-lock"]:checked + .lock-icon {
     border-radius: var(--cc-border--radius);
   }
 }
+.color-filters .corn-col-sm-6:first-of-type {
+  border-right: 1px solid var(--cc-gray-20);
+}
+
 
 .corn-toggle-group:has(.corn-assistive-text) {
   max-width: max-content;
 } 
+.corn-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .corn-assistive-text {
   border: 0;
   display:block !important;
@@ -105,6 +159,12 @@ input[name="color-lock"]:checked + .lock-icon {
   position: absolute !important;
   white-space: nowrap !important; 
   margin: -1px;    
+}
+
+
+
+fieldset.corn-checkbox-group--inline {
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
   /* --cc-form--item--size--xs: var(--cc-size-2);
   --cc-form--item--size--sm: var(--cc-size-4);

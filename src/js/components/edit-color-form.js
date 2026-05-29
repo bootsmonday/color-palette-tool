@@ -3,27 +3,61 @@ import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
 import { ColorSteps } from '../models/ColorSteps.js';
 import { ColorPalette } from '../models/ColorPalette.js';
+import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
-const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Gray'];
-const vortextOrder = [1, 2, 4, 8, 7, 5];
-const vortextOffsets = { 1: 0, 2: 40, 4: 120, 8: 280, 7: 240, 5: 160 };
+const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Magenta', 'Gray'];
+// const vortextOrder = [1, 2, 4, 8, 7, 5];
+// const vortextOffsets = { 1: 0, 2: 40, 4: 120, 8: 280, 7: 240, 5: 160 };
+
+// Red: [355, 20],
+// Orange: [20, 55],
+// Yellow: [55, 100],
+// Green: [100, 155],
+// Teal: [155, 190],
+// Blue: [190, 245],
+// Magenta: [245, 305],
+// Purple: [305, 355],
 
 const categoryRangesHSLUV = {
-  Red: [345, 15],
-  Orange: [15, 60],
-  Yellow: [60, 90],
-  Green: [90, 165],
-  Blue: [165, 255],
-  Purple: [255, 345],
+  Red: [355, 20],
+  Orange: [20, 75],
+  Yellow: [75, 95],
+  Green: [95, 155],
+  Teal: [155, 190],
+  Blue: [190, 255],
+  Purple: [255, 305],
+  Magenta: [305, 355],
+  // Red: [355, 30],
+  // Orange: [30, 90],
+  // Yellow: [90, 120],
+  // Green: [120, 155],
+  // Blue: [155, 270],
+  // Purple: [270, 355],
 };
+// Red: [350, 40]
+// Orange: [40, 70]
+// Yellow: [70, 110]
+// Green: [110, 165]
+// Teal: [165, 210]
+// Blue: [210, 275]
+// Magenta: [275, 330]
+// Purple: [330, 350]
 const categoryRangesOKHSL = {
-  Red: [345, 15],
-  Orange: [15, 50],
-  Yellow: [50, 95],
-  Green: [95, 170],
-  Blue: [170, 273],
-  Purple: [273, 345],
+  Red: [350, 40],
+  Orange: [40, 100],
+  Yellow: [100, 120],
+  Green: [120, 165],
+  Teal: [165, 210],
+  Blue: [210, 275],
+  Purple: [275, 330],
+  Magenta: [330, 350],
+  // Red: [345, 15],
+  // Orange: [15, 50],
+  // Yellow: [50, 95],
+  // Green: [95, 170],
+  // Blue: [170, 273],
+  // Purple: [273, 345],
 };
 
 // const categoryRangesOKHSL = {
@@ -62,12 +96,14 @@ function getColorCategory(hue) {
   const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
 
   const normalizedHue = ((hue % 360) + 360) % 360;
-  console.log('Normalized hue:', normalizedHue, ranges.Red[0], ranges.Red[1]);
+  console.log('Normalized hue:', normalizedHue, ranges.Yellow[0], ranges.Yellow[1]);
   if (normalizedHue >= ranges.Red[0] || normalizedHue < ranges.Red[1]) return 'Red';
   if (normalizedHue >= ranges.Orange[0] && normalizedHue < ranges.Orange[1]) return 'Orange';
   if (normalizedHue >= ranges.Yellow[0] && normalizedHue < ranges.Yellow[1]) return 'Yellow';
   if (normalizedHue >= ranges.Green[0] && normalizedHue < ranges.Green[1]) return 'Green';
+  if (normalizedHue >= ranges.Teal[0] && normalizedHue < ranges.Teal[1]) return 'Teal';
   if (normalizedHue >= ranges.Blue[0] && normalizedHue < ranges.Blue[1]) return 'Blue';
+  if (normalizedHue >= ranges.Magenta[0] && normalizedHue < ranges.Magenta[1]) return 'Magenta';
 
   return 'Purple';
 }
@@ -78,15 +114,17 @@ function buildCategoryCenters(startOffset) {
   return {
     Red: valueAtPercentage(ranges.Red[0], ranges.Red[1], startOffset, 360, true).toFixed(2),
     Orange: valueAtPercentage(ranges.Orange[0], ranges.Orange[1], startOffset, 360, false).toFixed(2),
-    Yellow: valueAtPercentage(ranges.Yellow[0], ranges.Yellow[1], startOffset, 360, false).toFixed(2),
+    Yellow: ((ranges.Yellow[0] + ranges.Yellow[1]) / 2).toFixed(2),
     Green: valueAtPercentage(ranges.Green[0], ranges.Green[1], startOffset, 360, false).toFixed(2),
+    Teal: valueAtPercentage(ranges.Teal[0], ranges.Teal[1], startOffset, 360, false).toFixed(2),
     Blue: valueAtPercentage(ranges.Blue[0], ranges.Blue[1], startOffset, 360, false).toFixed(2),
+    Magenta: valueAtPercentage(ranges.Magenta[0], ranges.Magenta[1], startOffset, 360, false).toFixed(2),
     Purple: valueAtPercentage(ranges.Purple[0], ranges.Purple[1], startOffset, 360, false).toFixed(2),
   };
 }
 
 function calculateVortexHues(startHue) {
-  // const originalHues = {};
+  const originalHues = {};
   // for (const num of vortextOrder) {
   //   originalHues[num] = (startHue + vortextOffsets[num]) % 360;
   // }
@@ -98,18 +136,18 @@ function calculateVortexHues(startHue) {
   const categoryCenters = buildCategoryCenters(startOffset);
   const availableCats = Object.keys(categoryCenters).filter((cat) => cat !== startCategory);
 
-  const sortedVortex = vortextOrder
-    .slice()
-    // .sort((a, b) => {
-    //   const distA = Math.min(Math.abs(originalHues[a] - startHue), 360 - Math.abs(originalHues[a] - startHue));
-    //   const distB = Math.min(Math.abs(originalHues[b] - startHue), 360 - Math.abs(originalHues[b] - startHue));
-    //   return distB - distA;
-    // })
-    .slice(0, 5);
+  // const sortedVortex = vortextOrder
+  //   .slice()
+  //   .sort((a, b) => {
+  //     const distA = Math.min(Math.abs(originalHues[a] - startHue), 360 - Math.abs(originalHues[a] - startHue));
+  //     const distB = Math.min(Math.abs(originalHues[b] - startHue), 360 - Math.abs(originalHues[b] - startHue));
+  //     return distB - distA;
+  //   })
+  //   .slice(0, 5);
 
   const assigned = {};
   availableCats.forEach((cat, i) => {
-    const vortexNum = sortedVortex[i];
+    // const vortexNum = sortedVortex[i];
     const hue = categoryCenters[cat];
     console.log(`Assigning vortex ${vortexNum} to category ${cat} with hue ${hue}`);
     assigned[vortexNum] = {
@@ -121,6 +159,42 @@ function calculateVortexHues(startHue) {
   });
 
   return vortextOrder.filter((num) => assigned[num]).map((num) => assigned[num]);
+}
+
+function calculateHues(startHue) {
+  const originalHues = {};
+  // for (const num of vortextOrder) {
+  //   originalHues[num] = (startHue + vortextOffsets[num]) % 360;
+  // }
+
+  const startCategory = getColorCategory(startHue);
+  const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
+  const [startRangeMin, startRangeMax] = ranges[startCategory];
+  const startOffset = circularRangePercentage(startRangeMin, startRangeMax, startHue);
+  const categoryCenters = buildCategoryCenters(startOffset);
+  const availableCats = Object.keys(categoryCenters).filter((cat) => cat !== startCategory);
+  console.log('-----------------> availableCats', startCategory, availableCats);
+  // const sortedVortex = vortextOrder
+  //   .slice()
+  //   .sort((a, b) => {
+  //     const distA = Math.min(Math.abs(originalHues[a] - startHue), 360 - Math.abs(originalHues[a] - startHue));
+  //     const distB = Math.min(Math.abs(originalHues[b] - startHue), 360 - Math.abs(originalHues[b] - startHue));
+  //     return distB - distA;
+  //   })
+  //   .slice(0, 5);
+
+  const assigned = [];
+  availableCats.forEach((cat, i) => {
+    // const vortexNum = sortedVortex[i];
+    const hue = categoryCenters[cat];
+    assigned[i] = {
+      hue: Math.round(hue * 100) / 100,
+      category: cat,
+      // originalHue: Math.round(originalHues[vortexNum] * 100) / 100,
+    };
+  });
+
+  return assigned;
 }
 
 function createHueGradientValues(previewColorModel) {
@@ -164,7 +238,21 @@ function buildColorSteps(colorName, colorSpace, hue, saturation) {
   return colorSteps;
 }
 
-function renderPaletteStepsHtml(steps) {
+function setSampleColorTokens(steps) {
+  document.documentElement.style.setProperty(
+    '--sample-black',
+    steps
+      .find((step) => step.colorName === 'Gray')
+      .colors[9].getColor()
+      .toString({ format: 'hex' })
+  );
+  document.documentElement.style.setProperty(
+    '--sample-white',
+    steps
+      .find((step) => step.colorName === 'Gray')
+      .colors[0].getColor()
+      .toString({ format: 'hex' })
+  );
   let stepsHtml = '';
 
   steps.forEach((step) => {
@@ -172,6 +260,7 @@ function renderPaletteStepsHtml(steps) {
       let lightText = step.colors[0].getColor();
       let darkText = step.colors[9].getColor();
       let j = (i + 1) * 10;
+      document.documentElement.style.setProperty(`--sample-${step.colorName.toLowerCase()}-${j}`, color.getColor().toString({ format: 'hex' }));
       const colorPreview = color.getColor();
       if (i === 0) {
         let stepColor;
@@ -180,58 +269,9 @@ function renderPaletteStepsHtml(steps) {
         } else {
           stepColor = step.colors[4].getColor();
         }
-
-        //stepsHtml += `<button class="corn-button" style="background-color: ${stepColor.toString({ format: 'hex' })}; color: var(--cc-gray-100);">${i === 0 ? step.colorName : ''}</button>`;
-        stepsHtml += `<div class="color-step-preview" style="box-shadow:inset 0 0 0 2px ${stepColor.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">
-        <label for="lock-${step.colorName}">${i === 0 ? step.colorName : ''}</label>
-          <input type="checkbox" name="color-lock" id="lock-${step.colorName}" class="corn-assistive-text" />
-          <svg class="lock-icon" width="16" height="16" fill="currentColor">
-            <use href="/node_modules/bootstrap-icons/bootstrap-icons.svg#lock"/>
-          </svg>          
-        </div>`;
       }
-
-      if (i < 5) {
-        //wcag ${colorPreview.contrast(darkText, 'WCAG21').toFixed(2)}
-        stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${darkText.toString({ format: 'hex' })};">
-        
-        ${j}
-        </div>`;
-      } else {
-        //wcag ${colorPreview.contrast(lightText, 'WCAG21').toFixed(2)}
-        stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${lightText.toString({ format: 'hex' })};">
-        
-        ${j}
-        </div>`;
-      }
-      // stepsHtml += `<div class="color-step-preview" style="background-color: ${colorPreview.toString({ format: 'hex' })}; height: 50px; border-radius: var(--cc-border--radius);">${j}</div>`;
     });
   });
-  let contrastSteps = steps.find((step) => step.colorName === 'Gray');
-  let darkText = contrastSteps.colors[9].getColor();
-  let lightText = contrastSteps.colors[0].getColor();
-  contrastSteps.colors.forEach((color, i) => {
-    let colorPreview = color.getColor();
-    if (i === 0) {
-      stepsHtml += `<div style="box-shadow: inset 0 0 0 2px ${darkText.toString({ format: 'hex' })}; color: ${darkText.toString({ format: 'hex' })};"> WCAG2.1 </div>`;
-    }
-    if (i < 5) {
-      //wcag ${colorPreview.contrast(darkText, 'WCAG21').toFixed(2)}
-      stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${darkText.toString({ format: 'hex' })};">
-        ${colorPreview.contrast(darkText, 'WCAG21').toFixed(2)}
-        </div>`;
-    } else {
-      //wcag ${colorPreview.contrast(lightText, 'WCAG21').toFixed(2)}
-      stepsHtml += `<div style="background-color: ${colorPreview.toString({ format: 'hex' })}; color: ${lightText.toString({ format: 'hex' })};">
-        ${colorPreview.contrast(lightText, 'WCAG21').toFixed(2)}
-        </div>`;
-    }
-  });
-  console.log(
-    'gray',
-    steps.find((step) => step.colorName === 'Gray')
-  );
-  return stepsHtml;
 }
 
 class EditColorForm extends HTMLElement {
@@ -295,7 +335,6 @@ class EditColorForm extends HTMLElement {
     this.saturationInput = this.querySelector('#saturation-value');
     this.saturationSlider = this.querySelector('#saturation-slider');
     this.colorPreview = this.querySelector('#color-preview');
-    this.colorStepsPreview = this.querySelector('#color-steps-container');
   }
 
   update(changes, newState) {
@@ -320,7 +359,7 @@ class EditColorForm extends HTMLElement {
   }
 
   updatePreview() {
-    if (!this.previewColor || !this.hueSlider || !this.saturationSlider || !this.colorStepsPreview) {
+    if (!this.previewColor || !this.hueSlider || !this.saturationSlider) {
       return;
     }
 
@@ -393,9 +432,18 @@ class EditColorForm extends HTMLElement {
 
     this.workingPalette.steps = [];
     this.workingPalette.steps.push(colorSteps);
-    const vortexHues = this.calculateVortexHues(currentHue);
+    console.log('Built color steps for category:', hueCategory, colorSteps);
 
-    vortexHues.forEach((hue) => {
+    const categoryHues = calculateHues(currentHue);
+    console.log('XXXXXXX HUES', categoryHues);
+    // const vortexHues = this.calculateVortexHues(currentHue);
+    // console.log('Calculated vortex hues:', vortexHues);
+    // vortexHues.forEach((hue) => {
+    //   this.workingPalette.steps.push(buildColorSteps(hue.category, this.previewColor.colorSpace, hue.hue, currentSaturation));
+    // });
+
+    categoryHues.forEach((hue) => {
+      console.log('Adding color steps for category:', hue.category, hue.hue);
       this.workingPalette.steps.push(buildColorSteps(hue.category, this.previewColor.colorSpace, hue.hue, currentSaturation));
     });
 
@@ -404,8 +452,9 @@ class EditColorForm extends HTMLElement {
     this.workingPalette.steps.sort((a, b) => {
       return categoryOrder.indexOf(a.colorName) - categoryOrder.indexOf(b.colorName);
     });
+    console.log('Updated working palette:', this.workingPalette);
 
-    this.colorStepsPreview.innerHTML = renderPaletteStepsHtml(this.workingPalette.steps);
+    setSampleColorTokens(this.workingPalette.steps);
   }
 
   addEventListeners() {
@@ -595,16 +644,113 @@ class EditColorForm extends HTMLElement {
               </div>
 
             </div>
-
             <div class="corn-button-group">
               <button type="submit" class="corn-button corn-button--sm">Save Palette</button>
-            </div>
+            </div>  
           </form>
         </div>
       </div>
       <div class="corn-row">
         <div class="corn-col-12">
-          <h2>Palette</h2>
+          <corn-expandable class="corn-expandable">
+            <details slot="details">
+              <summary class="corn-expandable-button">
+                Filter options
+                <svg class="corn-icon" aria-hidden="true">
+                  <use href="${bootstrapIconsSprite}#chevron-right"></use>
+                </svg>
+              </summary>
+              <div class="corn-expandable--content color-filters">
+                <div class="corn-row">
+                <div class="corn-col-12 corn-col-sm-6">
+<fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
+<legend>Colors</legend>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-red" name="filter-color" checked/>
+  <label for="filter-red">Red</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-orange" name="filter-color" checked/>
+  <label for="filter-orange">Orange</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-yellow" name="filter-color" checked/>
+  <label for="filter-yellow">Yellow</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-green" name="filter-color" checked/>
+  <label for="filter-green">Green</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-teal" name="filter-color" checked/>
+  <label for="filter-teal">Teal</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-blue" name="filter-color" checked/>
+  <label for="filter-blue">Blue</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-purple" name="filter-color" checked/>
+  <label for="filter-purple">Purple</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-magenta" name="filter-color" checked/>
+  <label for="filter-magenta">Magenta</label>
+</div>
+<div class="corn-checkbox corn-checkbox--xs">
+  <input type="checkbox" id="filter-gray" name="filter-color" checked/>
+  <label for="filter-gray">Gray</label>
+</div>
+</fieldset>      
+                </div>
+                <div class="corn-col-12 corn-col-sm-6">
+                <fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
+                  <legend>Steps</legend>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-1" name="filter-steps" checked/>
+                    <label for="filter-steps-1">1</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-2" name="filter-steps" checked/>
+                    <label for="filter-steps-2">2</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-3" name="filter-steps" checked/>
+                    <label for="filter-steps-3">3</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-4" name="filter-steps" checked/>
+                    <label for="filter-steps-4">4</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-5" name="filter-steps" checked/>
+                    <label for="filter-steps-5">5</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-6" name="filter-steps" checked/>
+                    <label for="filter-steps-6">6</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-7" name="filter-steps" checked/>
+                    <label for="filter-steps-7">7</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-8" name="filter-steps" checked/>
+                    <label for="filter-steps-8">8</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-9" name="filter-steps" checked/>
+                    <label for="filter-steps-9">9</label>
+                  </div>
+                  <div class="corn-checkbox corn-checkbox--xs">
+                    <input type="checkbox" id="filter-steps-10" name="filter-steps" checked/>
+                    <label for="filter-steps-10">10</label>
+                  </div>                  
+                </fieldset>
+              </div>
+            </details>
+          </corn-expandable>          
+          <color-steps-examples id="color-preview" class="corn-margin-bottom"></color-steps-examples>
           <div id="color-steps-container" class="color-steps-container edit-mode"></div>
         </div>
       </div>
