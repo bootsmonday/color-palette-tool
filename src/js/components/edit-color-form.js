@@ -3,7 +3,6 @@ import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
 import { ColorSteps } from '../models/ColorSteps.js';
 import { ColorPalette } from '../models/ColorPalette.js';
-import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
 const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Magenta', 'Gray'];
@@ -22,9 +21,9 @@ const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purp
 const categoryRangesHSLUV = {
   Red: [355, 20],
   Orange: [20, 75],
-  Yellow: [75, 95],
-  Green: [95, 155],
-  Teal: [155, 190],
+  Yellow: [75, 120],
+  Green: [120, 160],
+  Teal: [160, 190],
   Blue: [190, 255],
   Purple: [255, 305],
   Magenta: [305, 355],
@@ -44,14 +43,24 @@ const categoryRangesHSLUV = {
 // Magenta: [275, 330]
 // Purple: [330, 350]
 const categoryRangesOKHSL = {
-  Red: [350, 40],
-  Orange: [40, 100],
-  Yellow: [100, 120],
+  Red: [350, 45],
+  Orange: [45, 98],
+  Yellow: [98, 120],
   Green: [120, 165],
   Teal: [165, 210],
   Blue: [210, 275],
   Purple: [275, 330],
   Magenta: [330, 350],
+
+  // Red: [350, 40],
+  // Orange: [40, 100],
+  // Yellow: [100, 120],
+  // Green: [120, 165],
+  // Teal: [165, 210],
+  // Blue: [210, 275],
+  // Purple: [275, 330],
+  // Magenta: [330, 350],
+
   // Red: [345, 15],
   // Orange: [15, 50],
   // Yellow: [50, 95],
@@ -87,7 +96,9 @@ function valueAtPercentage(start, end, percentage, maxVal = 360, isWrapping = fa
   }
 
   const rangeLength = (end - start + maxVal) % maxVal;
-  const distance = pct * rangeLength;
+  console.log('rangelength', rangeLength, start, end, percentage, maxVal);
+  //const distance = pct * rangeLength;
+  const distance = rangeLength / 2;
   return (start + distance) % maxVal;
 }
 
@@ -651,105 +662,7 @@ class EditColorForm extends HTMLElement {
         </div>
       </div>
       <div class="corn-row">
-        <div class="corn-col-12">
-          <corn-expandable class="corn-expandable">
-            <details slot="details">
-              <summary class="corn-expandable-button">
-                Filter options
-                <svg class="corn-icon" aria-hidden="true">
-                  <use href="${bootstrapIconsSprite}#chevron-right"></use>
-                </svg>
-              </summary>
-              <div class="corn-expandable--content color-filters">
-                <div class="corn-row">
-                <div class="corn-col-12 corn-col-sm-6">
-<fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
-<legend>Colors</legend>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-red" name="filter-color" checked/>
-  <label for="filter-red">Red</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-orange" name="filter-color" checked/>
-  <label for="filter-orange">Orange</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-yellow" name="filter-color" checked/>
-  <label for="filter-yellow">Yellow</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-green" name="filter-color" checked/>
-  <label for="filter-green">Green</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-teal" name="filter-color" checked/>
-  <label for="filter-teal">Teal</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-blue" name="filter-color" checked/>
-  <label for="filter-blue">Blue</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-purple" name="filter-color" checked/>
-  <label for="filter-purple">Purple</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-magenta" name="filter-color" checked/>
-  <label for="filter-magenta">Magenta</label>
-</div>
-<div class="corn-checkbox corn-checkbox--xs">
-  <input type="checkbox" id="filter-gray" name="filter-color" checked/>
-  <label for="filter-gray">Gray</label>
-</div>
-</fieldset>      
-                </div>
-                <div class="corn-col-12 corn-col-sm-6">
-                <fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
-                  <legend>Steps</legend>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-1" name="filter-steps" checked/>
-                    <label for="filter-steps-1">1</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-2" name="filter-steps" checked/>
-                    <label for="filter-steps-2">2</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-3" name="filter-steps" checked/>
-                    <label for="filter-steps-3">3</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-4" name="filter-steps" checked/>
-                    <label for="filter-steps-4">4</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-5" name="filter-steps" checked/>
-                    <label for="filter-steps-5">5</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-6" name="filter-steps" checked/>
-                    <label for="filter-steps-6">6</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-7" name="filter-steps" checked/>
-                    <label for="filter-steps-7">7</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-8" name="filter-steps" checked/>
-                    <label for="filter-steps-8">8</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-9" name="filter-steps" checked/>
-                    <label for="filter-steps-9">9</label>
-                  </div>
-                  <div class="corn-checkbox corn-checkbox--xs">
-                    <input type="checkbox" id="filter-steps-10" name="filter-steps" checked/>
-                    <label for="filter-steps-10">10</label>
-                  </div>                  
-                </fieldset>
-              </div>
-            </details>
-          </corn-expandable>          
+        <div class="corn-col-12">          
           <color-steps-examples id="color-preview" class="corn-margin-bottom"></color-steps-examples>
           <div id="color-steps-container" class="color-steps-container edit-mode"></div>
         </div>

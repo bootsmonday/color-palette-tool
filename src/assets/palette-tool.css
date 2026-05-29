@@ -76,7 +76,17 @@ input[name="color-lock"]:checked + .lock-icon {
 
 .color-examples {
   display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 
+  minmax(0, 1fr)
+  minmax(0, 1fr)
+  minmax(0, 1fr)
+  minmax(0, 1fr)
+  minmax(0, 1fr)
+  minmax(0, 1fr)
+  minmax(0, 1fr)
+  minmax(0, 1fr);
+  transition: grid-template-rows var(--cc-transition--time--fast) var(--cc-transition--easing);
+
 }
 .color-example-row:has([name="color-category"]:checked) {
   div {
@@ -88,17 +98,30 @@ input[name="color-lock"]:checked + .lock-icon {
 .color-example-row, 
 .color-examples-toolbar {
   display: grid;
-  grid-template-columns:  minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr) 
+  minmax(0, 1fr);
   gap: var(--cc-size--5);
   margin-top: var(--cc-size--5);
   transition: grid-template-columns var(--cc-transition--time--fast) var(--cc-transition--easing);
+  overflow: hidden;
   div {
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     transition: all var(--cc-transition--time--fast) var(--cc-transition--easing);
     flex: 1;
     height: 50px;
+    
     padding-left: var(--cc-size--4);
     border-radius: var(--cc-border--radius);
   }
