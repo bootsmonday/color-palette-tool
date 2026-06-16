@@ -2,6 +2,7 @@ import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 
 class ColorStepsExamples extends HTMLElement {
   colorSteps = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Magenta', 'Gray'];
+
   generateColorTools(color) {
     const tools = document.createElement('div');
     tools.classList.add('color-examples-toolbar', 'color-example-row');
