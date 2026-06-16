@@ -501,7 +501,7 @@ class ColorForm extends HTMLElement {
                 <label for="palette-name">Enter Palette Name</label>
               </div>
             </div>
-            <div class="corn-row">
+            <div class="corn-row corn-margin-bottom">
               <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
                 <div class="corn-form--item">
                   <div class="corn-text-input corn-text-input--sm">

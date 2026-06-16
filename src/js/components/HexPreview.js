@@ -1,12 +1,64 @@
 import { store } from '../store.js';
-import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
-
 import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
-class EditPalettePage extends HTMLElement {
+class HexPreview extends HTMLElement {
+  constructor() {
+    super();
+  }
+  render() {
+    this.innerHTML = `
+      <div>
+
+      <form class="corn-form" id="hex-seed-form">
+        <div class="corn-row">
+          <div class="corn-col-4">
+            <div class="corn-form--item" id="hex-seed-item">
+              <div class="corn-text-input corn-text-input--xs">
+                <input id="hex-seed-input" name="input" placeholder="Hex value" value=""/>
+                <label for="hex-seed-input" class="corn-assistive-text">
+                  Enter a hex seed value
+                </label>
+              </div>
+              <div class="corn-status"></div>
+            </div>
+          </div>
+          <div class="corn-col-8">
+            <div class="corn-button-group">
+              <button class="corn-button corn-button--xs" type="submit">check</button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div id="hex-ghost-text" class="hex-preview-ghost-text">
+        See how a hex value would map to a palette color in HSLuv and OKHSL color spaces. This will show you the closest color that maps to your value and maintains the mathematically accessible contrast ratio with the other color steps.
+      </div>
+      <div id="hex-preview" style="margin-top: var(--cc-size-0);">
+
+        <form class="corn-form" id="hex-preview-form">
+          <div class="corn-row">
+            <div class="corn-col-12">
+              <p id="base-hex-color" class="hex-preview hex-user">#</p>
+            </div>
+            <div class="corn-col-6">
+              <div id="closest-hsluv-preview" class="hex-preview">
+                <p>#</p>
+                <button type="submit" class="corn-button corn-button--xs" id="copy-hsluv-hex" value="hsluv">USE HSLUV</button>
+              </div>
+            </div>
+            <div class="corn-col-6">
+              <div id="closest-okhsl-preview" class="hex-preview">
+                <p>#</p>                    
+                <button type="submit" class="corn-button corn-button--xs" id="copy-okhsl-hex" value="okhsl">USE OKHSL</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    `;
+  }
   connectedCallback() {
-    console.log('EditPalettePage connected', store.getState().editingPaletteId);
     this.closestHsluvColor = null;
     this.closestOkhslColor = null;
     this.render();
@@ -16,12 +68,16 @@ class EditPalettePage extends HTMLElement {
   addEventListeners() {
     this.addEventListener('change', this);
     this.addEventListener('submit', this);
+    this.addEventListener('click', this);
   }
 
   handleEvent(event) {
-    // console.log('EditPalettePage event:', event.type, 'target:', event.target);
+    // console.log('PalettePage event:', event.type, 'target:', event.target);
     // event.stopPropagation();
     // event.preventDefault();
+    if (event.type === 'click') {
+      console.log('HexPreview.js Click event:', event.target, this);
+    }
     if (event.type === 'change') {
       const target = event.target;
       if (target.name === 'color-space') {
@@ -29,7 +85,9 @@ class EditPalettePage extends HTMLElement {
       }
     }
     if (event.type === 'submit') {
+      console.log('HexPreview.js Form submitted:', event.target.id);
       event.preventDefault();
+      event.stopPropagation();
       if (event.target.id === 'hex-preview-form') {
         const colorToCopy = event.submitter.value;
         console.log('Copying color for:', colorToCopy);
@@ -45,6 +103,7 @@ class EditPalettePage extends HTMLElement {
       if (event.target.id === 'hex-seed-form') {
         const formData = new FormData(event.target);
         let hexSeed = formData.get('input');
+        console.log('Hex seed input:', hexSeed);
         if (hexSeed) {
           // Validate hex seed format (basic validation for 3 or 6 hex digits, with optional #)
           const isValidHex = /^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hexSeed);
@@ -59,8 +118,12 @@ class EditPalettePage extends HTMLElement {
             hexSeed.startsWith('#') || (hexSeed = '#' + hexSeed);
             this.calculateClosestColor(hexSeed);
           }
+        } else {
+          this.querySelector('#hex-ghost-text').style.display = 'block';
+          this.querySelector('#hex-preview').style.display = 'none';
         }
         console.log('Hex seed submitted:', hexSeed);
+        return false;
       }
     }
   }
@@ -76,6 +139,7 @@ class EditPalettePage extends HTMLElement {
     this.closestHsluvColor = new Color('hsluv', [hsluvColor.h, hsluvColor.s, closestHsluvLightness]);
     console.log('Closest HSLuv color:', this.closestHsluvColor.toString());
     this.closestOkhslColor = new Color('okhsl', [okhslColor.h, okhslColor.s, closestOkhslLightness / 100]);
+    this.querySelector('#hex-ghost-text').style.display = 'none';
     this.querySelector('#hex-preview').style.backgroundColor = color.toString({ format: 'hex' });
     this.querySelector('#hex-preview').style.display = 'block';
     this.querySelector('#hex-preview').classList.remove('islight', 'isdark');
@@ -107,42 +171,16 @@ class EditPalettePage extends HTMLElement {
     }
     this.removeEventListeners();
   }
+
   update() {
-    console.log('PalettePage update called');
-    const { paletteName, colorSpace } = store.getState();
-    console.log('Updating color space display to:', colorSpace);
-    console.log('Updating palette name display to:', paletteName);
-    this.querySelectorAll('input[name="color-space"]').forEach((input) => {
-      input.checked = input.value === colorSpace;
-    });
-    const paletteNameElement = this.querySelector('#palette-name');
-    paletteNameElement.textContent = paletteName;
-  }
-  render() {
-    const { colorSpace, paletteName } = store.getState();
-    this.innerHTML = `
-      <div class="corn-row">
-        <div class="corn-col-12">
-          <h1>Edit ${paletteName}</h1>
-        </div>
-      </div>
-      <div class="corn-row">
-        <div class="corn-col-12"> 
-          <div class="corn-panel">
-          <edit-color-form></edit-color-form>
-          <div class="corn-row">
-            <div class="corn-col-6">
-            <!-- <sample-image></sample-image> -->
-            <corn-cob-template></corn-cob-template>
-            </div>
-            <div class="corn-col-6">
-              <tailwind-template></tailwind-template>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+    // const {  colorSpace } = store.getState();
+    // console.log('Updating color space display to:', colorSpace);
+    // this.querySelectorAll('input[name="color-space"]').forEach((input) => {
+    //   input.checked = input.value === colorSpace;
+    // });
+    // const paletteNameElement = this.querySelector('#palette-name');
+    // paletteNameElement.textContent = paletteName;
   }
 }
 
-customElements.define('edit-palette-page', EditPalettePage);
+customElements.define('hex-preview', HexPreview);

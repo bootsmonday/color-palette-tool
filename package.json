@@ -9,10 +9,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@bootsmonday/corncob-design-language": "^0.0.6",
+    "@bootsmonday/corncob-design-language": "^0.1.0",
+    "@tailwindcss/vite": "^4.3.0",
     "bootstrap-icons": "^1.13.1",
     "colorjs.io": "^0.6.1",
     "hsluv": "^1.0.1",
+    "tailwindcss": "^4.3.0",
     "vite": "^8.0.10"
   },
   "dependencies": {

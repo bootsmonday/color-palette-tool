@@ -167,43 +167,43 @@ class ColorStepsExamples extends HTMLElement {
               <legend>Steps</legend>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="1" id="filter-steps-1" name="filter-step" checked/>
-                <label for="filter-steps-1">1</label>
+                <label for="filter-steps-1">10</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="2" id="filter-steps-2" name="filter-step" checked/>
-                <label for="filter-steps-2">2</label>
+                <label for="filter-steps-2">20</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="3" id="filter-steps-3" name="filter-step" checked/>
-                <label for="filter-steps-3">3</label>
+                <label for="filter-steps-3">30</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="4" id="filter-steps-4" name="filter-step" checked/>
-                <label for="filter-steps-4">4</label>
+                <label for="filter-steps-4">40</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="5" id="filter-steps-5" name="filter-step" checked/>
-                <label for="filter-steps-5">5</label>
+                <label for="filter-steps-5">50</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="6" id="filter-steps-6" name="filter-step" checked/>
-                <label for="filter-steps-6">6</label>
+                <label for="filter-steps-6">60</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="7" id="filter-steps-7" name="filter-step" checked/>
-                <label for="filter-steps-7">7</label>
+                <label for="filter-steps-7">70</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="8" id="filter-steps-8" name="filter-step" checked/>
-                <label for="filter-steps-8">8</label>
+                <label for="filter-steps-8">80</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="9" id="filter-steps-9" name="filter-step" checked/>
-                <label for="filter-steps-9">9</label>
+                <label for="filter-steps-9">90</label>
               </div>
               <div class="corn-checkbox corn-checkbox--xs">
                 <input type="checkbox" value="10" id="filter-steps-10" name="filter-step" checked/>
-                <label for="filter-steps-10">10</label>
+                <label for="filter-steps-10">100</label>
               </div>                  
             </fieldset>
           </div>

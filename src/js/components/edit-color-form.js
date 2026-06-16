@@ -184,7 +184,7 @@ function calculateHues(startHue) {
   const startOffset = circularRangePercentage(startRangeMin, startRangeMax, startHue);
   const categoryCenters = buildCategoryCenters(startOffset);
   const availableCats = Object.keys(categoryCenters).filter((cat) => cat !== startCategory);
-  console.log('-----------------> availableCats', startCategory, availableCats);
+  // console.log('-----------------> availableCats', startCategory, availableCats);
   // const sortedVortex = vortextOrder
   //   .slice()
   //   .sort((a, b) => {
@@ -443,10 +443,10 @@ class EditColorForm extends HTMLElement {
 
     this.workingPalette.steps = [];
     this.workingPalette.steps.push(colorSteps);
-    console.log('Built color steps for category:', hueCategory, colorSteps);
+    // console.log('Built color steps for category:', hueCategory, colorSteps);
 
     const categoryHues = calculateHues(currentHue);
-    console.log('XXXXXXX HUES', categoryHues);
+    // console.log('XXXXXXX HUES', categoryHues);
     // const vortexHues = this.calculateVortexHues(currentHue);
     // console.log('Calculated vortex hues:', vortexHues);
     // vortexHues.forEach((hue) => {
@@ -454,7 +454,7 @@ class EditColorForm extends HTMLElement {
     // });
 
     categoryHues.forEach((hue) => {
-      console.log('Adding color steps for category:', hue.category, hue.hue);
+      // console.log('Adding color steps for category:', hue.category, hue.hue);
       this.workingPalette.steps.push(buildColorSteps(hue.category, this.previewColor.colorSpace, hue.hue, currentSaturation));
     });
 
@@ -463,7 +463,7 @@ class EditColorForm extends HTMLElement {
     this.workingPalette.steps.sort((a, b) => {
       return categoryOrder.indexOf(a.colorName) - categoryOrder.indexOf(b.colorName);
     });
-    console.log('Updated working palette:', this.workingPalette);
+    // console.log('Updated working palette:', this.workingPalette);
 
     setSampleColorTokens(this.workingPalette.steps);
   }
@@ -478,7 +478,7 @@ class EditColorForm extends HTMLElement {
 
   handleEvent(e) {
     if (e.type === 'submit') {
-      console.log('Form submitted');
+      console.log('edit-color-form Form submitted');
       const paletteCollection = store.getState().paletteCollection;
       store.setState({ paletteCollection: [] });
       // return;
@@ -595,8 +595,25 @@ class EditColorForm extends HTMLElement {
 
     this.innerHTML = `
       <div class="corn-row corn-margin-bottom">
-        <div class="corn-col-12">
-          <form class="corn-form">
+        <div class="corn-col-12">          
+          <div class="corn-row">
+            <div class="corn-col-12">
+              <div class="corn-header-bar">
+              <h2 class="corn-heading">Palette</h2>
+              <corn-button-bar class="corn-button-bar corn-button-bar--toolbar">
+                <div class="corn-popover--anchor">
+                  <button class="corn-button corn-button--xs corn-pop" aria-controls="popover-hex" aria-haspopup="true" type="button">
+                    hex
+                  </button>
+                  <corn-popover position="left" id="popover-hex" class="corn-popover">
+                    <hex-preview></hex-preview>
+                  </corn-popover>
+                </div>
+              </corn-button-bar>                
+              </div>
+            </div>
+          </div>
+          <form class="corn-form">            
             <div class="corn-row">
               <div class="corn-col-3 corn-form">
                 <div class="corn-form--item">
@@ -605,19 +622,21 @@ class EditColorForm extends HTMLElement {
                     <label for="palette-name">Enter Palette Name</label>
                   </div>
                 </div>
-                <fieldset class="corn-toggle-group corn-toggle--xl color-space-toggle" aria-labelledby="legend1">
-                  <legend id="legend1" class="corn-assistive-text">Color Space</legend>
-                  <div class="corn-toggles">
-                    <div class="corn-toggle">
-                      <input type="radio" id="colospace1" name="color-space" value="hsluv" ${colorSpace === 'hsluv' ? 'checked' : ''} />
-                      <label for="colospace1">hsluv</label>
+                <div class="corn-form--item">
+                  <fieldset class="corn-toggle-group corn-toggle--md color-space-toggle" aria-labelledby="legend1">
+                    <legend id="legend1">Color Space</legend>
+                    <div class="corn-toggles">
+                      <div class="corn-toggle">
+                        <input type="radio" id="colospace1" name="color-space" value="hsluv" ${colorSpace === 'hsluv' ? 'checked' : ''} />
+                        <label for="colospace1">hsluv</label>
+                      </div>
+                      <div class="corn-toggle">
+                        <input type="radio" id="colospace2" name="color-space" value="okhsl" ${colorSpace === 'okhsl' ? 'checked' : ''} />
+                        <label for="colospace2">okhsl</label>
+                      </div>
                     </div>
-                    <div class="corn-toggle">
-                      <input type="radio" id="colospace2" name="color-space" value="okhsl" ${colorSpace === 'okhsl' ? 'checked' : ''} />
-                      <label for="colospace2">okhsl</label>
-                    </div>
-                  </div>
-                </fieldset>                   
+                  </fieldset>
+                </div>              
               </div>
               <div class="corn-col-9 corn-form">
                 <div class="corn-row">
@@ -664,7 +683,7 @@ class EditColorForm extends HTMLElement {
       <div class="corn-row">
         <div class="corn-col-12">          
           <color-steps-examples id="color-preview" class="corn-margin-bottom"></color-steps-examples>
-          <div id="color-steps-container" class="color-steps-container edit-mode"></div>
+          <!-- div id="color-steps-container" class="color-steps-container edit-mode"></div -->
         </div>
       </div>
     `;
