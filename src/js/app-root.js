@@ -1,7 +1,7 @@
-import { store } from '../store.js';
-import { router } from '../router.js';
+import { store } from './store.js';
+import { router } from './router.js';
 import corncobStyles from '@bootsmonday/corncob-design-language/style.css?inline';
-import toolstyles from '../../assets/palette-tool.css?inline';
+import toolstyles from '../assets/palette-tool.css?inline';
 
 class AppRoot extends HTMLElement {
   constructor() {
@@ -11,28 +11,26 @@ class AppRoot extends HTMLElement {
   }
 
   connectedCallback() {
-    //this.render();
     this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
-
+    this.render();
     // Register routes
-    router.register('/', 'home-page');
+    router.register('/', 'home-page', 'home');
     router.register('/counter', 'counter-page');
-    router.register('/new-palette', 'palette-page');
+    router.register('/new-palette', 'palette-page', 'new');
     router.register('/todos', 'todo-page');
-    router.register('/edit-palette', 'edit-palette-page');
+    router.register('/edit-palette', 'palette-page', 'edit');
     router.init();
   }
 
   storeUpdate() {
-    this.render();
+    this.updatePage();
   }
   disconnectedCallback() {
     this.unsubscribe?.();
   }
-
-  render() {
+  updatePage() {
     const { currentRoute } = store.getState();
-    console.log('Current route:', currentRoute);
+    // console.log('Current route:', currentRoute);
     let normalizedRoute = '/' + (currentRoute || '/').split(/\//).filter(Boolean)[0]; // Get the first segment for dynamic routes
 
     if (currentRoute.split('/')[1] === 'edit-palette') {
@@ -47,6 +45,12 @@ class AppRoot extends HTMLElement {
     }
 
     const pageTag = router.routes[normalizedRoute] || 'home-page';
+    // console.log('Rendering page:', pageTag);
+    this.shadowRoot.getElementById('current-page').innerHTML = `<${router.routes[store.getState().currentRoute]?.componentName || 'home-page'}></${router.routes[store.getState().currentRoute]?.componentName || 'home-page'}>`;
+  }
+
+  render() {
+    // console.log('XXXXXXXXXXXXXXXX AppRoot render called');
 
     this.shadowRoot.innerHTML = `
     <style>
@@ -62,8 +66,8 @@ class AppRoot extends HTMLElement {
       <div class="corn-header--title">Color Palette Tool</div>
       <nav class="corn-header--nav">
         <corn-button-bar class="corn-button-bar">
-          <a href="/" class="corn-button corn-button--sm">Home</a>
-          <a href="/new-palette" class="corn-button corn-button--sm">New Palette</a>
+          <a href="/" class="corn-button corn-button--sm" data-link>Home</a>
+          <a href="/new-palette" class="corn-button corn-button--sm" data-link>New Palette</a>
           <div class="corn-popover--anchor corn-button-bar--more">
             <button class="corn-button corn-button--sm corn-pop" aria-controls="button-bar-popover" aria-label="more items">&middot;&middot;&middot;</button>
             <corn-popover position="bottom" id="button-bar-popover" class="corn-popover"></corn-popover>
@@ -72,8 +76,8 @@ class AppRoot extends HTMLElement {
       </nav>
     </header>
 
-      <main class="corn-main corn-container corn-container--fluid">
-        <${pageTag}></${pageTag}>
+      <main class="corn-main corn-container corn-container--fluid" id="current-page">
+       
       </main>
     `;
 
@@ -81,10 +85,10 @@ class AppRoot extends HTMLElement {
     this.shadowRoot.querySelectorAll('a[data-link]').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Link clicked:', link.getAttribute('href'));
         router.navigate(link.getAttribute('href'));
       });
     });
+    this.updatePage();
   }
 }
 

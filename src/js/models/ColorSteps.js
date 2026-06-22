@@ -1,9 +1,10 @@
 class ColorSteps {
-  constructor(colorName, colorSpace = 'hsluv', colors = []) {
+  constructor(colorName, colorSpace = 'hsluv', colors = [], locked = false) {
     this.colorName = colorName;
     this.colorSpace = colorSpace;
     this.colors = colors;
-    this.id = crypto.randomUUID();
+    this.locked = locked;
+    this.id = 'steps-' + crypto.randomUUID().slice(0, 8);
   }
 
   set colorSpace(value) {
@@ -24,12 +25,19 @@ class ColorSteps {
   get colors() {
     return this._colors;
   }
+  get locked() {
+    return this._locked;
+  }
+  set locked(value) {
+    this._locked = value;
+  }
   toJSON() {
     return {
       id: this.id,
       colorName: this._colorName,
       colorSpace: this._colorSpace,
       colors: this._colors,
+      locked: this._locked,
     };
   }
 }

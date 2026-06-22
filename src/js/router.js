@@ -3,21 +3,26 @@ import { store } from './store.js';
 export const router = {
   routes: {},
 
-  register(path, componentName) {
-    this.routes[path] = componentName;
+  register(path, componentName, pageType = 'home') {
+    this.routes[path] = { componentName, pageType };
   },
 
   navigate(path) {
     history.pushState({}, '', path);
-    store.setState({ normalizedRoute: normalizedRoute });
+    const normalizedRoute = path.replace(/\/+$/, '') || '/';
+    store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
+    console.log('Navigated to:', normalizedRoute);
+    console.log(store.getState());
   },
 
   init() {
     window.addEventListener('popstate', () => {
-      store.setState({ currentRoute: window.location.pathname || '/' });
+      const normalizedRoute = window.location.pathname.replace(/\/+$/, '') || '/';
+      store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
     });
 
     // Initial route
-    store.setState({ currentRoute: window.location.pathname || '/' });
+    const normalizedRoute = window.location.pathname.replace(/\/+$/, '') || '/';
+    store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
   },
 };

@@ -10,6 +10,7 @@ class PalettePage extends HTMLElement {
     this.render();
     this.unsubscribe = store.subscribeTo(['paletteName', 'colorSpace'], () => this.update(), { batch: true });
     this.addEventListeners();
+    console.log('PalettePage connected', store.getState());
   }
   addEventListeners() {
     this.addEventListener('change', this);
@@ -193,4 +194,4 @@ class PalettePage extends HTMLElement {
   }
 }
 
-customElements.define('palette-page', PalettePage);
+customElements.define('new-palette-page', PalettePage);

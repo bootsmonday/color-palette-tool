@@ -1,6 +1,6 @@
 // Import all components to register them
 import '@bootsmonday/corncob-design-language/style.css';
-import './components/app-root.js';
+import './app-root.js';
 import './components/color-form.js';
 import './components/edit-color-form.js';
 import './components/SampleImage.js';
@@ -8,8 +8,11 @@ import './components/ColorStepsExamples.js';
 import './components/TailWindTemplate.js';
 import './components/CornCobTemplate.js';
 import './components/HexPreview.js';
+import './components/ColorTokens.js';
+import './components/PaletteForm.js';
+import './pages/palette.js';
 import './pages/home-page.js';
-import './pages/palette-page.js';
+import './pages/new-palette-page.js';
 import './pages/edit-palette-page.js';
 import './pages/counter-page.js';
 import './pages/todo-page.js';

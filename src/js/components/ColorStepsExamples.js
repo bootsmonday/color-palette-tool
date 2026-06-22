@@ -35,6 +35,43 @@ class ColorStepsExamples extends HTMLElement {
   }
   generateColorRow(color) {
     const row = document.createElement('div');
+    row.classList.add('color-example');
+    this.container.appendChild(row);
+    //Add Color Label
+    const colorPreview = document.createElement('div');
+
+    colorPreview.classList.add('color-step-preview');
+    const colorLabel = document.createElement('label');
+    colorLabel.innerText = color;
+    colorLabel.setAttribute('for', `lock-${color.toLowerCase()}`);
+    const colorCheckbox = document.createElement('input');
+    colorCheckbox.type = 'checkbox';
+    colorCheckbox.id = `lock-${color.toLowerCase()}`;
+    colorCheckbox.name = 'lock-color';
+    colorCheckbox.value = color.toLowerCase();
+    colorCheckbox.ariaLabel = `Lock ${color}`;
+    //colorCheckbox.classList.add('corn-assistive-text');
+    colorPreview.appendChild(colorCheckbox);
+
+    colorPreview.appendChild(colorLabel);
+    // colorPreview.innerText = color;
+    colorPreview.style.boxShadow = `inset 0 0 0 2px var(--sample-${color.toLowerCase()}-50)`;
+    row.appendChild(colorPreview);
+    // Add Color Step Examples
+    for (let i = 1; i < 11; i++) {
+      const step = document.createElement('div');
+      if (i < 6) {
+        step.style.color = `var(--sample-black)`;
+      } else {
+        step.style.color = `var(--sample-white)`;
+      }
+      step.style.backgroundColor = `var(--sample-${color.toLowerCase()}-${i * 10})`;
+      step.innerText = `${i * 10}`;
+      row.appendChild(step);
+    }
+  }
+  _generateColorRow(color) {
+    const row = document.createElement('div');
     row.classList.add('color-example-row');
     this.container.appendChild(row);
     //Add Color Label
@@ -64,22 +101,19 @@ class ColorStepsExamples extends HTMLElement {
       const target = event.target;
 
       if (target.name === 'filter-step') {
-        let colorGridWidths = 'minmax(0, 1fr) ';
+        let colorGridHeights = 'minmax(0, 1fr) ';
         const steps = Array.from(this.querySelectorAll('input[name="filter-step"]'));
         const checkedSteps = steps.filter((checkbox) => checkbox.checked);
         steps.forEach((checkbox) => {
           if (checkbox.checked) {
-            colorGridWidths += `minmax(0, 1fr) `;
+            colorGridHeights += `minmax(0, 1fr) `;
           } else {
-            colorGridWidths += `minmax(0, 0fr)`;
+            colorGridHeights += `minmax(0, 0fr)`;
           }
         });
-        console.log(
-          'Checked steps:',
-          checkedSteps.map((checkbox) => checkbox.value)
-        );
-        this.querySelectorAll('.color-example-row').forEach((row) => {
-          row.style.gridTemplateColumns = colorGridWidths;
+
+        this.querySelectorAll('.color-example').forEach((row) => {
+          row.style.gridTemplateRows = colorGridHeights;
           steps.forEach((checkbox) => {
             if (checkbox.checked) {
               row.querySelectorAll('div')[parseInt(checkbox.value)].classList.remove('selected');
@@ -90,17 +124,17 @@ class ColorStepsExamples extends HTMLElement {
         });
       }
       if (target.name === 'filter-color') {
-        let colorGridHeight = '';
+        let colorGridWidth = '';
         const checkedColors = Array.from(this.querySelectorAll('input[name="filter-color"]'));
 
         checkedColors.forEach((checkbox) => {
           if (checkbox.checked) {
-            colorGridHeight += `minmax(0, 1fr) `;
+            colorGridWidth += `minmax(0, 1fr) `;
           } else {
-            colorGridHeight += `minmax(0, 0fr)`;
+            colorGridWidth += `minmax(0, 0fr)`;
           }
         });
-        this.querySelector('.color-examples').style.gridTemplateRows = colorGridHeight;
+        this.querySelector('.color-examples').style.gridTemplateColumns = colorGridWidth;
         // const colorIndex = this.colorSteps.findIndex((c) => c.toLowerCase() === color);
         // if (target.checked) {
         //   rows[colorIndex].classList.remove('hidden');
@@ -108,8 +142,12 @@ class ColorStepsExamples extends HTMLElement {
         //   rows[colorIndex].classList.add('hidden');
         // }
       }
+      if (target.name === 'lock-color' || target.name === 'lock-step') {
+        this.updateFormValue();
+      }
     }
   }
+
   renderFilters() {
     this.innerHTML = `
       <corn-expandable class="corn-expandable">
@@ -125,39 +163,39 @@ class ColorStepsExamples extends HTMLElement {
           <div class="corn-col-12 corn-col-sm-6">
             <fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
             <legend>Colors</legend>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-red" name="filter-color" checked/>
               <label for="filter-red">Red</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-orange" name="filter-color" checked/>
               <label for="filter-orange">Orange</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-yellow" name="filter-color" checked/>
               <label for="filter-yellow">Yellow</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-green" name="filter-color" checked/>
               <label for="filter-green">Green</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-teal" name="filter-color" checked/>
               <label for="filter-teal">Teal</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-blue" name="filter-color" checked/>
               <label for="filter-blue">Blue</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-purple" name="filter-color" checked/>
               <label for="filter-purple">Purple</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-magenta" name="filter-color" checked/>
               <label for="filter-magenta">Magenta</label>
             </div>
-            <div class="corn-checkbox corn-checkbox--xs">
+            <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-gray" name="filter-color" checked/>
               <label for="filter-gray">Gray</label>
             </div>
@@ -166,43 +204,43 @@ class ColorStepsExamples extends HTMLElement {
           <div class="corn-col-12 corn-col-sm-6">
             <fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
               <legend>Steps</legend>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="1" id="filter-steps-1" name="filter-step" checked/>
                 <label for="filter-steps-1">10</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="2" id="filter-steps-2" name="filter-step" checked/>
                 <label for="filter-steps-2">20</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="3" id="filter-steps-3" name="filter-step" checked/>
                 <label for="filter-steps-3">30</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="4" id="filter-steps-4" name="filter-step" checked/>
                 <label for="filter-steps-4">40</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="5" id="filter-steps-5" name="filter-step" checked/>
                 <label for="filter-steps-5">50</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="6" id="filter-steps-6" name="filter-step" checked/>
                 <label for="filter-steps-6">60</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="7" id="filter-steps-7" name="filter-step" checked/>
                 <label for="filter-steps-7">70</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="8" id="filter-steps-8" name="filter-step" checked/>
                 <label for="filter-steps-8">80</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="9" id="filter-steps-9" name="filter-step" checked/>
                 <label for="filter-steps-9">90</label>
               </div>
-              <div class="corn-checkbox corn-checkbox--xs">
+              <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="10" id="filter-steps-10" name="filter-step" checked/>
                 <label for="filter-steps-10">100</label>
               </div>                  
@@ -211,9 +249,29 @@ class ColorStepsExamples extends HTMLElement {
         </details>
       </corn-expandable>`;
   }
+  static formAssociated = true;
+  static get formAssociated() {
+    return true;
+  }
+  updateFormValue() {
+    const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
+    const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
+    this.internals.setFormValue('hello', 'world');
+    console.log('internals', this.internals);
+    console.log('value', this.value);
+  }
+  get value() {
+    const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
+    const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
+    return { lockedColors, lockedSteps };
+  }
+  set value(val) {
+    this.updateFormValue();
+  }
 
   constructor() {
     super();
+    this.internals = this.attachInternals();
     this.renderFilters();
     this.container = document.createElement('div');
     this.container.classList.add('color-examples');

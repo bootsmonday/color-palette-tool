@@ -1,7 +1,7 @@
 import Color from 'colorjs.io';
 
 class ColorModel {
-  constructor(modeOrObj, hue = 180, saturation = 50, lightness = 47.5) {
+  constructor(modeOrObj, hue = 180, saturation = 50, lightness = 47.5, locked = false) {
     if (typeof modeOrObj === 'object' && modeOrObj !== null) {
       const source = modeOrObj;
       const colorSpace = source.colorSpace ?? source._colorSpace ?? 'okhsl';
@@ -15,11 +15,13 @@ class ColorModel {
       this.lightness = colorSpace === 'hsluv' ? lightnessValue : lightnessValue <= 1 ? lightnessValue * 100 : lightnessValue;
 
       this.id = source.id ?? 'color-' + crypto.randomUUID().slice(0, 8);
+      this.locked = source.locked ?? locked;
     } else {
       this.colorSpace = modeOrObj;
       this.hue = hue;
       this.saturation = saturation;
       this.lightness = lightness;
+      this.locked = locked;
       this.id = 'color-' + crypto.randomUUID().slice(0, 8);
     }
     this.fixedLightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
@@ -51,6 +53,12 @@ class ColorModel {
   get lightness() {
     return this._lightness;
   }
+  get locked() {
+    return this._locked;
+  }
+  set locked(value) {
+    this._locked = value;
+  }
   getColor() {
     return new Color(this.colorSpace, [this.hue, this.colorSpace === 'okhsl' ? +(this.saturation / 100).toFixed(4) : this.saturation, this.colorSpace === 'okhsl' ? +(this.lightness / 100).toFixed(4) : this.lightness]);
   }
@@ -61,6 +69,7 @@ class ColorModel {
       hue: this._hue,
       saturation: this._saturation,
       lightness: this._lightness,
+      locked: this._locked,
     };
   }
   set hex(value) {

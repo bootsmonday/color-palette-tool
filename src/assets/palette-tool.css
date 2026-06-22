@@ -88,7 +88,8 @@ input[name="color-lock"]:checked + .lock-icon {
 
 .color-examples {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) 
+  
+  grid-template-columns: minmax(0, 1fr) 
   minmax(0, 1fr)
   minmax(0, 1fr)
   minmax(0, 1fr)
@@ -97,20 +98,22 @@ input[name="color-lock"]:checked + .lock-icon {
   minmax(0, 1fr)
   minmax(0, 1fr)
   minmax(0, 1fr);
-  transition: grid-template-rows var(--cc-transition--time--fast) var(--cc-transition--easing);
-
+  transition: grid-template-columns var(--cc-transition--time--fast) var(--cc-transition--easing);
+  .color-example {
+    margin-right: var(--cc-size--5);
+  }
+  
 }
-.color-example-row:has([name="color-category"]:checked) {
+.color-example:has([name="color-category"]:checked) {
   div {
     color: transparent !important;
     height: var(--cc-size-0);
   }
 }
   
-.color-example-row, 
-.color-examples-toolbar {
+.color-example {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 
+  grid-template-rows: minmax(0, 1fr) 
   minmax(0, 1fr) 
   minmax(0, 1fr) 
   minmax(0, 1fr) 
@@ -123,9 +126,9 @@ input[name="color-lock"]:checked + .lock-icon {
   minmax(0, 1fr);
   gap: var(--cc-size--5);
   margin-top: var(--cc-size--5);
-  transition: grid-template-columns var(--cc-transition--time--fast) var(--cc-transition--easing);
+  transition: grid-template-rows var(--cc-transition--time--fast) var(--cc-transition--easing);
   overflow: hidden;
-  div {
+  div, label {
     min-height: 0;
     display: flex;
     align-items: center;

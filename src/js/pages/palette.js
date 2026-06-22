@@ -3,14 +3,24 @@ import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 
 import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
+
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
-class EditPalettePage extends HTMLElement {
-  connectedCallback() {
-    console.log('EditPalettePage connected', store.getState().editingPaletteId);
+class PalettePage extends HTMLElement {
+  constructor() {
+    super();
     this.closestHsluvColor = null;
     this.closestOkhslColor = null;
-    this.render();
     this.unsubscribe = store.subscribeTo(['paletteName', 'colorSpace'], () => this.update(), { batch: true });
+    this.unsubscribe = null;
+  }
+  connectedCallback() {
+    //console.log('PalettePage connected', store.getState().editingPaletteId);
+    console.log('PalettePage connected', store.getState());
+    const { pageType } = store.getState();
+    if (pageType === 'new') {
+      //store.setState({ paletteName: 'New Palette', colorSpace: 'hsluv' });
+    }
+    this.render();
     this.addEventListeners();
   }
   addEventListeners() {
@@ -19,7 +29,7 @@ class EditPalettePage extends HTMLElement {
   }
 
   handleEvent(event) {
-    // console.log('EditPalettePage event:', event.type, 'target:', event.target);
+    // console.log('PalettePage event:', event.type, 'target:', event.target);
     // event.stopPropagation();
     // event.preventDefault();
     if (event.type === 'change') {
@@ -119,20 +129,22 @@ class EditPalettePage extends HTMLElement {
     paletteNameElement.textContent = paletteName;
   }
   render() {
-    const { colorSpace, paletteName } = store.getState();
+    console.log('PalettePage render', store.getState());
+    const { colorSpace, paletteName, pageType } = store.getState();
     this.innerHTML = `
       <div class="corn-row">
         <div class="corn-col-12">
-          <h1>Edit ${paletteName}</h1>
+          ${pageType === 'edit' ? `<h1>Edit ${paletteName}</h1>` : `<h1>Create Palette</h1>`}
         </div>
       </div>      
       <div class="corn-row">
         <div class="corn-col-12"> 
           <div class="corn-panel">
-          <color-tokens></color-tokens>
-          <hr />
-          <edit-color-form></edit-color-form>
-          <hr />
+          ${pageType === 'edit' ? `<color-tokens></color-tokens><hr />` : ``}
+          
+          
+          <palette-form></palette-form>
+
      
           <div class="corn-row">
             <div class="corn-col-12">
@@ -154,4 +166,4 @@ class EditPalettePage extends HTMLElement {
   }
 }
 
-customElements.define('edit-palette-page', EditPalettePage);
+customElements.define('palette-page', PalettePage);

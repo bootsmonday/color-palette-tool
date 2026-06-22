@@ -5,12 +5,9 @@ export const store = {
     colorSpace: 'okhsl',
     workingPalette: null,
     paletteCollection: [],
-    paletteName: 'Working Palette',
+    paletteName: '',
     colorCollectionId: null,
     previewColor: null,
-    count: 0,
-    todos: [],
-    user: { name: 'Alex' },
     currentRoute: '/',
     STORAGE_KEY: 'ColorPaletteToolState',
   },
@@ -126,7 +123,7 @@ export const store = {
   // Load from LocalStorage
   loadFromStorage() {
     if (typeof localStorage === 'undefined') return;
-
+    // localStorage.removeItem(this.STORAGE_KEY); // Clear storage for testing
     try {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       if (saved) {
