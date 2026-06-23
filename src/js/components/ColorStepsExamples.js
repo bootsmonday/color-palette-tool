@@ -153,7 +153,7 @@ class ColorStepsExamples extends HTMLElement {
       <corn-expandable class="corn-expandable">
       <details slot="details">
         <summary class="corn-expandable-button">
-          Filter options
+          Display Options
           <svg class="corn-icon" aria-hidden="true">
             <use href="${bootstrapIconsSprite}#chevron-right"></use>
           </svg>
@@ -256,9 +256,9 @@ class ColorStepsExamples extends HTMLElement {
   updateFormValue() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
     const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
-    this.internals.setFormValue('hello', 'world');
-    console.log('internals', this.internals);
-    console.log('value', this.value);
+    // this.internals.setFormValue('hello', 'world');
+    // console.log('internals', this.internals);
+    // console.log('value', this.value);
   }
   get value() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
@@ -271,6 +271,7 @@ class ColorStepsExamples extends HTMLElement {
 
   constructor() {
     super();
+    console.log('ColorStepsExamples constructor', this);
     this.internals = this.attachInternals();
     this.renderFilters();
     this.container = document.createElement('div');

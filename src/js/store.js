@@ -7,6 +7,7 @@ export const store = {
     paletteCollection: [],
     paletteName: '',
     colorCollectionId: null,
+    userColor: null,
     previewColor: null,
     currentRoute: '/',
     STORAGE_KEY: 'ColorPaletteToolState',
