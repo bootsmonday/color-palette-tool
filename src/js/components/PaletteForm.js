@@ -6,17 +6,6 @@ import { ColorPalette } from '../models/ColorPalette.js';
 
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
 const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Magenta', 'Gray'];
-// const vortextOrder = [1, 2, 4, 8, 7, 5];
-// const vortextOffsets = { 1: 0, 2: 40, 4: 120, 8: 280, 7: 240, 5: 160 };
-
-// Red: [355, 20],
-// Orange: [20, 55],
-// Yellow: [55, 100],
-// Green: [100, 155],
-// Teal: [155, 190],
-// Blue: [190, 245],
-// Magenta: [245, 305],
-// Purple: [305, 355],
 
 const categoryRangesHSLUV = {
   Red: [355, 20],
@@ -27,21 +16,7 @@ const categoryRangesHSLUV = {
   Blue: [190, 255],
   Purple: [255, 305],
   Magenta: [305, 355],
-  // Red: [355, 30],
-  // Orange: [30, 90],
-  // Yellow: [90, 120],
-  // Green: [120, 155],
-  // Blue: [155, 270],
-  // Purple: [270, 355],
 };
-// Red: [350, 40]
-// Orange: [40, 70]
-// Yellow: [70, 110]
-// Green: [110, 165]
-// Teal: [165, 210]
-// Blue: [210, 275]
-// Magenta: [275, 330]
-// Purple: [330, 350]
 const categoryRangesOKHSL = {
   Red: [350, 45],
   Orange: [45, 98],
@@ -51,64 +26,12 @@ const categoryRangesOKHSL = {
   Blue: [210, 275],
   Purple: [275, 330],
   Magenta: [330, 350],
-
-  // Red: [350, 40],
-  // Orange: [40, 100],
-  // Yellow: [100, 120],
-  // Green: [120, 165],
-  // Teal: [165, 210],
-  // Blue: [210, 275],
-  // Purple: [275, 330],
-  // Magenta: [330, 350],
-
-  // Red: [345, 15],
-  // Orange: [15, 50],
-  // Yellow: [50, 95],
-  // Green: [95, 170],
-  // Blue: [170, 273],
-  // Purple: [273, 345],
 };
 
-// const categoryRangesOKHSL = {
-//   Red: [355, 45],
-//   Orange: [45, 85],
-//   Yellow: [85, 115],
-//   Green: [115, 185],
-//   Blue: [185, 285],
-//   Purple: [285, 355],
-// };
-
-// function clampPercentage(value) {
-//   return Math.max(0, Math.min(100, value));
-// }
-
-// function circularRangePercentage(start, end, value, maxVal = 360) {
-//   const rangeLength = (end - start + maxVal) % maxVal;
-//   const distance = (value - (end - start) / 2 + maxVal) % maxVal;
-//   return clampPercentage((distance / rangeLength) * 100);
-// }
-
-// function valueAtPercentage(start, end, percentage, maxVal = 360, isWrapping = false) {
-//   console.log('Calculating value at percentage:', { start, end, percentage, maxVal, isWrapping });
-//   const pct = clampPercentage(percentage) / 100;
-
-//   if (!isWrapping) {
-//     return start + pct * (end - start);
-//   }
-
-//   const rangeLength = (end - start + maxVal) % maxVal;
-//   // console.log('rangelength', rangeLength, start, end, percentage, maxVal);
-//   //const distance = pct * rangeLength;
-//   const distance = rangeLength / 2;
-//   return (start + distance) % maxVal;
-// }
-
 function getColorCategory(hue) {
-  // console.log('Getting color category for hue:', hue, 'in color space:', store.getState().colorSpace);
   const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
-
   const normalizedHue = ((hue % 360) + 360) % 360;
-  // console.log('Normalized hue:', normalizedHue, ranges.Yellow[0], ranges.Yellow[1]);
+
   if (normalizedHue >= ranges.Red[0] || normalizedHue < ranges.Red[1]) return 'Red';
   if (normalizedHue >= ranges.Orange[0] && normalizedHue < ranges.Orange[1]) return 'Orange';
   if (normalizedHue >= ranges.Yellow[0] && normalizedHue < ranges.Yellow[1]) return 'Yellow';
@@ -119,96 +42,6 @@ function getColorCategory(hue) {
 
   return 'Purple';
 }
-
-// function buildCategoryCenters(startOffset) {
-//   console.log('Building category centers with startOffset:', startOffset);
-//   const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
-
-//   return {
-//     Red: valueAtPercentage(ranges.Red[0], ranges.Red[1], startOffset, 360, true).toFixed(2),
-//     Orange: valueAtPercentage(ranges.Orange[0], ranges.Orange[1], startOffset, 360, false).toFixed(2),
-//     Yellow: ((ranges.Yellow[0] + ranges.Yellow[1]) / 2).toFixed(2),
-//     Green: valueAtPercentage(ranges.Green[0], ranges.Green[1], startOffset, 360, false).toFixed(2),
-//     Teal: valueAtPercentage(ranges.Teal[0], ranges.Teal[1], startOffset, 360, false).toFixed(2),
-//     Blue: valueAtPercentage(ranges.Blue[0], ranges.Blue[1], startOffset, 360, false).toFixed(2),
-//     Magenta: valueAtPercentage(ranges.Magenta[0], ranges.Magenta[1], startOffset, 360, false).toFixed(2),
-//     Purple: valueAtPercentage(ranges.Purple[0], ranges.Purple[1], startOffset, 360, false).toFixed(2),
-//   };
-// }
-
-// function calculateVortexHues(startHue) {
-//   const originalHues = {};
-//   // for (const num of vortextOrder) {
-//   //   originalHues[num] = (startHue + vortextOffsets[num]) % 360;
-//   // }
-
-//   const startCategory = getColorCategory(startHue);
-//   const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
-//   const [startRangeMin, startRangeMax] = ranges[startCategory];
-//   const startOffset = circularRangePercentage(startRangeMin, startRangeMax, startHue);
-//   const categoryCenters = buildCategoryCenters(startOffset);
-//   const availableCats = Object.keys(categoryCenters).filter((cat) => cat !== startCategory);
-
-//   // const sortedVortex = vortextOrder
-//   //   .slice()
-//   //   .sort((a, b) => {
-//   //     const distA = Math.min(Math.abs(originalHues[a] - startHue), 360 - Math.abs(originalHues[a] - startHue));
-//   //     const distB = Math.min(Math.abs(originalHues[b] - startHue), 360 - Math.abs(originalHues[b] - startHue));
-//   //     return distB - distA;
-//   //   })
-//   //   .slice(0, 5);
-
-//   const assigned = {};
-//   availableCats.forEach((cat, i) => {
-//     // const vortexNum = sortedVortex[i];
-//     const hue = categoryCenters[cat];
-//     // console.log(`Assigning vortex ${vortexNum} to category ${cat} with hue ${hue}`);
-//     assigned[vortexNum] = {
-//       vortex: vortexNum,
-//       hue: Math.round(hue * 100) / 100,
-//       category: cat,
-//       // originalHue: Math.round(originalHues[vortexNum] * 100) / 100,
-//     };
-//   });
-
-//   return vortextOrder.filter((num) => assigned[num]).map((num) => assigned[num]);
-// }
-
-// function calculateHues(startHue) {
-//   const originalHues = {};
-//   // for (const num of vortextOrder) {
-//   //   originalHues[num] = (startHue + vortextOffsets[num]) % 360;
-//   // }
-
-//   const startCategory = getColorCategory(startHue);
-//   const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
-//   const [startRangeMin, startRangeMax] = ranges[startCategory];
-//   const startOffset = circularRangePercentage(startRangeMin, startRangeMax, startHue);
-//   const categoryCenters = buildCategoryCenters(startOffset);
-//   const availableCats = Object.keys(categoryCenters).filter((cat) => cat !== startCategory);
-//   // console.log('-----------------> availableCats', startCategory, availableCats);
-//   // const sortedVortex = vortextOrder
-//   //   .slice()
-//   //   .sort((a, b) => {
-//   //     const distA = Math.min(Math.abs(originalHues[a] - startHue), 360 - Math.abs(originalHues[a] - startHue));
-//   //     const distB = Math.min(Math.abs(originalHues[b] - startHue), 360 - Math.abs(originalHues[b] - startHue));
-//   //     return distB - distA;
-//   //   })
-//   //   .slice(0, 5);
-
-//   const assigned = [];
-//   availableCats.forEach((cat, i) => {
-//     // const vortexNum = sortedVortex[i];
-//     const hue = categoryCenters[cat];
-//     assigned[i] = {
-//       hue: Math.round(hue * 100) / 100,
-//       category: cat,
-//       // originalHue: Math.round(originalHues[vortexNum] * 100) / 100,
-//     };
-//   });
-
-//   return assigned;
-// }
 
 function createHueGradientValues(previewColorModel) {
   const previewColor = previewColorModel.getColor();
@@ -293,10 +126,6 @@ class PaletteForm extends HTMLElement {
     this.unsubscribe = null;
   }
 
-  // calculateVortexHues(startHue) {
-  //   return calculateVortexHues(startHue);
-  // }
-
   getColorCategory(hue) {
     return getColorCategory(hue);
   }
@@ -319,7 +148,7 @@ class PaletteForm extends HTMLElement {
   }
   initialize() {
     const { pageType } = store.getState();
-    // console.log('Initializing PaletteForm for page type:', pageType);
+    console.log('Initializing PaletteForm for page type:', pageType);
     this.saturation = {
       min: 0,
       max: 100,
@@ -330,7 +159,9 @@ class PaletteForm extends HTMLElement {
     if (pageType === 'edit') {
       this.colorSpace = store.getState().colorSpace;
       this.previewColor = store.getState().previewColor || null;
+      this.userColor = store.getState().userColor || null;
       this.workingPalette = store.getState().workingPalette || new ColorPalette({});
+      console.log('Loaded working palette from store:', this.workingPalette);
     } else if (pageType === 'new') {
       this.colorSpace = 'okhsl';
       const defaultPreviewColor = new ColorModel({
@@ -344,6 +175,7 @@ class PaletteForm extends HTMLElement {
       this.userColor = defaultPreviewColor;
       this.workingPalette = new ColorPalette({});
     }
+    console.log('this.userColor:', this.userColor);
   }
 
   cacheElements() {
@@ -357,27 +189,10 @@ class PaletteForm extends HTMLElement {
 
   update(changes, newState) {
     console.log('------------> PaletteForm received store update:', { changes, newState });
-    //if (changes.previewColor && newState.previewColor) {
     this.previewColor = newState.previewColor;
     this.userColor = newState.userColor;
     this.syncControlsFromPreviewColor(); // keep UI in sync with store
     this.updatePreview();
-    // this.updateHueSlider();
-    // this.updateSaturationSlider();
-    // this.updateColorPreview();
-    //}
-    // if (changes.colorSpace) {
-    //   this.updateColorSpace();
-    //   console.log('Color space changed to:', newState.colorSpace);
-    //   if (this.previewColor && !changes.previewColor) {
-    //     const updatedPreviewColor = new ColorModel({
-    //       ...this.previewColor.toJSON(),
-    //       colorSpace: newState.colorSpace,
-    //     });
-    //     queueMicrotask(() => store.setState({ previewColor: updatedPreviewColor }));
-    //   }
-    //   return;
-    // }
   }
 
   updatePreview() {
@@ -439,17 +254,14 @@ class PaletteForm extends HTMLElement {
     let sourceRange = Object.entries(categoryRanges).find(([_, range]) => {
       const [start, end] = range;
       if (start < end) return hue >= start && hue <= end;
-      return hue >= start || hue <= end; // wrapping
+      return hue >= start || hue <= end;
     })?.[1];
-
-    if (!sourceRange) throw new Error('Hue not in any range');
 
     const sourceCenter = getCenter(sourceRange);
     const sourceWidth = sourceRange[0] < sourceRange[1] ? sourceRange[1] - sourceRange[0] : 360 - sourceRange[0] + sourceRange[1];
-
-    const offset = hue - sourceCenter; // signed offset
+    const offset = hue - sourceCenter;
     const halfWidth = sourceWidth / 2;
-    const percentage = offset / halfWidth; // -1 to +1 range
+    const percentage = offset / halfWidth;
 
     const results = {};
 
@@ -546,8 +358,12 @@ class PaletteForm extends HTMLElement {
   }
 
   handleEvent(e) {
-    console.log('PaletteForm event:', e.type, e.target.name);
+    //console.log('PaletteForm event:', e.type, e.target.name);
+
+    // console.log('PaletteForm event:', e.type, e.target.name, 'pageType:', pageType);
+
     if (e.type === 'submit') {
+      const { pageType } = store.getState();
       // console.log('edit-color-form Form submitted');
       const paletteCollection = store.getState().paletteCollection || [];
       //store.setState({ paletteCollection: [] });
@@ -570,11 +386,19 @@ class PaletteForm extends HTMLElement {
         paletteCollection.push(this.workingPalette);
         // console.log('Added new palette to collection:', this.workingPalette);
         store.setState({ paletteCollection });
-        return;
+        window.location.href = '/edit-palette/' + this.workingPalette.id;
+      } else {
+        const index = paletteCollection.findIndex((palette) => palette.id === this.workingPalette.id);
+        if (index !== -1) {
+          paletteCollection[index] = this.workingPalette;
+          store.setState({ paletteCollection });
+          // console.log('Updated existing palette in collection:', this.workingPalette);
+        }
       }
+
       // console.log('Would save to existing collection with ID:', store.getState().colorCollectionId);
       e.preventDefault();
-      return;
+      return false;
     }
     if (e.type === 'change') {
       if (e.target.name === 'palette-name') {
@@ -673,8 +497,9 @@ class PaletteForm extends HTMLElement {
   }
 
   render() {
-    const { colorSpace, workingPalette } = store.getState();
-    const defaultColor = this.userColor.getColor();
+    const { colorSpace, workingPalette, userColor } = store.getState();
+    console.log('Rendering PaletteForm with colorSpace:', colorSpace, 'workingPalette:', workingPalette, this.userColor);
+    const defaultColor = userColor.getColor();
     // console.log('rendering', workingPalette);
     this.innerHTML = `
       <div class="corn-row corn-margin-bottom">
@@ -726,7 +551,7 @@ class PaletteForm extends HTMLElement {
                   <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
                     <div class="corn-form--item">
                       <div class="corn-text-input">
-                        <input id="hue-value" name="hue-value" placeholder="Hue" value="${this.previewColor.hue.toFixed(2)}" />
+                        <input id="hue-value" name="hue-value" placeholder="Hue" value="${this.userColor.hue.toFixed(2)}" />
                         <label for="hue-value">Hue Value</label>
                       </div>
                     </div>
@@ -734,7 +559,7 @@ class PaletteForm extends HTMLElement {
                   <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
                     <div class="corn-slider ">
                       <label for="hue-slider">Hue:</label>
-                      <input type="range" min="0" max="360" step="0.01" value="${this.previewColor.hue.toFixed(2)}" id="hue-slider" name="hue-slider"/>
+                      <input type="range" min="0" max="360" step="0.01" value="${this.userColor.hue.toFixed(2)}" id="hue-slider" name="hue-slider"/>
                     </div>
                   </div>
                 </div>
@@ -742,7 +567,7 @@ class PaletteForm extends HTMLElement {
                   <div class="corn-col-12 corn-col-sm-4 corn-col-md-3 corn-col-xl-2">
                     <div class="corn-form--item">
                       <div class="corn-text-input">
-                        <input id="saturation-value" name="saturation-value" placeholder="Saturation" value="${this.previewColor.saturation.toFixed(2)}" />
+                        <input id="saturation-value" name="saturation-value" placeholder="Saturation" value="${this.userColor.saturation.toFixed(2)}" />
                         <label for="saturation-value">Saturation Value</label>
                       </div>
                     </div>
@@ -750,7 +575,7 @@ class PaletteForm extends HTMLElement {
                   <div class="corn-col-12 corn-col-sm-8 corn-col-md-9 corn-col-xl-10">
                     <div class="corn-slider">
                       <label for="saturation-slider">Saturation:</label>
-                      <input type="range" min="${this.saturation.min}" max="${this.saturation.max}" step="${this.saturation.step}" value="${this.previewColor.saturation.toFixed(2)}" id="saturation-slider" name="saturation-slider"/>
+                      <input type="range" min="${this.saturation.min}" max="${this.saturation.max}" step="${this.saturation.step}" value="${this.userColor.saturation.toFixed(2)}" id="saturation-slider" name="saturation-slider"/>
                     </div>
                   </div>
                 </div>                

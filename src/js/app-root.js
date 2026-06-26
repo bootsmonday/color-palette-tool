@@ -8,18 +8,20 @@ class AppRoot extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.unsubscribe = null;
-  }
-
-  connectedCallback() {
-    this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
-    this.render();
-    // Register routes
     router.register('/', 'home-page', 'home');
     router.register('/counter', 'counter-page');
     router.register('/new-palette', 'palette-page', 'new');
     router.register('/todos', 'todo-page');
     router.register('/edit-palette', 'palette-page', 'edit');
     router.init();
+  }
+
+  connectedCallback() {
+    this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
+    this.render();
+    // Register routes
+
+    console.log('AppRoot connectedCallback called');
   }
 
   storeUpdate() {
@@ -29,8 +31,8 @@ class AppRoot extends HTMLElement {
     this.unsubscribe?.();
   }
   updatePage() {
-    const { currentRoute } = store.getState();
-    // console.log('Current route:', currentRoute);
+    const { currentRoute, pageType } = store.getState();
+    console.log('---->Current route:', currentRoute, 'Page type:', pageType);
     let normalizedRoute = '/' + (currentRoute || '/').split(/\//).filter(Boolean)[0]; // Get the first segment for dynamic routes
 
     if (currentRoute.split('/')[1] === 'edit-palette') {
@@ -45,8 +47,10 @@ class AppRoot extends HTMLElement {
     }
 
     const pageTag = router.routes[normalizedRoute] || 'home-page';
-    // console.log('Rendering page:', pageTag);
-    this.shadowRoot.getElementById('current-page').innerHTML = `<${router.routes[store.getState().currentRoute]?.componentName || 'home-page'}></${router.routes[store.getState().currentRoute]?.componentName || 'home-page'}>`;
+    console.log('Navigating to page:', pageTag, 'for route:', normalizedRoute);
+    store.setState({ pageType: pageTag.pageType });
+    console.log('Rendering page:', pageTag, normalizedRoute, router.routes, router.routes[normalizedRoute]?.componentName);
+    this.shadowRoot.getElementById('current-page').innerHTML = `<${router.routes[normalizedRoute]?.componentName || 'home-page'}></${router.routes[normalizedRoute]?.componentName || 'home-page'}>`;
   }
 
   render() {

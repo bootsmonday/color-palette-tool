@@ -123,15 +123,19 @@ export const store = {
 
   // Load from LocalStorage
   loadFromStorage() {
+    console.log('Loading state from LocalStorage...');
     if (typeof localStorage === 'undefined') return;
     // localStorage.removeItem(this.STORAGE_KEY); // Clear storage for testing
     try {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-
+        console.log('Loaded state from LocalStorage:', parsed);
         if (parsed.previewColor) {
           parsed.previewColor = new ColorModel(parsed.previewColor);
+        }
+        if (parsed.userColor) {
+          parsed.userColor = new ColorModel(parsed.userColor);
         }
 
         this.state = { ...this.state, ...parsed };
