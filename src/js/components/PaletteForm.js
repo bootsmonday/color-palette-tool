@@ -134,7 +134,7 @@ class PaletteForm extends HTMLElement {
     this.initialize();
     this.render();
 
-    this.unsubscribe = store.subscribeTo(['colorSpace', 'previewColor', 'userColor'], (changes, newState) => this.update(changes, newState), { batch: true });
+    this.unsubscribe = store.subscribeTo(['workingPalette'], (changes, newState) => this.update(changes, newState), { batch: true });
     this.cacheElements();
     this.addEventListeners();
     this.updatePreview();
@@ -147,7 +147,8 @@ class PaletteForm extends HTMLElement {
     }
   }
   initialize() {
-    const { pageType } = store.getState();
+    const { pageType, workingPalette } = store.getState();
+    this.workingPalette = new ColorPalette(workingPalette) || new ColorPalette();
     console.log('Initializing PaletteForm for page type:', pageType);
     this.saturation = {
       min: 0,
@@ -155,27 +156,19 @@ class PaletteForm extends HTMLElement {
       step: 0.01,
       default: 50,
     };
-
+    console.log('---------> PaletteForm initialized state:', store.getState());
     if (pageType === 'edit') {
-      this.colorSpace = store.getState().colorSpace;
-      this.previewColor = store.getState().previewColor || null;
-      this.userColor = store.getState().userColor || null;
-      this.workingPalette = store.getState().workingPalette || new ColorPalette({});
+      this.paletteName = this.workingPalette.name || 'Palette Name Goes Here';
+      this.colorSpace = this.workingPalette.colorSpace;
+      this.userColor = this.workingPalette.userColor || null;
       console.log('Loaded working palette from store:', this.workingPalette);
     } else if (pageType === 'new') {
-      this.colorSpace = 'okhsl';
-      const defaultPreviewColor = new ColorModel({
-        colorSpace: this.colorSpace,
-        hue: 180,
-        saturation: 72,
-        lightness: lightnessSteps[5],
-      });
-      store.setState({ previewColor: defaultPreviewColor });
-      this.previewColor = defaultPreviewColor;
-      this.userColor = defaultPreviewColor;
-      this.workingPalette = new ColorPalette({});
+      this.workingPalette = new ColorPalette();
+      this.colorSpace = this.workingPalette.colorSpace;
+      this.paletteName = this.workingPalette.name;
+      this.userColor = this.workingPalette.userColor;
     }
-    console.log('this.userColor:', this.userColor);
+    console.log('-----------XXXXXXXX ->this.userColor:', this.userColor);
   }
 
   cacheElements() {
@@ -201,10 +194,10 @@ class PaletteForm extends HTMLElement {
     this.updateColorPreview();
   }
   syncControlsFromPreviewColor() {
-    if (!this.userColor) return;
+    if (!this.workingPalette.userColor) return;
 
-    const hue = this.userColor.hue.toFixed(2);
-    const saturation = this.userColor.saturation.toFixed(2);
+    const hue = this.workingPalette.userColor.hue.toFixed(2);
+    const saturation = this.workingPalette.userColor.saturation.toFixed(2);
 
     if (this.hueSlider.value !== hue) this.hueSlider.value = hue;
     if (this.hueInput.value !== hue) this.hueInput.value = hue;
@@ -223,20 +216,20 @@ class PaletteForm extends HTMLElement {
   }
 
   updateHueSlider() {
-    const gradientValues = createHueGradientValues(this.userColor);
-    if (this.hueSlider.value !== this.userColor.hue.toFixed(2)) {
-      this.hueSlider.value = this.userColor.hue.toFixed(2);
-      this.hueInput.value = this.userColor.hue.toFixed(2);
+    const gradientValues = createHueGradientValues(this.workingPalette.userColor);
+    if (this.hueSlider.value !== this.workingPalette.userColor.hue.toFixed(2)) {
+      this.hueSlider.value = this.workingPalette.userColor.hue.toFixed(2);
+      this.hueInput.value = this.workingPalette.userColor.hue.toFixed(2);
     }
     this.hueSlider.style.setProperty('background', `linear-gradient(to right, ${gradientValues.join(',')})`);
   }
 
   updateSaturationSlider() {
-    const gradientValues = createSaturationGradientValues(this.userColor);
+    const gradientValues = createSaturationGradientValues(this.workingPalette.userColor);
 
-    if (this.saturationSlider.value !== this.userColor.saturation.toFixed(2)) {
-      this.saturationSlider.value = this.userColor.saturation.toFixed(2);
-      this.saturationInput.value = this.userColor.saturation.toFixed(2);
+    if (this.saturationSlider.value !== this.workingPalette.userColor.saturation.toFixed(2)) {
+      this.saturationSlider.value = this.workingPalette.userColor.saturation.toFixed(2);
+      this.saturationInput.value = this.workingPalette.userColor.saturation.toFixed(2);
     }
     this.saturationSlider.style.setProperty('background', `linear-gradient(to right, ${gradientValues.join(',')})`);
   }
@@ -282,8 +275,10 @@ class PaletteForm extends HTMLElement {
     return results;
   }
 
+  applyFilters() {}
+
   updateColorPreview() {
-    const userColor = store.getState().userColor;
+    const userColor = store.getState().workingPalette.userColor;
     console.log('XXXXXXXUpdating color preview with user:', userColor);
     //const previewColor = this.previewColor.getColor();
     const currentHue = Number(this.hueInput.value || 0);
@@ -299,7 +294,16 @@ class PaletteForm extends HTMLElement {
     const lockedColorSet = new Set(lockedColors || []);
 
     console.log('Locked colors:', lockedColorSet, lockedSteps);
-    let filteredSteps = this.workingPalette.steps.filter((step) => lockedColorSet.has(step.colorName.toLowerCase()));
+    let filteredSteps = this.workingPalette.steps.filter((step) => {
+      if (lockedColorSet.has(step.colorName.toLowerCase())) {
+        console.log('Locked step found:', step.colorName);
+        step.locked = true;
+        return true;
+      } else {
+        step.locked = false;
+        return false;
+      }
+    });
     // colorSteps = colorSteps.filter((step) => !lockedColorSet.has(step.colorName.toLowerCase()));
     // console.log('--------> lockedColors', lockedColorSet, filteredSteps, this.workingPalette.steps);
     // this.workingPalette.steps = [];
@@ -330,6 +334,7 @@ class PaletteForm extends HTMLElement {
     // this.workingPalette.steps.push(buildColorSteps('Gray', this.previewColor.colorSpace, currentHue, 11));
     // }
     sampleSteps = sampleSteps.filter((step) => !lockedColorSet.has(step.colorName.toLowerCase()));
+    console.log('Filtered sample steps (excluding locked colors):', sampleSteps, filteredSteps);
     sampleSteps.push(...filteredSteps);
     sampleSteps.sort((a, b) => {
       return categoryOrder.indexOf(a.colorName) - categoryOrder.indexOf(b.colorName);
@@ -364,12 +369,13 @@ class PaletteForm extends HTMLElement {
 
     if (e.type === 'submit') {
       const { pageType } = store.getState();
-      // console.log('edit-color-form Form submitted');
+      this.updateColorPreview();
+      console.log('XXXXXXXXXXXXXXXXXXXXXXXX \n edit-color-form Form submitted', pageType);
       const paletteCollection = store.getState().paletteCollection || [];
       //store.setState({ paletteCollection: [] });
 
       // console.log('Current palette collection:', paletteCollection);
-      let newPalette = true;
+      // let newPalette = true;
       //return;
       // for (const palette of paletteCollection) {
       //   if (palette.id === this.workingPalette.id) {
@@ -382,17 +388,24 @@ class PaletteForm extends HTMLElement {
       //     return;
       //   }
       // }
-      if (newPalette) {
+      this.workingPalette.name = this.paletteName.value || 'Untitled Palette';
+      this.workingPalette.colorSpace = this.colorSpace;
+
+      if (pageType === 'new') {
         paletteCollection.push(this.workingPalette);
         // console.log('Added new palette to collection:', this.workingPalette);
-        store.setState({ paletteCollection });
+        store.setState({ paletteCollection: paletteCollection, workingPalette: this.workingPalette });
         window.location.href = '/edit-palette/' + this.workingPalette.id;
       } else {
         const index = paletteCollection.findIndex((palette) => palette.id === this.workingPalette.id);
+        console.log('--------------> Index of existing palette in collection:', index);
+        console.log('--------------> Current palette collection:', paletteCollection);
+        console.log('--------------> Working palette:', this.workingPalette);
         if (index !== -1) {
+          //paletteCollection = [];
           paletteCollection[index] = this.workingPalette;
-          store.setState({ paletteCollection });
-          // console.log('Updated existing palette in collection:', this.workingPalette);
+          store.setState({ paletteCollection: paletteCollection, workingPalette: this.workingPalette });
+          console.log('----------------------------------------> Updated existing palette in collection:', this.workingPalette, paletteCollection);
         }
       }
 
@@ -401,14 +414,15 @@ class PaletteForm extends HTMLElement {
       return false;
     }
     if (e.type === 'change') {
-      if (e.target.name === 'palette-name') {
-        store.setState({ paletteName: e.target.value });
-      }
+      // if (e.target.name === 'palette-name') {
+      //   store.setState({ paletteName: e.target.value });
+      // }
     }
     if (e.type === 'input') {
       if (e.target.name === 'color-space') {
         e.stopPropagation();
         this.colorSpace = e.target.value;
+        this.workingPalette.colorSpace = this.colorSpace;
         // this.userColor.colorSpace = this.colorSpace;
         this.changeColorSpace(e);
         return;
@@ -469,12 +483,12 @@ class PaletteForm extends HTMLElement {
     // if (!this.userColor) return;
 
     const nextPreviewColor = new ColorModel({
-      ...this.userColor.toJSON(),
+      ...this.workingPalette.userColor.toJSON(),
       ...patch,
     });
     // console.log('Next preview color:', nextPreviewColor);
-
-    store.setState({ userColor: nextPreviewColor });
+    this.workingPalette.userColor = nextPreviewColor;
+    store.setState({ workingPalette: this.workingPalette });
   }
 
   changeHue(e) {
@@ -497,9 +511,10 @@ class PaletteForm extends HTMLElement {
   }
 
   render() {
-    const { colorSpace, workingPalette, userColor } = store.getState();
-    console.log('Rendering PaletteForm with colorSpace:', colorSpace, 'workingPalette:', workingPalette, this.userColor);
-    const defaultColor = userColor.getColor();
+    // const { colorSpace, workingPalette, userColor } = store.getState();
+    console.log('Rendering PaletteForm with workingPalette:', this.workingPalette);
+    console.log('STORRRRRRRRRRE', store.getState());
+    // const defaultColor = userColor.getColor();
     // console.log('rendering', workingPalette);
     this.innerHTML = `
       <div class="corn-row corn-margin-bottom">
@@ -526,7 +541,7 @@ class PaletteForm extends HTMLElement {
               <div class="corn-col-3 corn-form">
                 <div class="corn-form--item">
                   <div class="corn-text-input">
-                    <input id="palette-name" name="palette-name" placeholder="Palette Name..." value="${store.getState().paletteName}" />
+                    <input id="palette-name" name="palette-name" placeholder="Palette Name..." value="${this.paletteName}" />
                     <label for="palette-name">Enter Palette Name</label>
                   </div>
                 </div>
@@ -535,11 +550,11 @@ class PaletteForm extends HTMLElement {
                     <legend id="legend1">Color Space</legend>
                     <div class="corn-toggles">
                       <div class="corn-toggle">
-                        <input type="radio" id="colospace1" name="color-space" value="hsluv" ${colorSpace === 'hsluv' ? 'checked' : ''} />
+                        <input type="radio" id="colospace1" name="color-space" value="hsluv" ${this.colorSpace === 'hsluv' ? 'checked' : ''} />
                         <label for="colospace1">hsluv</label>
                       </div>
                       <div class="corn-toggle">
-                        <input type="radio" id="colospace2" name="color-space" value="okhsl" ${colorSpace === 'okhsl' ? 'checked' : ''} />
+                        <input type="radio" id="colospace2" name="color-space" value="okhsl" ${this.colorSpace === 'okhsl' ? 'checked' : ''} />
                         <label for="colospace2">okhsl</label>
                       </div>
                     </div>

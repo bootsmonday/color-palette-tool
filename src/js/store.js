@@ -1,14 +1,9 @@
-import { ColorModel } from './models/ColorModel.js';
-
+// import { ColorModel } from './models/ColorModel.js';
+// import { ColorPalette } from './models/ColorPalette.js';
 export const store = {
   state: {
-    colorSpace: 'okhsl',
     workingPalette: null,
     paletteCollection: [],
-    paletteName: '',
-    colorCollectionId: null,
-    userColor: null,
-    previewColor: null,
     currentRoute: '/',
     STORAGE_KEY: 'ColorPaletteToolState',
   },
@@ -18,7 +13,10 @@ export const store = {
   groupListeners: new Map(), // multi-key batch listeners
 
   getState() {
-    return { ...this.state };
+    const copy = structuredClone(this.state); // clones data
+    Object.setPrototypeOf(copy, Object.getPrototypeOf(this.state)); // restore methods
+    console.log('store.getState() called. Returning copy of state:', copy);
+    return copy;
   },
 
   setState(newPartialState) {
@@ -26,7 +24,7 @@ export const store = {
     this.state = { ...this.state, ...newPartialState };
 
     const changedKeys = Object.keys(newPartialState);
-
+    console.log('store.setState() called. Changed keys:', changedKeys, 'New state:', this.state);
     if (changedKeys.length === 0) return;
     // 1. Save to LocalStorage after update
     this.saveToStorage();
@@ -125,21 +123,26 @@ export const store = {
   loadFromStorage() {
     console.log('Loading state from LocalStorage...');
     if (typeof localStorage === 'undefined') return;
-    // localStorage.removeItem(this.STORAGE_KEY); // Clear storage for testing
+    console.log('LocalStorage is available. Attempting to load state...');
+    //localStorage.removeItem(this.STORAGE_KEY); // Clear storage for testing
     try {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        console.log('Loaded state from LocalStorage:', parsed);
-        if (parsed.previewColor) {
-          parsed.previewColor = new ColorModel(parsed.previewColor);
-        }
-        if (parsed.userColor) {
-          parsed.userColor = new ColorModel(parsed.userColor);
-        }
+        console.log('Parsed state from LocalStorage:', parsed);
+        console.log('Parsed workingPalette from LocalStorage:', parsed.workingPalette);
+        parsed.workingPalette = parsed.workingPalette || new ColorPalette().toJSON();
+        // if (parsed.workingPalette) {
+        //   parsed.workingPalette = new ColorPalette().fromJSON(parsed.workingPalette);
+        //   console.log('XXXXXXXXXXXXXXX Reconstructed workingPalette from LocalStorage:', parsed.workingPalette);
+        // } else {
+        // parsed.workingPalette = new ColorPalette().toJSON();
+        // }
+        console.log('XXXXXXXXXXXXXXX Loaded state from LocalStorage:', parsed);
 
         this.state = { ...this.state, ...parsed };
       }
+      console.log('---------> Current state after loading from LocalStorage:', this.state);
     } catch (e) {
       console.warn('Failed to load state from LocalStorage:', e);
     }
@@ -150,6 +153,7 @@ export const store = {
     if (typeof localStorage === 'undefined') return;
 
     try {
+      console.log('XXXXXXXXXXX -------> Saving state to LocalStorage:', this.state);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
     } catch (e) {
       console.warn('Failed to save state to LocalStorage:', e);
