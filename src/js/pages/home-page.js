@@ -4,7 +4,6 @@ class HomePage extends HTMLElement {
   connectedCallback() {
     this.render();
     store.getState().paletteCollection.forEach((palette) => {
-      console.log('Rendering palette:', palette);
       const paletteElement = document.createElement('div');
       paletteElement.classList.add('corn-palette');
       paletteElement.innerHTML = `

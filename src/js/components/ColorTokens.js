@@ -20,11 +20,14 @@ class ColorTokens extends HTMLElement {
 
   connectedCallback() {
     this.render();
-    this.unsubscribe = store.subscribeTo(['colorSpace'], () => this.update(), { batch: true });
+    this.unsubscribe = store.subscribeTo('workingPalette', () => this.update());
     this.addEventListeners();
   }
   addEventListeners() {
     // Add event listeners here
+  }
+  update() {
+    const { workingPalette } = store.getState();
   }
 }
 

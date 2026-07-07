@@ -1,8 +1,7 @@
 import { store } from '../store.js';
-import Color from 'colorjs.io';
+import { router } from '../router.js';
 import { ColorModel } from '../models/ColorModel.js';
 import { ColorSteps } from '../models/ColorSteps.js';
-import { ColorPalette } from '../models/ColorPalette.js';
 
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
 const categoryOrder = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Magenta', 'Gray'];
@@ -29,7 +28,8 @@ const categoryRangesOKHSL = {
 };
 
 function getColorCategory(hue) {
-  const ranges = store.getState().colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
+  const colorSpace = store.getState().workingPalette?.colorSpace || 'okhsl';
+  const ranges = colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
   const normalizedHue = ((hue % 360) + 360) % 360;
 
   if (normalizedHue >= ranges.Red[0] || normalizedHue < ranges.Red[1]) return 'Red';
@@ -44,7 +44,7 @@ function getColorCategory(hue) {
 }
 
 function createHueGradientValues(previewColorModel) {
-  const previewColor = previewColorModel.getColor();
+  const previewColor = new ColorModel(previewColorModel).getColor();
   const gradientValues = [];
 
   for (let i = 0; i < 21; i++) {
@@ -56,7 +56,7 @@ function createHueGradientValues(previewColorModel) {
 }
 
 function createSaturationGradientValues(previewColorModel) {
-  const previewColor = previewColorModel.getColor();
+  const previewColor = new ColorModel(previewColorModel).getColor();
   const gradientValues = [];
 
   for (let i = 0; i <= 100; i += 10) {
@@ -81,40 +81,36 @@ function buildColorSteps(colorName, colorSpace, hue, saturation) {
     );
   });
 
-  return colorSteps;
+  return colorSteps.toJSON();
 }
 
 function setSampleColorTokens(steps) {
   document.documentElement.style.setProperty(
     '--sample-black',
-    steps
-      .find((step) => step.colorName === 'Gray')
-      .colors[9].getColor()
-      .toString({ format: 'hex' })
+    steps.find((step) => step.colorName === 'Gray').colors[9].getColor
+      ? steps
+          .find((step) => step.colorName === 'Gray')
+          .colors[9].getColor()
+          .toString({ format: 'hex' })
+      : new ColorModel(steps.find((step) => step.colorName === 'Gray').colors[9]).getColor().toString({ format: 'hex' })
   );
   document.documentElement.style.setProperty(
     '--sample-white',
-    steps
-      .find((step) => step.colorName === 'Gray')
-      .colors[0].getColor()
-      .toString({ format: 'hex' })
+    steps.find((step) => step.colorName === 'Gray').colors[0].getColor
+      ? steps
+          .find((step) => step.colorName === 'Gray')
+          .colors[0].getColor()
+          .toString({ format: 'hex' })
+      : new ColorModel(steps.find((step) => step.colorName === 'Gray').colors[0]).getColor().toString({ format: 'hex' })
   );
-  let stepsHtml = '';
 
   steps.forEach((step) => {
     step.colors.forEach((color, i) => {
-      let lightText = step.colors[0].getColor();
-      let darkText = step.colors[9].getColor();
       let j = (i + 1) * 10;
-      document.documentElement.style.setProperty(`--sample-${step.colorName.toLowerCase()}-${j}`, color.getColor().toString({ format: 'hex' }));
-      const colorPreview = color.getColor();
+      const runtimeColor = color.getColor ? color : new ColorModel(color);
+      document.documentElement.style.setProperty(`--sample-${step.colorName.toLowerCase()}-${j}`, runtimeColor.getColor().toString({ format: 'hex' }));
       if (i === 0) {
-        let stepColor;
-        if (step.colorName === 'Yellow') {
-          stepColor = step.colors[2].getColor();
-        } else {
-          stepColor = step.colors[4].getColor();
-        }
+        // intentionally no-op; retained to avoid changing render timing assumptions
       }
     });
   });
@@ -133,10 +129,10 @@ class PaletteForm extends HTMLElement {
   connectedCallback() {
     this.initialize();
     this.render();
-
-    this.unsubscribe = store.subscribeTo(['workingPalette'], (changes, newState) => this.update(changes, newState), { batch: true });
+    this.unsubscribe = store.subscribeTo('workingPalette', (_key, _newValue, _oldValue, fullState) => this.update(fullState));
     this.cacheElements();
     this.addEventListeners();
+    this.syncLockedControlsFromPalette();
     this.updatePreview();
   }
   attributeChangedCallback(name, oldValue, newValue) {
@@ -147,28 +143,23 @@ class PaletteForm extends HTMLElement {
     }
   }
   initialize() {
-    const { pageType, workingPalette } = store.getState();
-    this.workingPalette = new ColorPalette(workingPalette) || new ColorPalette();
-    console.log('Initializing PaletteForm for page type:', pageType);
+    const { pageType, workingPalette } = store.state;
+    this.workingPalette = workingPalette;
     this.saturation = {
       min: 0,
       max: 100,
       step: 0.01,
       default: 50,
     };
-    console.log('---------> PaletteForm initialized state:', store.getState());
     if (pageType === 'edit') {
       this.paletteName = this.workingPalette.name || 'Palette Name Goes Here';
       this.colorSpace = this.workingPalette.colorSpace;
       this.userColor = this.workingPalette.userColor || null;
-      console.log('Loaded working palette from store:', this.workingPalette);
     } else if (pageType === 'new') {
-      this.workingPalette = new ColorPalette();
       this.colorSpace = this.workingPalette.colorSpace;
       this.paletteName = this.workingPalette.name;
       this.userColor = this.workingPalette.userColor;
     }
-    console.log('-----------XXXXXXXX ->this.userColor:', this.userColor);
   }
 
   cacheElements() {
@@ -180,10 +171,9 @@ class PaletteForm extends HTMLElement {
     this.colorPreview = this.querySelector('#color-preview');
   }
 
-  update(changes, newState) {
-    console.log('------------> PaletteForm received store update:', { changes, newState });
-    this.previewColor = newState.previewColor;
-    this.userColor = newState.userColor;
+  update(newState) {
+    this.workingPalette = newState.workingPalette;
+    this.userColor = this.workingPalette.userColor;
     this.syncControlsFromPreviewColor(); // keep UI in sync with store
     this.updatePreview();
   }
@@ -193,6 +183,15 @@ class PaletteForm extends HTMLElement {
     this.updateSaturationSlider();
     this.updateColorPreview();
   }
+
+  syncLockedControlsFromPalette() {
+    const preview = this.querySelector('color-steps-examples');
+    if (!preview) return;
+
+    const lockedColors = (this.workingPalette?.steps || []).filter((step) => step.locked).map((step) => step.colorName.toLowerCase());
+    preview.value = { lockedColors, lockedSteps: [] };
+  }
+
   syncControlsFromPreviewColor() {
     if (!this.workingPalette.userColor) return;
 
@@ -206,7 +205,7 @@ class PaletteForm extends HTMLElement {
     if (this.saturationInput.value !== saturation) this.saturationInput.value = saturation;
   }
   updateColorSpace() {
-    this.colorSpace = store.getState().colorSpace;
+    this.colorSpace = store.getState().workingPalette?.colorSpace || 'okhsl';
     this.saturation = {
       min: 0,
       max: 100,
@@ -279,7 +278,6 @@ class PaletteForm extends HTMLElement {
 
   updateColorPreview() {
     const userColor = store.getState().workingPalette.userColor;
-    console.log('XXXXXXXUpdating color preview with user:', userColor);
     //const previewColor = this.previewColor.getColor();
     const currentHue = Number(this.hueInput.value || 0);
     const currentSaturation = Number(this.saturationInput.value || 0);
@@ -293,10 +291,8 @@ class PaletteForm extends HTMLElement {
 
     const lockedColorSet = new Set(lockedColors || []);
 
-    console.log('Locked colors:', lockedColorSet, lockedSteps);
     let filteredSteps = this.workingPalette.steps.filter((step) => {
       if (lockedColorSet.has(step.colorName.toLowerCase())) {
-        console.log('Locked step found:', step.colorName);
         step.locked = true;
         return true;
       } else {
@@ -305,36 +301,14 @@ class PaletteForm extends HTMLElement {
       }
     });
     // colorSteps = colorSteps.filter((step) => !lockedColorSet.has(step.colorName.toLowerCase()));
-    // console.log('--------> lockedColors', lockedColorSet, filteredSteps, this.workingPalette.steps);
-    // this.workingPalette.steps = [];
-    // filteredSteps.forEach((step) => step.col);
-    // this.workingPalette.steps.push(...filteredSteps);
-
-    //this.workingPalette.steps = this.workingPalette.steps.concat(colorSteps);
-
-    //console.log('--------> locked', this.querySelector('color-steps-examples').value);
-    // if (!lockedColorSet.has(colorSteps.colorName.toLowerCase())) {
-    //   this.workingPalette.steps.push(colorSteps);
-    // }
-
-    // console.log('Built color steps for category:', hueCategory, colorSteps);
-
     // Get hues for all categories based on current hue and color space
-    // const categoryHues = calculateHues(currentHue);
 
     Object.entries(hueDistances).forEach(([category, { newHue }]) => {
-      // if (!lockedColorSet.has(category.toLowerCase())) {
-      // console.log('Adding color steps for category:', category, newHue);
       sampleSteps.push(buildColorSteps(category, this.userColor.colorSpace, newHue, currentSaturation));
-      // }
     });
 
-    // if (!lockedColorSet.has('gray')) {
     sampleSteps.push(buildColorSteps('Gray', this.userColor.colorSpace, currentHue, 0));
-    // this.workingPalette.steps.push(buildColorSteps('Gray', this.previewColor.colorSpace, currentHue, 11));
-    // }
     sampleSteps = sampleSteps.filter((step) => !lockedColorSet.has(step.colorName.toLowerCase()));
-    console.log('Filtered sample steps (excluding locked colors):', sampleSteps, filteredSteps);
     sampleSteps.push(...filteredSteps);
     sampleSteps.sort((a, b) => {
       return categoryOrder.indexOf(a.colorName) - categoryOrder.indexOf(b.colorName);
@@ -343,8 +317,6 @@ class PaletteForm extends HTMLElement {
     // this.workingPalette.steps.sort((a, b) => {
     //   return categoryOrder.indexOf(a.colorName) - categoryOrder.indexOf(b.colorName);
     // });
-    // console.log('Updated working palette:', this.workingPalette);
-    console.log('Updated working palette steps:', this.workingPalette);
     this.workingPalette.steps.forEach((step) => {
       step.colorSpace = this.userColor.colorSpace;
       step.colors.forEach((color) => {
@@ -363,62 +335,39 @@ class PaletteForm extends HTMLElement {
   }
 
   handleEvent(e) {
-    //console.log('PaletteForm event:', e.type, e.target.name);
-
-    // console.log('PaletteForm event:', e.type, e.target.name, 'pageType:', pageType);
-
     if (e.type === 'submit') {
+      e.preventDefault();
       const { pageType } = store.getState();
       this.updateColorPreview();
-      console.log('XXXXXXXXXXXXXXXXXXXXXXXX \n edit-color-form Form submitted', pageType);
       const paletteCollection = store.getState().paletteCollection || [];
-      //store.setState({ paletteCollection: [] });
-
-      // console.log('Current palette collection:', paletteCollection);
-      // let newPalette = true;
-      //return;
-      // for (const palette of paletteCollection) {
-      //   if (palette.id === this.workingPalette.id) {
-      //     this.workingPalette.name = this.paletteName.value || 'Untitled Palette';
-      //     this.workingPalette.colorSpace = this.colorSpace;
-      //     paletteCollection.splice(paletteCollection.indexOf(palette), 1, this.workingPalette);
-      //     console.log('Updated existing palette in collection:', palette);
-      //     newPalette = false;
-      //     store.setState({ paletteCollection });
-      //     return;
-      //   }
-      // }
       this.workingPalette.name = this.paletteName.value || 'Untitled Palette';
       this.workingPalette.colorSpace = this.colorSpace;
 
       if (pageType === 'new') {
         paletteCollection.push(this.workingPalette);
-        // console.log('Added new palette to collection:', this.workingPalette);
         store.setState({ paletteCollection: paletteCollection, workingPalette: this.workingPalette });
-        window.location.href = '/edit-palette/' + this.workingPalette.id;
+        store.persist();
+        router.navigate('/edit-palette/' + this.workingPalette.id);
       } else {
         const index = paletteCollection.findIndex((palette) => palette.id === this.workingPalette.id);
-        console.log('--------------> Index of existing palette in collection:', index);
-        console.log('--------------> Current palette collection:', paletteCollection);
-        console.log('--------------> Working palette:', this.workingPalette);
         if (index !== -1) {
-          //paletteCollection = [];
           paletteCollection[index] = this.workingPalette;
           store.setState({ paletteCollection: paletteCollection, workingPalette: this.workingPalette });
-          console.log('----------------------------------------> Updated existing palette in collection:', this.workingPalette, paletteCollection);
+          store.persist();
         }
       }
 
-      // console.log('Would save to existing collection with ID:', store.getState().colorCollectionId);
-      e.preventDefault();
       return false;
     }
     if (e.type === 'change') {
-      // if (e.target.name === 'palette-name') {
-      //   store.setState({ paletteName: e.target.value });
-      // }
     }
     if (e.type === 'input') {
+      if (e.target.name === 'palette-name') {
+        this.workingPalette.name = e.target.value || 'Untitled Palette';
+        store.setState({ workingPalette: this.workingPalette });
+        return;
+      }
+
       if (e.target.name === 'color-space') {
         e.stopPropagation();
         this.colorSpace = e.target.value;
@@ -479,15 +428,10 @@ class PaletteForm extends HTMLElement {
   }
 
   commitPreviewColor(patch) {
-    // console.log('Committing preview color with patch:', patch);
-    // if (!this.userColor) return;
-
-    const nextPreviewColor = new ColorModel({
-      ...this.workingPalette.userColor.toJSON(),
+    this.workingPalette.userColor = {
+      ...this.workingPalette.userColor,
       ...patch,
-    });
-    // console.log('Next preview color:', nextPreviewColor);
-    this.workingPalette.userColor = nextPreviewColor;
+    };
     store.setState({ workingPalette: this.workingPalette });
   }
 
@@ -499,9 +443,6 @@ class PaletteForm extends HTMLElement {
     this.commitPreviewColor({ saturation: parseFloat(e.target.value) });
   }
   changeColorSpace(e) {
-    // console.log('Changing color space to:', e.target.value);
-    // let userColor = store.getState().userColor;
-    // userColor.colorSpace = e.target.value;
     this.commitPreviewColor({ colorSpace: e.target.value });
   }
   disconnectedCallback() {
@@ -511,11 +452,6 @@ class PaletteForm extends HTMLElement {
   }
 
   render() {
-    // const { colorSpace, workingPalette, userColor } = store.getState();
-    console.log('Rendering PaletteForm with workingPalette:', this.workingPalette);
-    console.log('STORRRRRRRRRRE', store.getState());
-    // const defaultColor = userColor.getColor();
-    // console.log('rendering', workingPalette);
     this.innerHTML = `
       <div class="corn-row corn-margin-bottom">
         <div class="corn-col-12">          

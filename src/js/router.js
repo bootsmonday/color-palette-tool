@@ -11,8 +11,6 @@ export const router = {
     history.pushState({}, '', path);
     const normalizedRoute = path.replace(/\/+$/, '') || '/';
     store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
-    console.log('Navigated to:', normalizedRoute);
-    console.log(store.getState());
   },
 
   init() {

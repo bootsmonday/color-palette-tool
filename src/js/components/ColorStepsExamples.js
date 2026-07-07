@@ -256,9 +256,6 @@ class ColorStepsExamples extends HTMLElement {
   updateFormValue() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
     const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
-    // this.internals.setFormValue('hello', 'world');
-    // console.log('internals', this.internals);
-    // console.log('value', this.value);
   }
   get value() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
@@ -266,18 +263,35 @@ class ColorStepsExamples extends HTMLElement {
     return { lockedColors, lockedSteps };
   }
   set value(val) {
+    if (val && typeof val === 'object') {
+      const { lockedColors = [], lockedSteps = [] } = val;
+      this.querySelectorAll('input[name="lock-color"]').forEach((checkbox) => {
+        checkbox.checked = lockedColors.includes(checkbox.value);
+      });
+      this.querySelectorAll('input[name="lock-step"]').forEach((checkbox) => {
+        checkbox.checked = lockedSteps.includes(checkbox.value);
+      });
+    }
     this.updateFormValue();
+  }
+
+  set colors(value) {
+    this.colorSteps = value;
+  }
+
+  get colors() {
+    return this.colorSteps;
   }
 
   constructor() {
     super();
-    console.log('ColorStepsExamples constructor', this);
     this.internals = this.attachInternals();
     this.renderFilters();
     this.container = document.createElement('div');
     this.container.classList.add('color-examples');
     this.appendChild(this.container);
     //this.generateColorTools();
+
     this.colorSteps.forEach((color) => {
       this.generateColorRow(color);
     });

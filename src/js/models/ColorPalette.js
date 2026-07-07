@@ -2,14 +2,12 @@ import ColorModel from './ColorModel.js';
 import ColorSteps from './ColorSteps.js';
 class ColorPalette {
   constructor(nameOrObj = 'Palette Name Goes Here', colorSpace = 'okhsl', steps = []) {
-    console.log('ColorPalette constructor called with:', nameOrObj, colorSpace, steps);
     if (typeof nameOrObj === 'object' && nameOrObj !== null) {
       const source = nameOrObj;
       this.userColor = new ColorModel(source.userColor) ?? new ColorModel();
       this.id = source.id ?? 'palette-' + crypto.randomUUID().slice(0, 8);
       this.name = source.name ?? 'Palette Name Goes Here';
       this.colorSpace = source.colorSpace ?? 'okhsl';
-      console.log('-------------------------------- /n ColorPalette constructor: source.steps:', source.steps);
       this.steps = source.steps.map((step) => new ColorSteps(step)) ?? [];
       this.createdAt = source.createdAt ?? new Date().toISOString();
     } else {
@@ -21,35 +19,23 @@ class ColorPalette {
       this.createdAt = new Date().toISOString();
     }
   }
-  set name(value) {
-    this._name = value;
-  }
-  get name() {
-    return this._name;
-  }
-  set steps(value) {
-    this._steps = value;
-  }
-  get steps() {
-    return this._steps;
-  }
   toJSON() {
     return {
       id: this.id,
       userColor: this.userColor,
-      name: this._name,
+      name: this.name,
       colorSpace: this.colorSpace,
       createdAt: this.createdAt,
-      steps: this._steps,
+      steps: this.steps,
     };
   }
   fromJSON(json) {
     this.id = json.id;
     this.userColor = new ColorModel(json.userColor);
-    this._name = json.name;
+    this.name = json.name;
     this.colorSpace = json.colorSpace;
     this.createdAt = json.createdAt;
-    this._steps = json.steps.map((step) => new ColorModel(step));
+    this.steps = json.steps.map((step) => new ColorModel(step));
     return this;
   }
 }
