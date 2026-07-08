@@ -39,6 +39,17 @@ class ColorModel {
   get hue() {
     return this._hue;
   }
+  get hex() {
+    const color = this.getColor();
+    return color.toString({ format: 'hex', precision: 0 });
+  }
+  set hex(value) {
+    const color = new Color(value);
+    const [hue, saturation, lightness] = color.to(this.colorSpace).coords;
+    this.hue = hue;
+    this.saturation = this.colorSpace === 'okhsl' ? +(saturation * 100).toFixed(2) : +saturation.toFixed(2);
+    this.lightness = this.colorSpace === 'okhsl' ? +(lightness * 100).toFixed(2) : +lightness.toFixed(2);
+  }
   set saturation(value) {
     value = +parseFloat(value).toFixed(2);
     this._saturation = value;
@@ -58,6 +69,10 @@ class ColorModel {
   }
   set locked(value) {
     this._locked = value;
+  }
+  format(colorSpace) {
+    const color = this.getColor();
+    return color.toString({ format: colorSpace });
   }
   getColor() {
     return new Color(this.colorSpace, [this.hue, this.colorSpace === 'okhsl' ? +(this.saturation / 100).toFixed(4) : this.saturation, this.colorSpace === 'okhsl' ? +(this.lightness / 100).toFixed(4) : this.lightness]);

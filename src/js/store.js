@@ -146,7 +146,7 @@ export const store = {
 
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      console.log('Loaded state from localStorage:', saved);
+
       if (!saved) return;
       const parsed = JSON.parse(saved);
       const newState = { ...this.state, ...parsed };
