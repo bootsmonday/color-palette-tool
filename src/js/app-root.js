@@ -7,7 +7,6 @@ import toolstyles from '../assets/palette-tool.css?inline';
 class AppRoot extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
     this.unsubscribe = null;
     router.register('/', 'home-page', 'home');
     router.register('/counter', 'counter-page');
@@ -44,11 +43,11 @@ class AppRoot extends HTMLElement {
 
     const pageTag = router.routes[normalizedRoute] || 'home-page';
     store.setState({ pageType: pageTag.pageType });
-    this.shadowRoot.getElementById('current-page').innerHTML = `<${router.routes[normalizedRoute]?.componentName || 'home-page'}></${router.routes[normalizedRoute]?.componentName || 'home-page'}>`;
+    this.querySelector('#current-page').innerHTML = `<${router.routes[normalizedRoute]?.componentName || 'home-page'}></${router.routes[normalizedRoute]?.componentName || 'home-page'}>`;
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
+    this.innerHTML = `
     <style>
       ${corncobStyles}
       ${toolstyles}
@@ -78,7 +77,7 @@ class AppRoot extends HTMLElement {
     `;
 
     // Handle navigation links
-    this.shadowRoot.querySelectorAll('a[data-link]').forEach((link) => {
+    this.querySelectorAll('a[data-link]').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         router.navigate(link.getAttribute('href'));

@@ -11,6 +11,7 @@ class ColorTokens extends HTMLElement {
       <div class="corn-row">
         <div class="corn-col-12">
           <h2>Tokens</h2>
+          <div class="corn-form">
             <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="token-format">
               <legend id="token-format">Token Format</legend>
               <div class="corn-toggles">
@@ -53,8 +54,34 @@ class ColorTokens extends HTMLElement {
                   <label for="light-dark-scheme">light dark</label>
                 </div>                         
               </div>
-            </fieldset>                             
-          <xmp id="color-tokens">tokens will go here</xmp>
+            </fieldset> 
+            <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="token-format">
+              <legend id="token-format">Token Format:</legend>
+              <div class="corn-toggles">
+                <div class="corn-toggle">
+                  <input type="radio" id="css-mode" name="token-format" value="css" checked />
+                  <label for="css-mode">CSS</label>
+                </div>
+                <div class="corn-toggle">
+                  <input type="radio" id="figma-mode" name="token-format" value="figma" />
+                  <label for="figma-mode">Figma</label>
+                </div>                         
+              </div>
+            </fieldset>             
+            <div id="copy-tokens-container" class="corn-form--item">
+              
+                <corn-copy-button class="corn-copy-button" copyselector="#copy-tokens-container xmp" copysuccess="Tokens copied to clipboard"
+                  copyfailure="Failed to copy">
+                  <button class="corn-button corn-button--xs" aria-controls="color-tokens" aria-label="Copy tokens to clipboard">
+                    copy
+                  </button>
+                  <div role="status" aria-live="polite" class=""></div>
+                </corn-copy-button>
+              <xmp id="color-tokens" class="palette-tokens">tokens will go here</xmp>
+            </div>
+            
+                       
+          </div>
         </div>
       </div>
       `;
@@ -83,11 +110,20 @@ class ColorTokens extends HTMLElement {
     colorSchemeInputs.forEach((input) => {
       input.addEventListener('change', () => this.update());
     });
+    const tokenFormatInputs = this.querySelectorAll('input[name="token-format"]');
+    tokenFormatInputs.forEach((input) => {
+      input.addEventListener('change', () => this.update());
+    });
   }
   update() {
     const { workingPalette } = store.getState();
     const tokenContainer = this.querySelector('#color-tokens');
-    const cssColorSpace = this.querySelector('input[name="color-space"]:checked')?.value || 'hex';
+    const tokenFormat = this.querySelector('input[name="token-format"]:checked')?.value || 'css';
+    let cssColorSpace = this.querySelector('input[name="color-space"]:checked')?.value || 'hex';
+    if (tokenFormat === 'figma') {
+      // Figma only support hex and RGB, so we will default to hex for figma tokens
+      cssColorSpace = 'hex';
+    }
     if (!tokenContainer) return;
     let tokenType, tokenPrefix, stepMultiplier, colorScheme;
     tokenType = this.querySelector('input[name="token-type"]:checked')?.value || 'generic';
@@ -103,46 +139,89 @@ class ColorTokens extends HTMLElement {
       tokenPrefix = '-';
       stepMultiplier = 10;
     }
-
+    console.log('Updating tokens with:', { tokenType, tokenPrefix, stepMultiplier, colorScheme, cssColorSpace, tokenFormat });
     // Clear existing tokens
     tokenContainer.innerHTML = '';
+    let tokensCode = '';
+    console.log('Generating tokens...', tokenFormat === 'figma' ? 'Figma format' : 'CSS format');
+    if (tokenFormat === 'css') {
+      if (workingPalette && workingPalette.steps) {
+        tokensCode += `/* Color Tokens for Palette: ${workingPalette.name} */\n`;
+        tokensCode += `/* Color Space: ${cssColorSpace} */\n`;
+        tokensCode += `/* Design System: ${tokenType} */\n\n`;
+        tokensCode += `:root, :host {\n`;
+        if (colorScheme === 'light-dark') {
+          tokensCode += `\n\tcolor-scheme: light dark;\n`;
+        }
+        workingPalette.steps.forEach((step, index) => {
+          tokensCode += `\n\t/* ${step.colorName} */\n`;
+          const colorCount = step.colors.length;
+          step.colors.forEach((color, colorIndex, colors) => {
+            const colorModel = new ColorModel(color);
+            let colorValue = colorModel.format(cssColorSpace);
 
-    if (workingPalette && workingPalette.steps) {
-      tokenContainer.innerHTML += `/* Color Tokens for Palette: ${workingPalette.name} */\n`;
-      tokenContainer.innerHTML += `/* Color Space: ${cssColorSpace} */\n`;
-      tokenContainer.innerHTML += `/* Design System: ${tokenType} */\n\n`;
-      tokenContainer.innerHTML += `:root, :host {\n`;
-      if (colorScheme === 'light-dark') {
-        tokenContainer.innerHTML += `\n\tcolor-scheme: light dark;\n`;
+            if (colorScheme === 'light-dark') {
+              const oppositeIndex = colors.length - 1 - colorIndex;
+              const oppositeColor = colors[oppositeIndex];
+              const oppositeColorModel = new ColorModel(oppositeColor);
+              const oppositeColorValue = oppositeColorModel.format(cssColorSpace);
+              colorValue = `light-dark(${colorValue}, ${oppositeColorValue})`;
+            }
+            if (tokenType === 'tailwind' && colorIndex === 0) {
+              tokensCode += `\t${tokenPrefix}-${step.colorName.toLowerCase()}-${((colorIndex + 1) * stepMultiplier) / 2}: ${colorValue};\n`;
+            }
+            if (tokenType === 'tailwind' && colorIndex === step.colors.length - 1) {
+              tokensCode += `\t${tokenPrefix}-${step.colorName.toLowerCase()}-${(colorIndex + 1) * stepMultiplier - 50}: ${colorValue};\n`;
+            } else {
+              tokensCode += `\t${tokenPrefix}-${step.colorName.toLowerCase()}-${(colorIndex + 1) * stepMultiplier}: ${colorValue};\n`;
+            }
+          });
+        });
+        tokensCode += `}\n`;
+        tokensCode += `\n/* End of Color Tokens */\n`;
+        tokensCode += `/* Thanks BootsMonday! */\n`;
       }
+    } else if (tokenFormat === 'figma') {
+      console.log('Generating Figma tokens...');
+      tokensCode += `{\n`;
+      tokensCode += `  "${workingPalette.name}": {\n`;
       workingPalette.steps.forEach((step, index) => {
-        tokenContainer.innerHTML += `\n\t/* ${step.colorName} */\n`;
-        const colorCount = step.colors.length;
-        step.colors.forEach((color, colorIndex, colors) => {
+        let figmaVariablePrefix = tokenType === 'corncob' ? 'cc-' : tokenType === 'tailwind' ? 'color-' : '';
+        step.colors.forEach((color, colorIndex) => {
           const colorModel = new ColorModel(color);
-          let colorValue = colorModel.format(cssColorSpace);
-
-          if (colorScheme === 'light-dark') {
-            const oppositeIndex = colors.length - 1 - colorIndex;
-            const oppositeColor = colors[oppositeIndex];
-            const oppositeColorModel = new ColorModel(oppositeColor);
-            const oppositeColorValue = oppositeColorModel.format(cssColorSpace);
-            colorValue = `light-dark(${colorValue}, ${oppositeColorValue})`;
-          }
-          if (tokenType === 'tailwind' && colorIndex === 0) {
-            tokenContainer.innerHTML += `\t${tokenPrefix}-${step.colorName.toLowerCase()}-${((colorIndex + 1) * stepMultiplier) / 2}: ${colorValue};\n`;
-          }
-          if (tokenType === 'tailwind' && colorIndex === step.colors.length - 1) {
-            tokenContainer.innerHTML += `\t${tokenPrefix}-${step.colorName.toLowerCase()}-${(colorIndex + 1) * stepMultiplier - 50}: ${colorValue};\n`;
+          const srgbColor = colorModel.getColor().to('srgb');
+          srgbColor.coords = srgbColor.coords.map((c) => Math.min(Math.max(c, 0), 1)); // Clamp values between 0 and 1
+          const hexColor = colorModel.format('hex');
+          tokensCode += `    "${figmaVariablePrefix}${step.colorName.toLowerCase()}-${(colorIndex + 1) * stepMultiplier}": {\n`;
+          tokensCode += `      "$type": "color",\n`;
+          tokensCode += `      "$value": {\n`;
+          tokensCode += `        "colorSpace": "srgb",\n`;
+          tokensCode += `        "components": [${srgbColor.coords[0]}, ${srgbColor.coords[1]}, ${srgbColor.coords[2]}],\n`;
+          tokensCode += `        "alpha": 1,\n`;
+          tokensCode += `        "hex": "${hexColor}"\n`;
+          tokensCode += `      }\n`;
+          if (colorIndex < step.colors.length - 1) {
+            tokensCode += `    },\n`;
+          } else if (index < workingPalette.steps.length - 1) {
+            tokensCode += `    },\n`;
           } else {
-            tokenContainer.innerHTML += `\t${tokenPrefix}-${step.colorName.toLowerCase()}-${(colorIndex + 1) * stepMultiplier}: ${colorValue};\n`;
+            tokensCode += `    }\n`;
           }
+          // let colorValue = colorModel.format(cssColorSpace);
+          // if (colorScheme === 'light-dark') {
+          //   const oppositeIndex = step.colors.length - 1 - colorIndex;
+          //   const oppositeColor = step.colors[oppositeIndex];
+          //   const oppositeColorModel = new ColorModel(oppositeColor);
+          //   const oppositeColorValue = oppositeColorModel.format(cssColorSpace);
+          //   colorValue = `light-dark(${colorValue}, ${oppositeColorValue})`;
+          // }
+          // tokensCode += `        "${colorValue}"${colorIndex < step.colors.length - 1 ? ',' : ''}\n`;
         });
       });
-      tokenContainer.innerHTML += `}\n`;
-      tokenContainer.innerHTML += `\n/* End of Color Tokens */\n`;
-      tokenContainer.innerHTML += `/* Thanks BootsMonday! */\n`;
+      tokensCode += `  }\n`;
+      tokensCode += `}\n`;
     }
+    tokenContainer.textContent = tokensCode;
   }
 }
 
