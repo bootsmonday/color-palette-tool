@@ -67,16 +67,21 @@ class ColorTokens extends HTMLElement {
                   <label for="figma-mode">Figma</label>
                 </div>                         
               </div>
-            </fieldset>             
-            <div id="copy-tokens-container" class="corn-form--item">
-              
+            </fieldset> 
+              <div class="corn-button--group">
                 <corn-copy-button class="corn-copy-button" copyselector="#copy-tokens-container xmp" copysuccess="Tokens copied to clipboard"
                   copyfailure="Failed to copy">
-                  <button class="corn-button corn-button--xs" aria-controls="color-tokens" aria-label="Copy tokens to clipboard">
+                  <button type="button" class="corn-button corn-button--xs" aria-controls="color-tokens" aria-label="Copy tokens to clipboard">
                     copy
                   </button>
-                  <div role="status" aria-live="polite" class=""></div>
+                  <div role="status" aria-live="polite" class="corn-copy-button--message corn-assistive-text"></div>
                 </corn-copy-button>
+                <button type="button" class="corn-button corn-button--xs" id="download-tokens" aria-controls="color-tokens" aria-label="Download tokens as a file">
+                  download
+                </button>
+              </div>                        
+            <div id="copy-tokens-container" class="corn-form--item">
+
               <xmp id="color-tokens" class="palette-tokens">tokens will go here</xmp>
             </div>
             
@@ -113,6 +118,25 @@ class ColorTokens extends HTMLElement {
     const tokenFormatInputs = this.querySelectorAll('input[name="token-format"]');
     tokenFormatInputs.forEach((input) => {
       input.addEventListener('change', () => this.update());
+    });
+    const downloadButton = this.querySelector('#download-tokens');
+    downloadButton.addEventListener('click', () => {
+      const { workingPalette } = store.getState();
+      const tokensCode = this.querySelector('#color-tokens').textContent;
+      const fileType = this.querySelector('input[name="token-format"]:checked')?.value === 'figma' ? 'application/json' : 'text/css';
+      const blob = new Blob([tokensCode], { type: fileType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${workingPalette.name.replace(/\s+/g, '-').toLowerCase()}-tokens.${fileType.split('/')[1]}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      downloadButton.classList.add('corn-copied');
+      setTimeout(() => {
+        downloadButton.classList.remove('corn-copied');
+      }, 500);
     });
   }
   update() {

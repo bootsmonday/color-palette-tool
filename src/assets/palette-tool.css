@@ -231,11 +231,22 @@ hex-preview {
   margin: -1px;    
 }
 
-
+.corn-copied.corn-button {
+      background-color: var(--cc-green-40);
+      color: var(--cc-green-100);
+}
 fieldset.corn-checkbox-group--inline {
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
 
+h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
   /* --cc-form--item--size--xs: var(--cc-size-2);
   --cc-form--item--size--sm: var(--cc-size-4);
   --cc-form--item--size--md: var(--cc-size-5);

@@ -1,7 +1,7 @@
 import { store } from './store.js';
 import { createEmptyPalette } from './store.js';
 import { router } from './router.js';
-import corncobStyles from '@bootsmonday/corncob-design-language/style.css?inline';
+//import corncobStyles from '@bootsmonday/corncob-design-language/style.css?inline';
 import toolstyles from '../assets/palette-tool.css?inline';
 
 class AppRoot extends HTMLElement {
@@ -49,7 +49,7 @@ class AppRoot extends HTMLElement {
   render() {
     this.innerHTML = `
     <style>
-      ${corncobStyles}
+      {corncobStyles}
       ${toolstyles}
     </style>
     <header class="corn-header">
