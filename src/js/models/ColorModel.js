@@ -87,9 +87,6 @@ class ColorModel {
       locked: this._locked,
     };
   }
-  set hex(value) {
-    this._hex = value;
-  }
   fromJSON(json) {
     this.id = json.id;
     this._colorSpace = json.colorSpace;

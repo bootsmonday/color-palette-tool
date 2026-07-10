@@ -49,7 +49,6 @@ class AppRoot extends HTMLElement {
   render() {
     this.innerHTML = `
     <style>
-      {corncobStyles}
       ${toolstyles}
     </style>
     <header class="corn-header">

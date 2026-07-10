@@ -8,14 +8,14 @@ class ColorPalette {
       this.id = source.id ?? 'palette-' + crypto.randomUUID().slice(0, 8);
       this.name = source.name ?? 'Palette Name Goes Here';
       this.colorSpace = source.colorSpace ?? 'okhsl';
-      this.steps = source.steps.map((step) => new ColorSteps(step)) ?? [];
+      this.steps = Array.isArray(source.steps) ? source.steps.map((step) => new ColorSteps(step)) : [];
       this.createdAt = source.createdAt ?? new Date().toISOString();
     } else {
       this.userColor = new ColorModel();
       this.id = 'palette-' + crypto.randomUUID().slice(0, 8);
       this.name = nameOrObj;
       this.colorSpace = colorSpace;
-      this.steps = steps.map((step) => new ColorSteps(step)) ?? [];
+      this.steps = Array.isArray(steps) ? steps.map((step) => new ColorSteps(step)) : [];
       this.createdAt = new Date().toISOString();
     }
   }
@@ -35,7 +35,7 @@ class ColorPalette {
     this.name = json.name;
     this.colorSpace = json.colorSpace;
     this.createdAt = json.createdAt;
-    this.steps = json.steps.map((step) => new ColorModel(step));
+    this.steps = Array.isArray(json.steps) ? json.steps.map((step) => new ColorSteps(step)) : [];
     return this;
   }
 }

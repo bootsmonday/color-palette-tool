@@ -55,8 +55,8 @@ class ColorTokens extends HTMLElement {
                 </div>                         
               </div>
             </fieldset> 
-            <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="token-format">
-              <legend id="token-format">Token Format:</legend>
+            <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="token-output-format">
+              <legend id="token-output-format">Token Format:</legend>
               <div class="corn-toggles">
                 <div class="corn-toggle">
                   <input type="radio" id="css-mode" name="token-format" value="css" checked />

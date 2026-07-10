@@ -1,10 +1,16 @@
-import store from '../store.js';
 import ColorModel from '../models/ColorModel.js';
 class SampleImage extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'palette-steps') {
       try {
-        const steps = JSON.parse(newValue);
+        const parseSteps = (value) => {
+          try {
+            return JSON.parse(decodeURIComponent(value));
+          } catch {
+            return JSON.parse(value);
+          }
+        };
+        const steps = parseSteps(newValue);
         this.paletteSteps = steps;
         this.updateColorVariables();
       } catch (error) {
@@ -20,11 +26,6 @@ class SampleImage extends HTMLElement {
   updateColorVariables() {
     if (!this.paletteSteps || !Array.isArray(this.paletteSteps)) return;
     console.log('Updating color variables with palette steps:', this.paletteSteps);
-    const colorVariables = {};
-    this.paletteSteps.forEach((step, index) => {
-      colorVariables[`${step.colorName.toLowerCase()} * 10}`] = step.hex || '#000000';
-    });
-
     this.setColorVariables(this.paletteSteps);
   }
   constructor() {

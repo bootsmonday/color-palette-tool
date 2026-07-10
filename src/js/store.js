@@ -168,7 +168,6 @@ export const store = {
     if (typeof localStorage === 'undefined') return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
-      console.log('State saved to localStorage:', this.state);
     } catch (e) {
       console.warn('Failed to save to localStorage:', e);
     }
