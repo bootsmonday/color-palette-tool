@@ -1,188 +1,182 @@
-import { ColorModel } from './models/ColorModel.js';
+const STORAGE_KEY = 'ColorPaletteToolState';
 
+const createId = (prefix) => `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
+
+const toNumber = (value, fallback) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+export function createEmptyColor(colorSpace = 'okhsl') {
+  return {
+    id: createId('color'),
+    colorSpace,
+    hue: 180,
+    saturation: 50,
+    lightness: 47.5,
+    locked: false,
+  };
+}
+
+function normalizeColor(value, fallbackColorSpace = 'okhsl') {
+  const source = value && typeof value === 'object' ? value : {};
+  const colorSpace = source.colorSpace || fallbackColorSpace;
+
+  return {
+    id: source.id || createId('color'),
+    colorSpace,
+    hue: +toNumber(source.hue, 180).toFixed(2),
+    saturation: +toNumber(source.saturation, 50).toFixed(2),
+    lightness: +toNumber(source.lightness, 47.5).toFixed(2),
+    locked: Boolean(source.locked),
+  };
+}
+
+function normalizeStep(value, fallbackColorSpace = 'okhsl') {
+  const source = value && typeof value === 'object' ? value : {};
+  const colorSpace = source.colorSpace || fallbackColorSpace;
+
+  return {
+    id: source.id || createId('steps'),
+    colorName: source.colorName || 'Color Name Goes Here',
+    colorSpace,
+    colors: Array.isArray(source.colors) ? source.colors.map((color) => normalizeColor(color, colorSpace)) : [],
+    locked: Boolean(source.locked),
+  };
+}
+
+function normalizePalette(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  const colorSpace = source.colorSpace || 'okhsl';
+
+  return {
+    id: source.id || createId('palette'),
+    name: source.name || 'Palette Name Goes Here',
+    colorSpace,
+    createdAt: source.createdAt || new Date().toISOString(),
+    userColor: normalizeColor(source.userColor, colorSpace),
+    steps: Array.isArray(source.steps) ? source.steps.map((step) => normalizeStep(step, colorSpace)) : [],
+  };
+}
+
+export function createEmptyPalette() {
+  return normalizePalette({});
+}
+
+const toPaletteCollection = (value) => (Array.isArray(value) ? value.map((palette) => normalizePalette(palette)) : []);
+
+// Simple reactive store
 export const store = {
   state: {
-    colorSpace: 'okhsl',
-    workingPalette: null,
+    workingPalette: createEmptyPalette(),
     paletteCollection: [],
-    paletteName: '',
-    colorCollectionId: null,
-    userColor: null,
-    previewColor: null,
     currentRoute: '/',
-    STORAGE_KEY: 'ColorPaletteToolState',
+    pageType: 'home',
+    editingPaletteId: null,
   },
 
-  listeners: new Set(), // global listeners
-  keyedListeners: new Map(), // single-key listeners
-  groupListeners: new Map(), // multi-key batch listeners
+  listeners: new Set(),
+  keyedListeners: new Map(),
 
   getState() {
-    return { ...this.state };
+    return structuredClone(this.state);
   },
 
-  setState(newPartialState) {
-    const oldState = { ...this.state };
-    this.state = { ...this.state, ...newPartialState };
+  setState(partial) {
+    if (!partial || typeof partial !== 'object') return;
 
-    const changedKeys = Object.keys(newPartialState);
+    const oldState = { ...this.state };
+    const changedKeys = Object.keys(partial);
 
     if (changedKeys.length === 0) return;
-    // 1. Save to LocalStorage after update
-    this.saveToStorage();
 
-    // 2. Notify global listeners
-    this.notify(changedKeys);
+    let newState = { ...this.state, ...partial };
 
-    // 3. Notify single-key listeners (called per changed key)
+    if (partial.editingPaletteId !== undefined) {
+      const matchedPalette = newState.paletteCollection.find((p) => p?.id === partial.editingPaletteId);
+      if (matchedPalette) {
+        newState.workingPalette = normalizePalette(matchedPalette);
+      }
+    }
+
+    if ('workingPalette' in partial) {
+      newState.workingPalette = normalizePalette(newState.workingPalette);
+    }
+
+    if ('paletteCollection' in partial) {
+      newState.paletteCollection = toPaletteCollection(newState.paletteCollection);
+    }
+
+    this.state = newState;
+    this.listeners.forEach((listener) => listener(this.state, changedKeys));
+
     changedKeys.forEach((key) => {
-      if (this.keyedListeners.has(key)) {
-        this.keyedListeners.get(key).forEach((listener) => {
-          console.log(`Notifying listener for key: ${key}`);
-          listener(
-            key, // changed key
-            this.state[key], // new value
-            oldState[key], // old value
-            this.state // full state
-          );
-        });
-      }
-    });
-
-    // 4. Notify multi-key group listeners (called ONCE per setState)
-    this.groupListeners.forEach((listenerSet, watchedKeys) => {
-      const relevantChanges = changedKeys.filter((k) => watchedKeys.includes(k));
-
-      if (relevantChanges.length > 0) {
-        const changes = {};
-        relevantChanges.forEach((key) => {
-          changes[key] = {
-            newValue: this.state[key],
-            oldValue: oldState[key],
-          };
-        });
-
-        listenerSet.forEach((listener) => {
-          listener(changes, this.state, oldState);
-        });
-      }
+      this.keyedListeners.get(key)?.forEach((listener) => {
+        listener(key, this.state[key], oldState[key], this.state);
+      });
     });
   },
 
-  // Subscribe to ALL changes
+  saveState() {
+    this.saveToStorage();
+  },
   subscribe(listener) {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   },
 
-  // Subscribe to one or multiple keys
-  subscribeTo(keys, listener, options = {}) {
+  subscribeTo(keys, listener) {
     const keyArray = Array.isArray(keys) ? keys : [keys];
-    const { batch = false } = options; // batch: true = group mode
-
-    if (batch && keyArray.length > 1) {
-      // === Multi-key batch mode (fires once per setState) ===
-      const keySet = JSON.stringify(keyArray.sort()); // stable key for Map
-
-      if (!this.groupListeners.has(keySet)) {
-        this.groupListeners.set(keySet, new Set());
-      }
-      this.groupListeners.get(keySet).add(listener);
+    const unsubs = keyArray.map((key) => {
+      if (!this.keyedListeners.has(key)) this.keyedListeners.set(key, new Set());
+      this.keyedListeners.get(key).add(listener);
 
       return () => {
-        const set = this.groupListeners.get(keySet);
-        if (set) {
-          set.delete(listener);
-          if (set.size === 0) this.groupListeners.delete(keySet);
-        }
+        const set = this.keyedListeners.get(key);
+        set?.delete(listener);
+        if (set?.size === 0) this.keyedListeners.delete(key);
       };
-    } else {
-      // === Original per-key mode ===
-      const unsubscribers = keyArray.map((key) => {
-        if (!this.keyedListeners.has(key)) {
-          this.keyedListeners.set(key, new Set());
-        }
-        this.keyedListeners.get(key).add(listener);
+    });
 
-        return () => {
-          const set = this.keyedListeners.get(key);
-          if (set) {
-            set.delete(listener);
-            if (set.size === 0) this.keyedListeners.delete(key);
-          }
-        };
-      });
-
-      return () => unsubscribers.forEach((unsub) => unsub());
-    }
+    return () => unsubs.forEach((unsub) => unsub());
   },
 
-  notify(changedKeys) {
-    this.listeners.forEach((listener) => listener(this.state, changedKeys));
-  },
-
-  // Load from LocalStorage
   loadFromStorage() {
-    console.log('Loading state from LocalStorage...');
     if (typeof localStorage === 'undefined') return;
-    // localStorage.removeItem(this.STORAGE_KEY); // Clear storage for testing
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        console.log('Loaded state from LocalStorage:', parsed);
-        if (parsed.previewColor) {
-          parsed.previewColor = new ColorModel(parsed.previewColor);
-        }
-        if (parsed.userColor) {
-          parsed.userColor = new ColorModel(parsed.userColor);
-        }
 
-        this.state = { ...this.state, ...parsed };
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) return;
+      const parsed = JSON.parse(saved);
+      const newState = { ...this.state, ...parsed };
+
+      if ('workingPalette' in parsed) {
+        newState.workingPalette = normalizePalette(newState.workingPalette);
       }
+      if ('paletteCollection' in parsed) {
+        newState.paletteCollection = toPaletteCollection(newState.paletteCollection);
+      }
+
+      this.state = newState;
     } catch (e) {
-      console.warn('Failed to load state from LocalStorage:', e);
+      console.warn('Failed to load from localStorage:', e);
     }
   },
 
-  // Save to LocalStorage
   saveToStorage() {
     if (typeof localStorage === 'undefined') return;
-
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch (e) {
-      console.warn('Failed to save state to LocalStorage:', e);
+      console.warn('Failed to save to localStorage:', e);
     }
   },
+
+  persist: () => store.saveToStorage(),
 };
+
+// Initialize
 store.loadFromStorage();
+
 export default store;
-
-/***
-// 1. Single key 
-store.subscribeTo('count', (newVal, oldVal, state) => {
-  console.log(`Count changed: ${oldVal} → ${newVal}`);
-});
-
-// 2. Multiple keys - BATCH mode (recommended for groups)
-const unsubscribeGroup = store.subscribeTo(
-  ['count', 'currentRoute', 'user'],
-  (changes, newState, oldState) => {
-    console.log('Batch update - one of these changed:', Object.keys(changes));
-
-    if (changes.count) {
-      console.log('Count:', changes.count.oldValue, '→', changes.count.newValue);
-    }
-    if (changes.currentRoute) {
-      console.log('Route changed to:', changes.currentRoute.newValue);
-    }
-  },
-  { batch: true }          // ← This enables batch mode
-);
-
-// 3. Multiple keys without batch (still fires per key)
-store.subscribeTo(['todos', 'colorSpace'], (newVal, oldVal) => {
-  console.log('Individual notification');
-}, { batch: false });
- */

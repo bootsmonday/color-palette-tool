@@ -1,9 +1,17 @@
 class ColorSteps {
-  constructor(colorName, colorSpace = 'hsluv', colors = [], locked = false) {
-    this.colorName = colorName;
-    this.colorSpace = colorSpace;
-    this.colors = colors;
-    this.locked = locked;
+  constructor(colorNameOrObj, colorSpace = 'hsluv', colors = [], locked = false) {
+    if (typeof colorNameOrObj === 'object' && colorNameOrObj !== null) {
+      const source = colorNameOrObj;
+      this.colorName = source.colorName ?? 'Color Name Goes Here';
+      this.colorSpace = source.colorSpace ?? 'hsluv';
+      this.colors = source.colors ?? [];
+      this.locked = source.locked ?? false;
+    } else {
+      this.colorName = colorNameOrObj;
+      this.colorSpace = colorSpace;
+      this.colors = colors;
+      this.locked = locked;
+    }
     this.id = 'steps-' + crypto.randomUUID().slice(0, 8);
   }
 
