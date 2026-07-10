@@ -1,6 +1,36 @@
+import store from '../store.js';
+import ColorModel from '../models/ColorModel.js';
 class SampleImage extends HTMLElement {
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'palette-steps') {
+      try {
+        const steps = JSON.parse(newValue);
+        this.paletteSteps = steps;
+        this.updateColorVariables();
+      } catch (error) {
+        console.error('Failed to parse palette-steps:', error);
+      }
+    }
+  }
+
+  static get observedAttributes() {
+    return ['palette-steps'];
+  }
+
+  updateColorVariables() {
+    if (!this.paletteSteps || !Array.isArray(this.paletteSteps)) return;
+    console.log('Updating color variables with palette steps:', this.paletteSteps);
+    const colorVariables = {};
+    this.paletteSteps.forEach((step, index) => {
+      colorVariables[`${step.colorName.toLowerCase()} * 10}`] = step.hex || '#000000';
+    });
+
+    this.setColorVariables(this.paletteSteps);
+  }
   constructor() {
     super();
+    this.paletteSteps = [];
+
     this.attachShadow({ mode: 'open' });
 
     this.shadowRoot.innerHTML = `
@@ -15,14 +45,12 @@ class SampleImage extends HTMLElement {
           background: var(--primary-color);
           padding: var(--size);
           color: white;
-          padding: 1rem;
           svg {
             margin: 0 auto;
          }
         }
       </style>
-
-      <div class="sample-colors">
+<div class="sample-colors">
 <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 1800 1200" version="1.1"  style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
 <title>Sample Colors</title>
   <defs>
@@ -100,11 +128,24 @@ class SampleImage extends HTMLElement {
 
   // Public method to update variables
   setColor(color) {
-    this.style.setProperty('--primary-color', color);
+    const colorModel = new ColorModel(color);
+    this.style.setProperty('--primary-color', colorModel.hex);
   }
 
   setSize(size) {
     this.style.setProperty('--size', size);
+  }
+
+  setColorVariables(variables) {
+    variables.forEach((step, index) => {
+      const cssVariableName = `--sample-${step.colorName.toLowerCase()}`;
+      step.colors.forEach((color, colorIndex) => {
+        const colorVariableName = `${cssVariableName}-${(colorIndex + 1) * 10}`;
+        const colorModel = new ColorModel(color);
+        console.log(`Setting CSS variable ${colorVariableName} to ${colorModel.hex}`, colorModel);
+        this.style.setProperty(colorVariableName, colorModel.hex);
+      });
+    });
   }
 }
 

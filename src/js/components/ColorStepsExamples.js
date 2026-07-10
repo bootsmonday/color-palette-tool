@@ -42,7 +42,7 @@ class ColorStepsExamples extends HTMLElement {
 
     colorPreview.classList.add('color-step-preview');
     const colorLabel = document.createElement('label');
-    colorLabel.innerText = color;
+    colorLabel.innerHTML = `<svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg> ${color}`;
     colorLabel.setAttribute('for', `lock-${color.toLowerCase()}`);
     const colorCheckbox = document.createElement('input');
     colorCheckbox.type = 'checkbox';
@@ -50,7 +50,8 @@ class ColorStepsExamples extends HTMLElement {
     colorCheckbox.name = 'lock-color';
     colorCheckbox.value = color.toLowerCase();
     colorCheckbox.ariaLabel = `Lock ${color}`;
-    //colorCheckbox.classList.add('corn-assistive-text');
+    colorCheckbox.classList.add('palette-lock-checkbox');
+    colorCheckbox.classList.add('corn-assistive-text');
     colorPreview.appendChild(colorCheckbox);
 
     colorPreview.appendChild(colorLabel);

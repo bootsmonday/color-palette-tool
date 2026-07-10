@@ -201,6 +201,10 @@ hex-preview {
   overflow-x: auto;
   white-space: pre;
 }
+.palette-sample-image sample-image {
+  display: inline-flex;
+  height: var(--cc-size-10);
+}
 
 
 .corn-text-input--xs {
@@ -230,6 +234,19 @@ hex-preview {
   white-space: nowrap !important; 
   margin: -1px;    
 }
+.color-step-preview label {
+  cursor: pointer;
+}
+.palette-lock-checkbox + label {
+  svg {
+    display: none;
+  }
+}   
+.palette-lock-checkbox:checked + label {
+  svg {
+    display: block;
+  }
+}
 
 .corn-copied.corn-button {
       background-color: var(--cc-green-40);
@@ -245,6 +262,10 @@ h1 {
 }
 h2 {
   font-size: 1.5rem;
+  font-weight: 600;
+}
+h3 {
+  font-size: 1.25rem;
   font-weight: 600;
 }
   /* --cc-form--item--size--xs: var(--cc-size-2);
