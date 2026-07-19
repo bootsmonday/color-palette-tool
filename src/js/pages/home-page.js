@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { router } from '../router.js';
 
 /**
  * The HomePage class represents the home page of the Color Palette Tool application. It is a custom HTML element that displays a list of saved color palettes and provides links to create new palettes or edit existing ones. The component retrieves the palette collection from the application's state store and dynamically generates HTML elements to display each palette's name and a sample image based on its color steps. The sample images are rendered using the SampleImage custom element, which takes the palette steps as an attribute. The HomePage component also includes introductory text and instructions for users on how to use the tool.
@@ -16,10 +17,17 @@ class HomePage extends HTMLElement {
       paletteElement.innerHTML = `
         <h3 ${index !== 0 ? 'style="margin-top: var(--cc-size-4)"' : ''}>${palette.name}</h3>
         <div class="palette-sample-image">
-          <a href="/edit-palette/${palette.id}" class="corn-link"><sample-image palette-steps='${encodeURIComponent(JSON.stringify(palette.steps))}'></sample-image></a>
+          <a href="${router.toAppPath(`/edit-palette/${palette.id}`)}" class="corn-link" data-link data-route="/edit-palette/${palette.id}"><sample-image palette-steps='${encodeURIComponent(JSON.stringify(palette.steps))}'></sample-image></a>
         </div>
       `;
       this.querySelector('.corn-panel').appendChild(paletteElement);
+    });
+
+    this.querySelectorAll('a[data-link]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        router.navigate(link.getAttribute('data-route') || '/');
+      });
     });
   }
 
@@ -32,7 +40,7 @@ class HomePage extends HTMLElement {
         <div class="corn-col-12">
         <h1>Color Palette Tool</h1>
         <div class="corn-panel">
-            <a href="/new-palette" class="corn-link" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
+          <a href="${router.toAppPath('/new-palette')}" class="corn-link" data-link data-route="/new-palette" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
             <p>This tool allows you to create accessible color palettes. These palettes are set up to quickly calculate accessible color combinations.</p>
             <p>You can create a new palette, edit existing ones, and view sample images based on your palettes.</p>
             <p>Palette data is stored in your browser's local storage, so it will persist across sessions.</p>
@@ -42,7 +50,7 @@ class HomePage extends HTMLElement {
             </p>
             <p>To get started, click on "Create New Palette" to design your first color palette.</p>
             <h2>Current Palettes</h2>
-            <a href="/new-palette" class="corn-link" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
+            <a href="${router.toAppPath('/new-palette')}" class="corn-link" data-link data-route="/new-palette" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
             ${store.getState().paletteCollection.length === 0 ? `<p>No palettes saved yet. Create a new palette to get started!</p>` : ''}
           </div>
         </div>

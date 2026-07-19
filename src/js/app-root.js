@@ -83,8 +83,8 @@ class AppRoot extends HTMLElement {
       <div class="corn-header--title">Color Palette Tool</div>
       <nav class="corn-header--nav">
         <corn-button-bar class="corn-button-bar">
-          <a href="/" class="corn-button corn-button--sm" data-link>Home</a>
-          <a href="/new-palette" class="corn-button corn-button--sm" data-link>New Palette</a>
+          <a href="${router.toAppPath('/')}" class="corn-button corn-button--sm" data-link data-route="/">Home</a>
+          <a href="${router.toAppPath('/new-palette')}" class="corn-button corn-button--sm" data-link data-route="/new-palette">New Palette</a>
           <div class="corn-popover--anchor corn-button-bar--more">
             <button class="corn-button corn-button--sm corn-pop" aria-controls="button-bar-popover" aria-label="more items">&middot;&middot;&middot;</button>
             <corn-popover position="bottom" id="button-bar-popover" class="corn-popover"></corn-popover>
@@ -102,7 +102,7 @@ class AppRoot extends HTMLElement {
     this.querySelectorAll('a[data-link]').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        router.navigate(link.getAttribute('href'));
+        router.navigate(link.getAttribute('data-route') || '/');
       });
     });
     this.updatePage();

@@ -9,6 +9,34 @@ import { store } from './store.js';
 export const router = {
   routes: {},
 
+  getBasePath() {
+    const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
+    return base === '/' ? '' : base;
+  },
+
+  normalizeRoutePath(path) {
+    const withLeadingSlash = path.startsWith('/') ? path : `/${path}`;
+    const normalizedRoute = withLeadingSlash.replace(/\/+$/, '') || '/';
+    return normalizedRoute;
+  },
+
+  toAppPath(path) {
+    const routePath = this.normalizeRoutePath(path);
+    const basePath = this.getBasePath();
+    return `${basePath}${routePath}` || '/';
+  },
+
+  fromLocationPath(pathname) {
+    const basePath = this.getBasePath();
+    let routePath = pathname;
+
+    if (basePath && routePath.startsWith(basePath)) {
+      routePath = routePath.slice(basePath.length) || '/';
+    }
+
+    return this.normalizeRoutePath(routePath);
+  },
+
   /**
    * Registers a new route with the router. It associates a specific path with a component name and an optional page type. The registered route is stored in the routes object, allowing the router to determine which component to render when navigating to that path. This method enables the application to define its navigation structure and map URLs to corresponding components.
    *
@@ -26,8 +54,8 @@ export const router = {
    * This method updates the browser's history and the application's state to reflect the new route. It normalizes the provided path, removing any trailing slashes, and sets the currentRoute and pageType properties in the application's state store. This allows the application to dynamically render the appropriate component based on the new route, enabling seamless navigation between different pages without requiring a full page reload.
    */
   navigate(path) {
-    history.pushState({}, '', path);
-    const normalizedRoute = path.replace(/\/+$/, '') || '/';
+    const normalizedRoute = this.normalizeRoutePath(path);
+    history.pushState({}, '', this.toAppPath(normalizedRoute));
     store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
   },
 
@@ -36,12 +64,12 @@ export const router = {
    */
   init() {
     window.addEventListener('popstate', () => {
-      const normalizedRoute = window.location.pathname.replace(/\/+$/, '') || '/';
+      const normalizedRoute = this.fromLocationPath(window.location.pathname);
       store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
     });
 
     // Initial route
-    const normalizedRoute = window.location.pathname.replace(/\/+$/, '') || '/';
+    const normalizedRoute = this.fromLocationPath(window.location.pathname);
     store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
   },
 };
