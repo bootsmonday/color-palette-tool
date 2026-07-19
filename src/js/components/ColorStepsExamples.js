@@ -1,102 +1,39 @@
 import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
-
+/**
+ * ColorStepsExamples is a custom element that displays a grid of color steps for various colors.
+ * It allows users to filter colors and steps, and lock specific colors or steps.
+ */
 class ColorStepsExamples extends HTMLElement {
+  /**
+   * @type {string[]}
+   * @description An array of color names to be displayed in the color steps grid.
+   */
   colorSteps = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Magenta', 'Gray'];
 
-  generateColorTools(color) {
-    const tools = document.createElement('div');
-    tools.classList.add('color-examples-toolbar', 'color-example-row');
-    this.container.appendChild(tools);
-    const spacer = document.createElement('div');
-    tools.appendChild(spacer);
-    this.label = document.createElement('div');
-    this.label.classList.add('color-step-preview');
-    this.label.innerText = 'Tools';
-    tools.appendChild(this.label);
-    for (let i = 1; i < 11; i++) {
-      const gridItem = document.createElement('div');
-      const tool = document.createElement('div');
-      tool.classList.add('corn-checkbox', 'corn-checkbox--xs');
-      const button = document.createElement('input');
-      const buttonLabel = document.createElement('label');
-      buttonLabel.innerText = `${i * 10}`;
-      buttonLabel.setAttribute('for', `tool-${i * 10}`);
-      buttonLabel.classList.add('corn-assistive-text');
-      tool.appendChild(buttonLabel);
-      button.id = `tool-${i * 10}`;
-      button.type = 'checkbox';
-      button.value = `${i + 1}`;
-      button.name = 'color-step';
-      button.ariaLabel = `Toggle ${i * 10}`;
-      tool.appendChild(button);
-      gridItem.appendChild(tool);
-      tools.appendChild(gridItem);
-    }
-  }
-  generateColorRow(color) {
-    const row = document.createElement('div');
-    row.classList.add('color-example');
-    this.container.appendChild(row);
-    //Add Color Label
-    const colorPreview = document.createElement('div');
+  /**
+   * @description Indicates that this custom element is form-associated, allowing it to participate in form submission and validation.
+   */
+  static formAssociated = true;
 
-    colorPreview.classList.add('color-step-preview');
-    const colorLabel = document.createElement('label');
-    colorLabel.innerHTML = `<svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg> ${color}`;
-    colorLabel.setAttribute('for', `lock-${color.toLowerCase()}`);
-    const colorCheckbox = document.createElement('input');
-    colorCheckbox.type = 'checkbox';
-    colorCheckbox.id = `lock-${color.toLowerCase()}`;
-    colorCheckbox.name = 'lock-color';
-    colorCheckbox.value = color.toLowerCase();
-    colorCheckbox.ariaLabel = `Lock ${color}`;
-    colorCheckbox.classList.add('palette-lock-checkbox');
-    colorCheckbox.classList.add('corn-assistive-text');
-    colorPreview.appendChild(colorCheckbox);
+  /**
+   * @description Indicates that this custom element is form-associated, allowing it to participate in form submission and validation.
+   */
+  static get formAssociated() {
+    return true;
+  }
 
-    colorPreview.appendChild(colorLabel);
-    // colorPreview.innerText = color;
-    colorPreview.style.boxShadow = `inset 0 0 0 2px var(--sample-${color.toLowerCase()}-50)`;
-    row.appendChild(colorPreview);
-    // Add Color Step Examples
-    for (let i = 1; i < 11; i++) {
-      const step = document.createElement('div');
-      if (i < 6) {
-        step.style.color = `var(--sample-black)`;
-      } else {
-        step.style.color = `var(--sample-white)`;
-      }
-      step.style.backgroundColor = `var(--sample-${color.toLowerCase()}-${i * 10})`;
-      step.innerText = `${i * 10}`;
-      row.appendChild(step);
-    }
-  }
-  _generateColorRow(color) {
-    const row = document.createElement('div');
-    row.classList.add('color-example-row');
-    this.container.appendChild(row);
-    //Add Color Label
-    const label = document.createElement('div');
-    label.classList.add('color-step-preview');
-    label.innerText = color;
-    label.style.boxShadow = `inset 0 0 0 2px var(--sample-${color.toLowerCase()}-50)`;
-    row.appendChild(label);
-    // Add Color Step Examples
-    for (let i = 1; i < 11; i++) {
-      const step = document.createElement('div');
-      if (i < 6) {
-        step.style.color = `var(--sample-black)`;
-      } else {
-        step.style.color = `var(--sample-white)`;
-      }
-      step.style.backgroundColor = `var(--sample-${color.toLowerCase()}-${i * 10})`;
-      step.innerText = `${i * 10}`;
-      row.appendChild(step);
-    }
-  }
+  /**
+   * @description Adds event listeners to the component for handling changes in filter and lock checkboxes.
+   */
   addEventListeners() {
     this.addEventListener('change', this);
   }
+
+  /**
+   *
+   * @param {Event} event - The event object triggered by user interaction.
+   * @description Handles change events for filter and lock checkboxes, updating the display of color steps and the form value accordingly.
+   */
   handleEvent(event) {
     if (event.type === 'change') {
       const target = event.target;
@@ -136,12 +73,6 @@ class ColorStepsExamples extends HTMLElement {
           }
         });
         this.querySelector('.color-examples').style.gridTemplateColumns = colorGridWidth;
-        // const colorIndex = this.colorSteps.findIndex((c) => c.toLowerCase() === color);
-        // if (target.checked) {
-        //   rows[colorIndex].classList.remove('hidden');
-        // } else {
-        //   rows[colorIndex].classList.add('hidden');
-        // }
       }
       if (target.name === 'lock-color' || target.name === 'lock-step') {
         this.updateFormValue();
@@ -149,6 +80,52 @@ class ColorStepsExamples extends HTMLElement {
     }
   }
 
+  /**
+   *
+   * @param {string} color - The name of the color for which to generate the row. This function creates a row in the color steps grid for the specified color, including a color preview, label, and checkboxes for locking the color.It is displayed as a Column in the grid layout.
+   */
+  generateColorRow(color) {
+    const row = document.createElement('div');
+    row.classList.add('color-example');
+    this.container.appendChild(row);
+    //Add Color Label
+    const colorPreview = document.createElement('div');
+
+    colorPreview.classList.add('color-step-preview');
+    const colorLabel = document.createElement('label');
+    colorLabel.innerHTML = `<svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg> ${color}`;
+    colorLabel.setAttribute('for', `lock-${color.toLowerCase()}`);
+    const colorCheckbox = document.createElement('input');
+    colorCheckbox.type = 'checkbox';
+    colorCheckbox.id = `lock-${color.toLowerCase()}`;
+    colorCheckbox.name = 'lock-color';
+    colorCheckbox.value = color.toLowerCase();
+    colorCheckbox.ariaLabel = `Lock ${color}`;
+    colorCheckbox.classList.add('palette-lock-checkbox');
+    colorCheckbox.classList.add('corn-assistive-text');
+    colorPreview.appendChild(colorCheckbox);
+
+    colorPreview.appendChild(colorLabel);
+    // colorPreview.innerText = color;
+    colorPreview.style.boxShadow = `inset 0 0 0 2px var(--sample-${color.toLowerCase()}-50)`;
+    row.appendChild(colorPreview);
+    // Add Color Step Examples
+    for (let i = 1; i < 11; i++) {
+      const step = document.createElement('div');
+      if (i < 6) {
+        step.style.color = `var(--sample-black)`;
+      } else {
+        step.style.color = `var(--sample-white)`;
+      }
+      step.style.backgroundColor = `var(--sample-${color.toLowerCase()}-${i * 10})`;
+      step.innerText = `${i * 10}`;
+      row.appendChild(step);
+    }
+  }
+
+  /**
+   * @description Renders the filter options for colors and steps, allowing users to customize the display of the color steps grid.
+   */
   renderFilters() {
     this.innerHTML = `
       <corn-expandable class="corn-expandable">
@@ -250,19 +227,28 @@ class ColorStepsExamples extends HTMLElement {
         </details>
       </corn-expandable>`;
   }
-  static formAssociated = true;
-  static get formAssociated() {
-    return true;
-  }
+
+  /**
+   * @description Updates the form value based on the current state of locked colors and steps. This method collects the values of checked lock checkboxes and updates the form value accordingly.
+   */
   updateFormValue() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
     const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
   }
+
+  /**
+   * @description Gets the current value of the form, including locked colors and steps.
+   */
   get value() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
     const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
     return { lockedColors, lockedSteps };
   }
+
+  /**
+   * @param {Object} val - An object containing locked colors and steps to set the form value. The object should have properties `lockedColors` and `lockedSteps`, which are arrays of strings representing the locked colors and steps, respectively.
+   * @description Sets the form value based on the provided object, updating the state of lock checkboxes accordingly.
+   */
   set value(val) {
     if (val && typeof val === 'object') {
       const { lockedColors = [], lockedSteps = [] } = val;
@@ -276,14 +262,23 @@ class ColorStepsExamples extends HTMLElement {
     this.updateFormValue();
   }
 
+  /**
+   * @param {string[]} value - An array of color names to set as the color steps for the component. This setter updates the `colorSteps` property and re-renders the color steps grid accordingly.
+   */
   set colors(value) {
     this.colorSteps = value;
   }
 
+  /**
+   * @description Gets the current array of color steps for the component.
+   */
   get colors() {
     return this.colorSteps;
   }
 
+  /**
+   * @description Initializes the component, sets up the internals, renders filters, creates the container for color examples, generates color rows for each color step, and adds event listeners.
+   */
   constructor() {
     super();
     this.internals = this.attachInternals();
@@ -291,12 +286,17 @@ class ColorStepsExamples extends HTMLElement {
     this.container = document.createElement('div');
     this.container.classList.add('color-examples');
     this.appendChild(this.container);
-    //this.generateColorTools();
 
     this.colorSteps.forEach((color) => {
       this.generateColorRow(color);
     });
     this.addEventListeners();
+  }
+  /**
+   * @description Cleans up event listeners when the component is disconnected from the DOM.
+   */
+  disconnectedCallback() {
+    this.removeEventListener('change', this);
   }
 }
 

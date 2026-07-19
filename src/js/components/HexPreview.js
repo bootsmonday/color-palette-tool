@@ -2,10 +2,18 @@ import { store } from '../store.js';
 import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
 const lightnessSteps = [97, 90, 82, 72, 59.04, 47.5, 37, 28, 20, 13];
+
+/**
+ * HexPreview is a custom web component that provides a user interface for previewing and interacting with hex color values. It allows users to input a hex color, validates the input, and calculates the closest matching colors in HSLuv and OKHSL color spaces. The component displays the original hex color along with the closest matches, and provides buttons to use these colors in the working palette. It also manages event listeners for user interactions and updates its display based on changes in the application state.
+ */
 class HexPreview extends HTMLElement {
   constructor() {
     super();
   }
+
+  /**
+   * This method renders the HTML structure of the HexPreview component. It creates a form for users to input a hex color value, displays instructions for how the hex value maps to palette colors in HSLuv and OKHSL color spaces, and shows the closest matching colors along with buttons to use these colors. The method sets up the necessary HTML elements and classes for styling and functionality, ensuring that the component is ready for user interaction.
+   */
   render() {
     this.innerHTML = `
       <div>
@@ -58,19 +66,33 @@ class HexPreview extends HTMLElement {
     </div>
     `;
   }
+
+  /**
+   * This method is called when the HexPreview component is added to the DOM. It initializes the component's state, renders its HTML structure, subscribes to changes in the working palette from the store, and sets up event listeners for user interactions. The method ensures that the component is ready to respond to user input and updates its display based on changes in the application state.
+   */
   connectedCallback() {
     this.closestHsluvColor = null;
     this.closestOkhslColor = null;
     this.render();
-    this.unsubscribe = store.subscribeTo('workingPalette', () => this.update());
+    // this.unsubscribe = store.subscribeTo('workingPalette', () => this.update());
     this.addEventListeners();
   }
+
+  /**
+   * This method adds event listeners to the HexPreview component for handling user interactions. It listens for 'change', 'submit', and 'click' events, allowing the component to respond to input changes, form submissions, and button clicks. The event listeners are bound to the component itself, enabling it to handle events and update its state or UI accordingly. This setup ensures that the component can effectively manage user input and maintain synchronization with the application's state.
+   */
   addEventListeners() {
     this.addEventListener('change', this);
     this.addEventListener('submit', this);
     this.addEventListener('click', this);
   }
 
+  /**
+   *
+   * @param {Event} event
+   * @returns {void}
+   * This method handles various events triggered within the HexPreview component. It processes 'click', 'change', and 'submit' events, allowing the component to respond to user interactions. For 'change' events, it updates the working palette's color space based on user selection. For 'submit' events, it validates hex input, calculates the closest matching colors in HSLuv and OKHSL color spaces, and updates the working palette accordingly. The method ensures that the component's state and display are updated in response to user actions.
+   */
   handleEvent(event) {
     if (event.type === 'click') {
     }
@@ -129,6 +151,12 @@ class HexPreview extends HTMLElement {
     }
   }
 
+  /**
+   *
+   * @param {string} hex - The hex color code to find the closest matching colors for.
+   * @returns {string} - The hex code of the closest matching color (example implementation).
+   * This method calculates the closest matching colors in HSLuv and OKHSL color spaces for a given hex color code. It converts the hex color to HSLuv and OKHSL formats, determines the closest lightness values from predefined steps, and creates new Color instances for the closest matches. The method updates the component's display to show the original hex color and the closest matches, along with their respective hex codes. It also hides the ghost text and displays the color previews. The method returns an example closest match hex code (this should be calculated based on the palette in a real implementation).
+   */
   calculateClosestColor(hex) {
     const color = new Color(hex);
     const hsluvColor = color.to('hsluv');
@@ -154,10 +182,17 @@ class HexPreview extends HTMLElement {
     return '#ff6000'; // Example closest match (this should be calculated based on the palette)
   }
 
+  /**
+   * This method removes event listeners from the HexPreview component. It is typically called when the component is disconnected from the DOM to prevent memory leaks and ensure that the component no longer responds to events after it has been removed. The method removes 'change' and 'submit' event listeners that were previously added to the component.
+   */
   removeEventListeners() {
     this.removeEventListener('change', this);
     this.removeEventListener('submit', this);
   }
+
+  /**
+   * This method is called when the HexPreview component is removed from the DOM. It unsubscribes from any store subscriptions to prevent memory leaks and removes event listeners that were added during the component's lifecycle. This ensures that the component cleans up its resources and does not continue to respond to events or state changes after it has been disconnected from the DOM.
+   */
   disconnectedCallback() {
     if (this.unsubscribe) {
       this.unsubscribe();

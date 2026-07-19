@@ -1,10 +1,16 @@
 import { store } from './store.js';
 import { createEmptyPalette } from './store.js';
 import { router } from './router.js';
-//import corncobStyles from '@bootsmonday/corncob-design-language/style.css?inline';
 import toolstyles from '../assets/palette-tool.css?inline';
 
+/**
+ * The AppRoot class represents the root component of the Color Palette Tool application. It is a custom HTML element that manages the overall layout, including the header, navigation, and main content area. The component listens for changes in the application's state, particularly the current route, and updates the displayed page accordingly. It also handles navigation events and initializes the router with the defined routes.
+ */
+
 class AppRoot extends HTMLElement {
+  /**
+   * This is the constructor for the AppRoot component. It initializes the component by calling the superclass constructor and setting up an unsubscribe property to manage state subscriptions. The constructor also registers the application's routes with the router, associating each route with a specific component and page type. This setup allows the AppRoot component to manage navigation and display the appropriate content based on the current route in the application's state.
+   */
   constructor() {
     super();
     this.unsubscribe = null;
@@ -16,17 +22,31 @@ class AppRoot extends HTMLElement {
     router.init();
   }
 
+  /**
+   * This method is called when the AppRoot element is added to the DOM. It subscribes to changes in the 'currentRoute' property of the application's state store, allowing the component to update the displayed page whenever the route changes. The method also calls render() to set up the initial HTML structure of the component, including the header, navigation, and main content area. This ensures that the application is properly initialized and ready to handle user interactions and navigation events.
+   */
   connectedCallback() {
     this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
     this.render();
   }
 
+  /**
+   * This method is called whenever the 'currentRoute' property in the application's state store changes. It triggers an update of the displayed page by calling updatePage(), ensuring that the content shown to the user reflects the current route. This allows for dynamic navigation within the application, as users can move between different pages and see the corresponding content without needing to reload the entire application.
+   */
   storeUpdate() {
     this.updatePage();
   }
+
+  /**
+   * This method is called when the AppRoot element is removed from the DOM. It checks if there is an active subscription to the application's state store and, if so, calls the unsubscribe function to clean up the subscription. This ensures that the component does not continue to receive updates or trigger re-renders after it has been removed from the DOM, preventing potential memory leaks and unnecessary processing.
+   */
   disconnectedCallback() {
     this.unsubscribe?.();
   }
+
+  /**
+   * This method updates the displayed page based on the current route in the application's state store. It normalizes the route to handle dynamic routes, such as editing a specific palette, and sets the appropriate state properties for the working palette and page type. The method then determines which component to render based on the normalized route and updates the innerHTML of the main content area to display the corresponding component. This allows for seamless navigation within the application, as users can move between different pages and see the relevant content without needing to reload the entire application.
+   */
   updatePage() {
     const { currentRoute, pageType } = store.getState();
     let normalizedRoute = '/' + (currentRoute || '/').split(/\//).filter(Boolean)[0]; // Get the first segment for dynamic routes
@@ -46,6 +66,9 @@ class AppRoot extends HTMLElement {
     this.querySelector('#current-page').innerHTML = `<${router.routes[normalizedRoute]?.componentName || 'home-page'}></${router.routes[normalizedRoute]?.componentName || 'home-page'}>`;
   }
 
+  /**
+   * This method renders the initial HTML structure of the AppRoot component. It sets the innerHTML of the component to include a header with navigation links and a main content area where the current page will be displayed. The method also attaches event listeners to the navigation links to handle click events, preventing the default behavior and using the router to navigate to the specified route instead. This setup allows for dynamic navigation within the application, as users can move between different pages and see the corresponding content without needing to reload the entire application.
+   */
   render() {
     this.innerHTML = `
     <style>

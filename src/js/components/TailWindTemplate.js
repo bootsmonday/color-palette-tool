@@ -1,6 +1,12 @@
 import style from '../../assets/tailwind.css?inline';
 
+/**
+ * TailwindTemplate is a custom web component that represents a form for account setup. It includes various input fields, toggles, checkboxes, and status messages for success and error states. The component uses Shadow DOM to encapsulate its styles and structure, ensuring that it does not interfere with other elements on the page. The styles are imported from the Tailwind CSS framework and applied to the component's shadow root.
+ */
 class TailwindTemplate extends HTMLElement {
+  /**
+   * This is the constructor for the TailwindTemplate component. It initializes the component by attaching a shadow DOM, creating a style element with the imported Tailwind CSS, and appending it to the shadow root. The constructor also sets the innerHTML of the shadow root to include the form structure, input fields, status messages, and other elements that make up the account setup form. This setup ensures that the component is styled according to Tailwind CSS and encapsulated within its own shadow DOM.
+   */
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });

@@ -1,6 +1,12 @@
 import { store } from '../store.js';
 
+/**
+ * The HomePage class represents the home page of the Color Palette Tool application. It is a custom HTML element that displays a list of saved color palettes and provides links to create new palettes or edit existing ones. The component retrieves the palette collection from the application's state store and dynamically generates HTML elements to display each palette's name and a sample image based on its color steps. The sample images are rendered using the SampleImage custom element, which takes the palette steps as an attribute. The HomePage component also includes introductory text and instructions for users on how to use the tool.
+ */
 class HomePage extends HTMLElement {
+  /**
+   * This method is called when the HomePage element is added to the DOM. It renders the initial HTML structure of the home page, including headings, introductory text, and a link to create a new palette. It then iterates over the palette collection from the application's state store and creates a div element for each palette, displaying its name and a sample image. The sample image is generated using the SampleImage custom element, which receives the palette steps as an attribute. This setup allows users to view their saved palettes and navigate to edit them.
+   */
   connectedCallback() {
     this.render();
 
@@ -17,6 +23,9 @@ class HomePage extends HTMLElement {
     });
   }
 
+  /**
+   * This method renders the HTML structure of the HomePage component. It sets the innerHTML of the component to include headings, introductory text, and a link to create a new palette. It also checks if there are any saved palettes in the application's state store and displays a message if there are none. The method is called when the component is connected to the DOM, ensuring that the home page is properly displayed to users when they visit the application.
+   */
   render() {
     this.innerHTML = `
       <div class="corn-row">

@@ -1,5 +1,8 @@
 import style from '@bootsmonday/corncob-design-language/style.css?inline';
 
+/**
+ * CornCobTemplate is a custom web component that represents a form for account setup. It includes various input fields, toggles, checkboxes, and status messages for success and error states. The component uses Shadow DOM to encapsulate its styles and structure, ensuring that it does not interfere with other elements on the page. The styles are imported from the CornCob Design Language and applied to the component's shadow root.
+ */
 class CornCobTemplate extends HTMLElement {
   constructor() {
     super();

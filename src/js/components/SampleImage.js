@@ -1,5 +1,15 @@
 import ColorModel from '../models/ColorModel.js';
+
+/**
+ * This custom element represents a sample image that displays colors based on a given palette. It listens for changes to the 'palette-steps' attribute, which should contain a JSON string representing an array of color steps. When the attribute changes, it parses the new value and updates the CSS variables used to style the sample image. The component uses Shadow DOM to encapsulate its styles and structure, ensuring that it does not interfere with other elements on the page. The sample image is rendered as an SVG with various shapes filled with colors defined by the CSS variables.
+ */
 class SampleImage extends HTMLElement {
+  /**
+   * @param {string} name - The name of the attribute that changed.
+   * @param {string} oldValue - The previous value of the attribute.
+   * @param {string} newValue - The new value of the attribute.
+   * This method is called whenever an observed attribute changes. It checks if the changed attribute is 'palette-steps', and if so, it attempts to parse the new value as JSON. If parsing is successful, it updates the component's paletteSteps property and calls updateColorVariables to refresh the CSS variables used in the sample image. If parsing fails, it logs an error to the console. This allows the component to dynamically update its appearance based on changes to the palette steps provided via the attribute.
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'palette-steps') {
       try {
@@ -19,15 +29,26 @@ class SampleImage extends HTMLElement {
     }
   }
 
+  /**
+   * @returns {Array} An array of attribute names to observe for changes.
+   * This static getter defines which attributes the custom element should observe for changes. In this case, it returns an array containing 'palette-steps', indicating that the component should listen for changes to this attribute. When the 'palette-steps' attribute changes, the attributeChangedCallback method will be invoked to handle the update.
+   */
   static get observedAttributes() {
     return ['palette-steps'];
   }
 
+  /**
+   * This method updates the CSS variables used in the sample image based on the current paletteSteps property. It checks if paletteSteps is defined and is an array, and if so, it calls setColorVariables to apply the new color values to the component's style. This allows the sample image to reflect the colors defined in the provided palette steps, ensuring that the visual representation is consistent with the specified color scheme.
+   */
   updateColorVariables() {
     if (!this.paletteSteps || !Array.isArray(this.paletteSteps)) return;
     console.log('Updating color variables with palette steps:', this.paletteSteps);
     this.setColorVariables(this.paletteSteps);
   }
+
+  /**
+   * This is the constructor for the SampleImage component. It initializes the paletteSteps property as an empty array, attaches a shadow DOM to the component, and sets the initial innerHTML of the shadow root, including the styles and sample image markup. The constructor sets up the component's structure and prepares it to display colors based on the provided palette steps. It also defines default CSS variables for the sample colors, which can be updated later based on the palette steps provided via the 'palette-steps' attribute.
+   */
   constructor() {
     super();
     this.paletteSteps = [];
@@ -151,11 +172,3 @@ class SampleImage extends HTMLElement {
 }
 
 customElements.define('sample-image', SampleImage);
-
-// --retro-1: #FF4D94; /* hot pink */
-// --retro-2: #FF8C00; /* orange */
-// --retro-3: #FFEB3B; /* bright yellow */
-// --retro-4: #00E676; /* lime green */
-// --retro-5: #00B8D4; /* cyan */
-// --retro-6: #7C4DFF; /* purple */
-// --retro-7: #FF4081; /* magenta */
