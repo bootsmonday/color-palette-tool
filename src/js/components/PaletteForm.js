@@ -349,9 +349,7 @@ class PaletteForm extends HTMLElement {
   }
 
   /**
-   * Calculates equivalent hues for all categories while preserving the relative position
-   * within the source category's hue range. Handles wrapping ranges (like Red) and edge cases
-   * (hue = 0, 350, 360) correctly.
+   * This method calculates the new hue values for all color categories at the same relative distance as a given hue value. It uses predefined hue ranges for different color categories in either the HSLuv or OKHSL color space, depending on the current working palette's color space. The method normalizes the input hue, determines its position within its source category range, and calculates the corresponding new hue for each category while preserving the relative distance. The results are returned as an object containing the center, new hue, and percentage for each category.
    */
   getHueAtSameRelativeDistance(hue) {
     // Normalize hue to [0, 360)
