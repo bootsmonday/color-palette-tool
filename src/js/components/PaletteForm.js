@@ -354,7 +354,7 @@ class PaletteForm extends HTMLElement {
     // Find source category and range
     const sourceEntry = Object.entries(categoryRanges).find(([_, range]) => {
       const [start, end] = range;
-      if (start < end) return hue >= start && hue <= end;
+      if (start < end) return hue >= start && hue < end;
       return hue >= start || hue <= end; // wrapping range (Red)
     });
 
