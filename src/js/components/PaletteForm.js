@@ -267,7 +267,17 @@ class PaletteForm extends HTMLElement {
     if (!preview) return;
 
     const lockedColors = (this.workingPalette?.steps || []).filter((step) => step.locked).map((step) => step.colorName.toLowerCase());
-    preview.value = { lockedColors, lockedSteps: [] };
+    const lockedSteps = [];
+
+    (this.workingPalette?.steps || []).forEach((step) => {
+      step.colors?.forEach((color, index) => {
+        if (color?.locked) {
+          lockedSteps.push(`${step.colorName.toLowerCase()}:${(index + 1) * 10}`);
+        }
+      });
+    });
+
+    preview.value = { lockedColors, lockedSteps };
   }
 
   /**
