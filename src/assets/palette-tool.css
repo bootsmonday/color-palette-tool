@@ -243,6 +243,12 @@ hex-preview {
     display: block;
   }
 }
+.palette-lock-checkbox + label.is-indeterminate {
+  svg {
+    display: block;
+    opacity: 0.5;
+  }
+}
 
 .corn-copied.corn-button {
       background-color: var(--cc-green-40);

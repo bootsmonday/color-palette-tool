@@ -75,9 +75,66 @@ class ColorStepsExamples extends HTMLElement {
         this.querySelector('.color-examples').style.gridTemplateColumns = colorGridWidth;
       }
       if (target.name === 'lock-color' || target.name === 'lock-step') {
+        if (target.name === 'lock-color') {
+          this.setColorStepsLocked(target.value, target.checked);
+          target.indeterminate = false;
+          this.updateColorLockState(target.value);
+        }
+
+        if (target.name === 'lock-step') {
+          const [colorKey] = String(target.value).split(':');
+          this.updateColorLockState(colorKey);
+        }
+
         this.updateFormValue();
       }
     }
+  }
+
+  /**
+   * Returns all per-step lock inputs for a color key (e.g. "red").
+   */
+  getStepLockInputsForColor(colorKey) {
+    return Array.from(this.querySelectorAll(`input[name="lock-step"][value^="${colorKey}:"]`));
+  }
+
+  /**
+   * Locks or unlocks all steps for a single color.
+   */
+  setColorStepsLocked(colorKey, isLocked) {
+    this.getStepLockInputsForColor(colorKey).forEach((stepInput) => {
+      stepInput.checked = isLocked;
+    });
+  }
+
+  /**
+   * Synchronizes a color lock checkbox to reflect per-step lock state (checked/indeterminate/unchecked).
+   */
+  updateColorLockState(colorKey) {
+    const colorInput = this.querySelector(`input[name="lock-color"][value="${colorKey}"]`);
+    if (!colorInput) return;
+
+    const stepInputs = this.getStepLockInputsForColor(colorKey);
+    const lockedCount = stepInputs.filter((input) => input.checked).length;
+    const totalCount = stepInputs.length;
+
+    colorInput.checked = totalCount > 0 && lockedCount === totalCount;
+    colorInput.indeterminate = lockedCount > 0 && lockedCount < totalCount;
+    colorInput.setAttribute('aria-checked', colorInput.indeterminate ? 'mixed' : String(colorInput.checked));
+
+    const label = this.querySelector(`label[for="${colorInput.id}"]`);
+    if (label) {
+      label.classList.toggle('is-indeterminate', colorInput.indeterminate);
+    }
+  }
+
+  /**
+   * Synchronizes all color lock checkboxes with their corresponding per-step locks.
+   */
+  updateAllColorLockStates() {
+    this.querySelectorAll('input[name="lock-color"]').forEach((input) => {
+      this.updateColorLockState(input.value);
+    });
   }
 
   /**
@@ -270,13 +327,18 @@ class ColorStepsExamples extends HTMLElement {
   set value(val) {
     if (val && typeof val === 'object') {
       const { lockedColors = [], lockedSteps = [] } = val;
-      this.querySelectorAll('input[name="lock-color"]').forEach((checkbox) => {
-        checkbox.checked = lockedColors.includes(checkbox.value);
-      });
       this.querySelectorAll('input[name="lock-step"]').forEach((checkbox) => {
         checkbox.checked = lockedSteps.includes(checkbox.value);
       });
+
+      // Backward compatibility: if only color locks are present, lock all steps for those colors.
+      this.querySelectorAll('input[name="lock-color"]').forEach((checkbox) => {
+        if (lockedColors.includes(checkbox.value)) {
+          this.setColorStepsLocked(checkbox.value, true);
+        }
+      });
     }
+    this.updateAllColorLockStates();
     this.updateFormValue();
   }
 
@@ -309,6 +371,7 @@ class ColorStepsExamples extends HTMLElement {
       this.generateColorRow(color);
     });
     this.addEventListeners();
+    this.updateAllColorLockStates();
     this.updateFormValue();
   }
   /**
