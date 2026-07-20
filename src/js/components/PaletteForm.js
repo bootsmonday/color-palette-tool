@@ -529,6 +529,11 @@ class PaletteForm extends HTMLElement {
       return false;
     }
     if (e.type === 'change') {
+      if (e.target.name === 'lock-color' || e.target.name === 'lock-step') {
+        this.updateColorPreview();
+        store.setState({ workingPalette: this.workingPalette });
+        return;
+      }
     }
     if (e.type === 'input') {
       if (e.target.name === 'palette-name') {
