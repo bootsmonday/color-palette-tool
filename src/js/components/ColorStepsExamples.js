@@ -150,7 +150,7 @@ class ColorStepsExamples extends HTMLElement {
 
     colorPreview.classList.add('color-step-preview');
     const colorLabel = document.createElement('label');
-    colorLabel.innerHTML = `<svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg> ${color}`;
+    colorLabel.innerHTML = `${color} <svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg>`;
     colorLabel.setAttribute('for', `lock-${color.toLowerCase()}`);
     const colorCheckbox = document.createElement('input');
     colorCheckbox.type = 'checkbox';
@@ -189,7 +189,7 @@ class ColorStepsExamples extends HTMLElement {
 
       const stepLabel = document.createElement('label');
       stepLabel.setAttribute('for', lockId);
-      stepLabel.innerHTML = `<svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg> ${stepValue}`;
+      stepLabel.innerHTML = ` ${stepValue} <svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg>`;
 
       step.appendChild(stepCheckbox);
       step.appendChild(stepLabel);

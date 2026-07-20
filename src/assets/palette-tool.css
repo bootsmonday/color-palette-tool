@@ -235,6 +235,9 @@ hex-preview {
 }
 .palette-lock-checkbox + label {
   svg {
+    position: absolute; 
+    top: var(--cc-size--4);
+    right: var(--cc-size--4);
     display: none;
   }
 }   
