@@ -1,4 +1,4 @@
-name: Deploy Docs
+name: Deploy Color Palette Tool to GitHub Pages
 
 on:
   push:
