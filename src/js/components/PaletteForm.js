@@ -335,6 +335,20 @@ class PaletteForm extends HTMLElement {
   }
 
   /**
+   * This method calculates the default hue mapping for all color categories based on a given hue value. It uses predefined hue ranges for different color categories in either the HSLuv or OKHSL color space, depending on the current working palette's color space. The method iterates through each category, calculates the center of the hue range, and creates an object containing the center, new hue, and percentage for each category. This mapping can be used to determine equivalent hues for all categories while preserving their relative positions within their respective ranges.
+   */
+  getDefaultHueMapping(hue) {
+    const results = {};
+    const ranges = this.colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
+    Object.keys(ranges).forEach((name) => {
+      const [start, end] = ranges[name];
+      const center = start < end ? (start + end) / 2 : ((start + end + 360) / 2) % 360;
+      results[name] = { center, newHue: hue, percentage: 50 };
+    });
+    return results;
+  }
+
+  /**
    * Calculates equivalent hues for all categories while preserving the relative position
    * within the source category's hue range. Handles wrapping ranges (like Red) and edge cases
    * (hue = 0, 350, 360) correctly.
