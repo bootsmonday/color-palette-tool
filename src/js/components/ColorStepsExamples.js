@@ -75,9 +75,66 @@ class ColorStepsExamples extends HTMLElement {
         this.querySelector('.color-examples').style.gridTemplateColumns = colorGridWidth;
       }
       if (target.name === 'lock-color' || target.name === 'lock-step') {
+        if (target.name === 'lock-color') {
+          this.setColorStepsLocked(target.value, target.checked);
+          target.indeterminate = false;
+          this.updateColorLockState(target.value);
+        }
+
+        if (target.name === 'lock-step') {
+          const [colorKey] = String(target.value).split(':');
+          this.updateColorLockState(colorKey);
+        }
+
         this.updateFormValue();
       }
     }
+  }
+
+  /**
+   * Returns all per-step lock inputs for a color key (e.g. "red").
+   */
+  getStepLockInputsForColor(colorKey) {
+    return Array.from(this.querySelectorAll(`input[name="lock-step"][value^="${colorKey}:"]`));
+  }
+
+  /**
+   * Locks or unlocks all steps for a single color.
+   */
+  setColorStepsLocked(colorKey, isLocked) {
+    this.getStepLockInputsForColor(colorKey).forEach((stepInput) => {
+      stepInput.checked = isLocked;
+    });
+  }
+
+  /**
+   * Synchronizes a color lock checkbox to reflect per-step lock state (checked/indeterminate/unchecked).
+   */
+  updateColorLockState(colorKey) {
+    const colorInput = this.querySelector(`input[name="lock-color"][value="${colorKey}"]`);
+    if (!colorInput) return;
+
+    const stepInputs = this.getStepLockInputsForColor(colorKey);
+    const lockedCount = stepInputs.filter((input) => input.checked).length;
+    const totalCount = stepInputs.length;
+
+    colorInput.checked = totalCount > 0 && lockedCount === totalCount;
+    colorInput.indeterminate = lockedCount > 0 && lockedCount < totalCount;
+    colorInput.setAttribute('aria-checked', colorInput.indeterminate ? 'mixed' : String(colorInput.checked));
+
+    const label = this.querySelector(`label[for="${colorInput.id}"]`);
+    if (label) {
+      label.classList.toggle('is-indeterminate', colorInput.indeterminate);
+    }
+  }
+
+  /**
+   * Synchronizes all color lock checkboxes with their corresponding per-step locks.
+   */
+  updateAllColorLockStates() {
+    this.querySelectorAll('input[name="lock-color"]').forEach((input) => {
+      this.updateColorLockState(input.value);
+    });
   }
 
   /**
@@ -93,7 +150,7 @@ class ColorStepsExamples extends HTMLElement {
 
     colorPreview.classList.add('color-step-preview');
     const colorLabel = document.createElement('label');
-    colorLabel.innerHTML = `<svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg> ${color}`;
+    colorLabel.innerHTML = `${color} <svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg>`;
     colorLabel.setAttribute('for', `lock-${color.toLowerCase()}`);
     const colorCheckbox = document.createElement('input');
     colorCheckbox.type = 'checkbox';
@@ -112,13 +169,30 @@ class ColorStepsExamples extends HTMLElement {
     // Add Color Step Examples
     for (let i = 1; i < 11; i++) {
       const step = document.createElement('div');
+      const stepValue = i * 10;
+      const lockId = `lock-step-${color.toLowerCase()}-${stepValue}`;
       if (i < 6) {
         step.style.color = `var(--sample-black)`;
       } else {
         step.style.color = `var(--sample-white)`;
       }
+      step.classList.add('color-step-preview');
       step.style.backgroundColor = `var(--sample-${color.toLowerCase()}-${i * 10})`;
-      step.innerText = `${i * 10}`;
+      const stepCheckbox = document.createElement('input');
+      stepCheckbox.type = 'checkbox';
+      stepCheckbox.id = lockId;
+      stepCheckbox.name = 'lock-step';
+      stepCheckbox.value = `${color.toLowerCase()}:${stepValue}`;
+      stepCheckbox.ariaLabel = `Lock ${color} ${stepValue}`;
+      stepCheckbox.classList.add('palette-lock-checkbox');
+      stepCheckbox.classList.add('corn-assistive-text');
+
+      const stepLabel = document.createElement('label');
+      stepLabel.setAttribute('for', lockId);
+      stepLabel.innerHTML = ` ${stepValue} <svg class="corn-icon"><use href="${bootstrapIconsSprite}#lock"></use></svg>`;
+
+      step.appendChild(stepCheckbox);
+      step.appendChild(stepLabel);
       row.appendChild(step);
     }
   }
@@ -221,7 +295,7 @@ class ColorStepsExamples extends HTMLElement {
               <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="10" id="filter-steps-10" name="filter-step" checked/>
                 <label for="filter-steps-10">100</label>
-              </div>                  
+              </div>
             </fieldset>
           </div>
         </details>
@@ -234,6 +308,7 @@ class ColorStepsExamples extends HTMLElement {
   updateFormValue() {
     const lockedColors = Array.from(this.querySelectorAll('input[name="lock-color"]:checked')).map((checkbox) => checkbox.value);
     const lockedSteps = Array.from(this.querySelectorAll('input[name="lock-step"]:checked')).map((checkbox) => checkbox.value);
+    this.internals.setFormValue(JSON.stringify({ lockedColors, lockedSteps }));
   }
 
   /**
@@ -252,13 +327,18 @@ class ColorStepsExamples extends HTMLElement {
   set value(val) {
     if (val && typeof val === 'object') {
       const { lockedColors = [], lockedSteps = [] } = val;
-      this.querySelectorAll('input[name="lock-color"]').forEach((checkbox) => {
-        checkbox.checked = lockedColors.includes(checkbox.value);
-      });
       this.querySelectorAll('input[name="lock-step"]').forEach((checkbox) => {
         checkbox.checked = lockedSteps.includes(checkbox.value);
       });
+
+      // Backward compatibility: if only color locks are present, lock all steps for those colors.
+      this.querySelectorAll('input[name="lock-color"]').forEach((checkbox) => {
+        if (lockedColors.includes(checkbox.value)) {
+          this.setColorStepsLocked(checkbox.value, true);
+        }
+      });
     }
+    this.updateAllColorLockStates();
     this.updateFormValue();
   }
 
@@ -291,6 +371,8 @@ class ColorStepsExamples extends HTMLElement {
       this.generateColorRow(color);
     });
     this.addEventListeners();
+    this.updateAllColorLockStates();
+    this.updateFormValue();
   }
   /**
    * @description Cleans up event listeners when the component is disconnected from the DOM.
