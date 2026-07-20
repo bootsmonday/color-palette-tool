@@ -267,7 +267,17 @@ class PaletteForm extends HTMLElement {
     if (!preview) return;
 
     const lockedColors = (this.workingPalette?.steps || []).filter((step) => step.locked).map((step) => step.colorName.toLowerCase());
-    preview.value = { lockedColors, lockedSteps: [] };
+    const lockedSteps = [];
+
+    (this.workingPalette?.steps || []).forEach((step) => {
+      step.colors?.forEach((color, index) => {
+        if (color?.locked) {
+          lockedSteps.push(`${step.colorName.toLowerCase()}:${(index + 1) * 10}`);
+        }
+      });
+    });
+
+    preview.value = { lockedColors, lockedSteps };
   }
 
   /**
@@ -388,6 +398,13 @@ class PaletteForm extends HTMLElement {
     const { lockedColors, lockedSteps } = this.querySelector('color-steps-examples').value || {};
 
     const lockedColorSet = new Set(lockedColors || []);
+    const lockedStepSet = new Set((lockedSteps || []).map((value) => String(value)));
+    const existingStepsByColor = new Map((this.workingPalette.steps || []).map((step) => [step.colorName, step]));
+    const isStepLocked = (colorName, stepName) => {
+      const scopedKey = `${colorName.toLowerCase()}:${stepName}`;
+      // Keep backward compatibility for prior global step locks (e.g. "10").
+      return lockedStepSet.has(scopedKey) || lockedStepSet.has(stepName);
+    };
 
     let filteredSteps = this.workingPalette.steps.filter((step) => {
       if (lockedColorSet.has(step.colorName.toLowerCase())) {
@@ -404,6 +421,33 @@ class PaletteForm extends HTMLElement {
     });
 
     sampleSteps.push(buildColorSteps('Gray', this.userColor.colorSpace, currentHue, 0));
+
+    sampleSteps = sampleSteps.map((step) => {
+      const existingStep = existingStepsByColor.get(step.colorName);
+      step.colors = step.colors.map((color, index) => {
+        const stepName = String((index + 1) * 10);
+        const shouldLockStep = isStepLocked(step.colorName, stepName);
+        const previousColor = existingStep?.colors?.[index];
+
+        if (shouldLockStep && previousColor) {
+          previousColor.locked = true;
+          return previousColor;
+        }
+
+        color.locked = shouldLockStep;
+        return color;
+      });
+
+      return step;
+    });
+
+    filteredSteps.forEach((step) => {
+      step.colors = step.colors.map((color, index) => {
+        color.locked = isStepLocked(step.colorName, String((index + 1) * 10));
+        return color;
+      });
+    });
+
     sampleSteps = sampleSteps.filter((step) => !lockedColorSet.has(step.colorName.toLowerCase()));
     sampleSteps.push(...filteredSteps);
     sampleSteps.sort((a, b) => {
@@ -462,6 +506,10 @@ class PaletteForm extends HTMLElement {
       return false;
     }
     if (e.type === 'change') {
+      if (e.target.name === 'lock-color' || e.target.name === 'lock-step') {
+        this.updateColorPreview();
+        store.setState({ workingPalette: this.workingPalette });
+      }
     }
     if (e.type === 'input') {
       if (e.target.name === 'palette-name') {
