@@ -335,46 +335,70 @@ class PaletteForm extends HTMLElement {
   }
 
   /**
-   *
-   * @param {number} hue - The hue value to find at the same relative distance.
-   * @returns {Object} An object containing the new hue values for each color category, along with the center and percentage offset.
-   * This method calculates the new hue values for each color category based on the provided hue value. It determines the source category and its center, calculates the offset and percentage relative to the source category's width, and then applies this percentage to each target category's width to find the new hue values. The results are returned as an object containing the new hue values, centers, and percentage offsets for each color category. This allows for consistent color adjustments across different categories while maintaining relative distances in hue.
+   * Calculates equivalent hues for all categories while preserving the relative position
+   * within the source category's hue range. Handles wrapping ranges (like Red) and edge cases
+   * (hue = 0, 350, 360) correctly.
    */
   getHueAtSameRelativeDistance(hue) {
+    // Normalize hue to [0, 360)
+    hue = ((hue % 360) + 360) % 360;
+
     const categoryRanges = this.colorSpace === 'hsluv' ? categoryRangesHSLUV : categoryRangesOKHSL;
+
     // Helper to get center (handles wrapping ranges)
     const getCenter = ([start, end]) => {
       if (start < end) return (start + end) / 2;
-      // Wrapping range (like Red)
       return ((start + end + 360) / 2) % 360;
     };
 
-    // Find source category
-    let sourceRange = Object.entries(categoryRanges).find(([_, range]) => {
+    // Find source category and range
+    const sourceEntry = Object.entries(categoryRanges).find(([_, range]) => {
       const [start, end] = range;
       if (start < end) return hue >= start && hue <= end;
-      return hue >= start || hue <= end;
-    })?.[1];
+      return hue >= start || hue <= end; // wrapping range (Red)
+    });
 
-    const sourceCenter = getCenter(sourceRange);
-    const sourceWidth = sourceRange[0] < sourceRange[1] ? sourceRange[1] - sourceRange[0] : 360 - sourceRange[0] + sourceRange[1];
-    const offset = hue - sourceCenter;
-    const halfWidth = sourceWidth / 2;
-    const percentage = offset / halfWidth;
+    if (!sourceEntry) {
+      console.warn('Could not determine source category for hue:', hue);
+      // fallback
+      return this.getDefaultHueMapping(hue);
+    }
+
+    const [sourceName, sourceRange] = sourceEntry;
+    const [rangeStart, rangeEnd] = sourceRange;
+
+    // Calculate normalized position (0.0 to 1.0) within the source range
+    let normalizedPos;
+    if (rangeStart < rangeEnd) {
+      // Normal range
+      normalizedPos = (hue - rangeStart) / (rangeEnd - rangeStart);
+    } else {
+      // Wrapping range (e.g. Red: 350 → 45)
+      const width = 360 - rangeStart + rangeEnd;
+      normalizedPos = (hue >= rangeStart ? hue - rangeStart : hue + (360 - rangeStart)) / width;
+    }
 
     const results = {};
 
     Object.entries(categoryRanges).forEach(([name, range]) => {
-      const center = getCenter(range);
-      const width = range[0] < range[1] ? range[1] - range[0] : 360 - range[0] + range[1];
+      const [start, end] = range;
+      let newHue;
 
-      const newOffset = percentage * (width / 2);
-      let newHue = (center + newOffset + 360) % 360; // normalize
+      if (start < end) {
+        // Normal range
+        newHue = start + normalizedPos * (end - start);
+      } else {
+        // Wrapping range
+        const width = 360 - start + end;
+        newHue = (start + normalizedPos * width) % 360;
+      }
+
+      const center = getCenter(range);
 
       results[name] = {
         center: Math.round(center * 100) / 100,
         newHue: Math.round(newHue * 100) / 100,
-        percentage: Math.round(percentage * 10000) / 100, // e.g. 33.33
+        percentage: Math.round(normalizedPos * 10000) / 100, // 0 to 100 for clarity
       };
     });
 
@@ -398,6 +422,12 @@ class PaletteForm extends HTMLElement {
     const { lockedColors, lockedSteps } = this.querySelector('color-steps-examples').value || {};
 
     const lockedColorSet = new Set(lockedColors || []);
+    const lockedStepSet = new Set((lockedSteps || []).map((value) => String(value)));
+    const existingStepsByColor = new Map((this.workingPalette.steps || []).map((step) => [step.colorName, step]));
+    const isStepLocked = (colorName, stepName) => {
+      const scopedKey = `${colorName.toLowerCase()}:${stepName}`;
+      return lockedStepSet.has(scopedKey) || lockedStepSet.has(stepName);
+    };
 
     let filteredSteps = this.workingPalette.steps.filter((step) => {
       if (lockedColorSet.has(step.colorName.toLowerCase())) {
@@ -414,6 +444,33 @@ class PaletteForm extends HTMLElement {
     });
 
     sampleSteps.push(buildColorSteps('Gray', this.userColor.colorSpace, currentHue, 0));
+
+    sampleSteps = sampleSteps.map((step) => {
+      const existingStep = existingStepsByColor.get(step.colorName);
+      step.colors = step.colors.map((color, index) => {
+        const stepName = String((index + 1) * 10);
+        const shouldLockStep = isStepLocked(step.colorName, stepName);
+        const previousColor = existingStep?.colors?.[index];
+
+        if (shouldLockStep && previousColor) {
+          previousColor.locked = true;
+          return previousColor;
+        }
+
+        color.locked = shouldLockStep;
+        return color;
+      });
+
+      return step;
+    });
+
+    filteredSteps.forEach((step) => {
+      step.colors = step.colors.map((color, index) => {
+        color.locked = isStepLocked(step.colorName, String((index + 1) * 10));
+        return color;
+      });
+    });
+
     sampleSteps = sampleSteps.filter((step) => !lockedColorSet.has(step.colorName.toLowerCase()));
     sampleSteps.push(...filteredSteps);
     sampleSteps.sort((a, b) => {
