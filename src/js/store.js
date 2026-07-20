@@ -19,7 +19,7 @@ export function createEmptyColor(colorSpace = 'okhsl') {
     id: createId('color'),
     colorSpace,
     hue: 180,
-    saturation: 50,
+    saturation: 80,
     lightness: 47.5,
     locked: false,
   };
@@ -41,7 +41,7 @@ function normalizeColor(value, fallbackColorSpace = 'okhsl') {
     id: source.id || createId('color'),
     colorSpace,
     hue: +toNumber(source.hue, 180).toFixed(2),
-    saturation: +toNumber(source.saturation, 50).toFixed(2),
+    saturation: +toNumber(source.saturation, 80).toFixed(2),
     lightness: +toNumber(source.lightness, 47.5).toFixed(2),
     locked: Boolean(source.locked),
   };
