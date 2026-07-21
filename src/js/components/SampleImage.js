@@ -42,7 +42,7 @@ class SampleImage extends HTMLElement {
    */
   updateColorVariables() {
     if (!this.paletteSteps || !Array.isArray(this.paletteSteps)) return;
-    console.log('Updating color variables with palette steps:', this.paletteSteps);
+
     this.setColorVariables(this.paletteSteps);
   }
 
@@ -164,7 +164,6 @@ class SampleImage extends HTMLElement {
       step.colors.forEach((color, colorIndex) => {
         const colorVariableName = `${cssVariableName}-${(colorIndex + 1) * 10}`;
         const colorModel = new ColorModel(color);
-        console.log(`Setting CSS variable ${colorVariableName} to ${colorModel.hex}`, colorModel);
         this.style.setProperty(colorVariableName, colorModel.hex);
       });
     });

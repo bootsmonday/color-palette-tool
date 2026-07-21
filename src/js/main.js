@@ -10,5 +10,6 @@ import './components/ColorTokens.js';
 import './components/PaletteForm.js';
 import './pages/palette.js';
 import './pages/home-page.js';
+import './pages/about.js';
 
 // The app starts automatically when <app-root> is parsed

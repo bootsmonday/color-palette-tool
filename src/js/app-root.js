@@ -15,9 +15,8 @@ class AppRoot extends HTMLElement {
     super();
     this.unsubscribe = null;
     router.register('/', 'home-page', 'home');
-    router.register('/counter', 'counter-page');
     router.register('/new-palette', 'palette-page', 'new');
-    router.register('/todos', 'todo-page');
+    router.register('/about', 'about-page');
     router.register('/edit-palette', 'palette-page', 'edit');
     router.init();
   }
@@ -85,10 +84,7 @@ class AppRoot extends HTMLElement {
         <corn-button-bar class="corn-button-bar">
           <a href="${router.toAppPath('/')}" class="corn-button corn-button--sm" data-link data-route="/">Home</a>
           <a href="${router.toAppPath('/new-palette')}" class="corn-button corn-button--sm" data-link data-route="/new-palette">New Palette</a>
-          <div class="corn-popover--anchor corn-button-bar--more">
-            <button class="corn-button corn-button--sm corn-pop" aria-controls="button-bar-popover" aria-label="more items">&middot;&middot;&middot;</button>
-            <corn-popover position="bottom" id="button-bar-popover" class="corn-popover"></corn-popover>
-          </div>
+          <a href="${router.toAppPath('/about')}" class="corn-button corn-button--sm" data-link data-route="/about">About</a>
         </corn-button-bar>
       </nav>
     </header>

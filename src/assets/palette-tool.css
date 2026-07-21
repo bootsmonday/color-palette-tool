@@ -252,6 +252,20 @@ hex-preview {
     opacity: 0.5;
   }
 }
+.about-example-1 {
+  background-color: var(--cc-green-90);
+  color: var(--cc-green-40);
+}
+
+.about-example-2 {
+  background-color: var(--cc-orange-90);
+  color: var(--cc-blue-40);
+}
+
+.about-example-3 {
+  background-color: var(--cc-yellow-50);
+  color: var(--cc-green-90);
+}
 
 .corn-copied.corn-button {
       background-color: var(--cc-green-40);
