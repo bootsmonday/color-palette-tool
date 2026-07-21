@@ -1,27 +1,17 @@
-import { store } from '../store.js';
 import { router } from '../router.js';
 
 /**
- * The HomePage class represents the home page of the Color Palette Tool application. It is a custom HTML element that displays a list of saved color palettes and provides links to create new palettes or edit existing ones. The component retrieves the palette collection from the application's state store and dynamically generates HTML elements to display each palette's name and a sample image based on its color steps. The sample images are rendered using the SampleImage custom element, which takes the palette steps as an attribute. The HomePage component also includes introductory text and instructions for users on how to use the tool.
+ * The AboutPage class renders the About page for the Color Palette Tool application.
+ * It explains the accessibility rationale behind the tool and includes guidance for
+ * integrating exported palettes into design and development workflows.
  */
 class AboutPage extends HTMLElement {
   /**
-   * This method is called when the HomePage element is added to the DOM. It renders the initial HTML structure of the home page, including headings, introductory text, and a link to create a new palette. It then iterates over the palette collection from the application's state store and creates a div element for each palette, displaying its name and a sample image. The sample image is generated using the SampleImage custom element, which receives the palette steps as an attribute. This setup allows users to view their saved palettes and navigate to edit them.
+   * Called when the AboutPage element is added to the DOM. It renders the page
+   * content and wires up internal data-link anchors to client-side router navigation.
    */
   connectedCallback() {
     this.render();
-
-    // store.getState().paletteCollection.forEach((palette, index) => {
-    //   const paletteElement = document.createElement('div');
-    //   paletteElement.classList.add('corn-palette');
-    //   paletteElement.innerHTML = `
-    //     <h3 ${index !== 0 ? 'style="margin-top: var(--cc-size-4)"' : ''}>${palette.name}</h3>
-    //     <div class="palette-sample-image">
-    //       <a href="${router.toAppPath(`/edit-palette/${palette.id}`)}" class="corn-link" data-link data-route="/edit-palette/${palette.id}"><sample-image palette-steps='${encodeURIComponent(JSON.stringify(palette.steps))}'></sample-image></a>
-    //     </div>
-    //   `;
-    //   this.querySelector('.corn-panel').appendChild(paletteElement);
-    // });
 
     this.querySelectorAll('a[data-link]').forEach((link) => {
       link.addEventListener('click', (e) => {
@@ -32,7 +22,8 @@ class AboutPage extends HTMLElement {
   }
 
   /**
-   * This method renders the HTML structure of the HomePage component. It sets the innerHTML of the component to include headings, introductory text, and a link to create a new palette. It also checks if there are any saved palettes in the application's state store and displays a message if there are none. The method is called when the component is connected to the DOM, ensuring that the home page is properly displayed to users when they visit the application.
+   * Renders the About page content, including accessibility background, contrast
+   * examples, and integration guidance for supported export formats.
    */
   render() {
     this.innerHTML = `
@@ -51,7 +42,7 @@ class AboutPage extends HTMLElement {
           <h2>Easier Accessibility Checks</h2>
           <p>This tool simplifies the process of checking color accessibility.</p>
           <p>As long as the colors are in a color space that is perceptually uniform, the contrast ratio can be calculated by using the lightness values of the colors. This allows for quick and easy accessibility checks without the need for complex tools or calculations.</p>
-          <p>A designer can easily check the accessiblity of their colors by using simple math.</p>
+          <p>A designer can easily check the accessibility of their colors by using simple math.</p>
           <p>As long as a color is five or more steps away from another color in the palette, it will pass accessibility checks for normal text. This makes it easy to create accessible color palettes without needing to rely on external tools or resources.</p>
           <p>You could use blue-70 text on a yellow-20 background or a red-20 background with a green-70 text color. As long as the colors are five or more steps away from each other in the palette, they will pass accessibility checks for normal text.</p>
 
@@ -89,10 +80,10 @@ class AboutPage extends HTMLElement {
 
 
           <h2>Integration with Design Tools</h2>
-          <p>Currently this tool supports three color token prefix variable variations, corncob, tailwind and un prefixed.</p>
+          <p>Currently this tool supports three color token prefix variable variations, corncob, tailwind and unprefixed.</p>
           <h3>Figma</h3>
           <p>You can export your palettes in Figma .json format for use in your design projects. This allows you to easily integrate your color palettes into your design workflow.</p>
-          <p>Open your Figma file, got to your variables, choose a collection, and click the "Import" button. Then select the .json file you exported from this tool. Your colors will be added to your Figma variables collection.</p>
+          <p>Open your Figma file, go to your variables, choose a collection, and click the "Import" button. Then select the .json file you exported from this tool. Your colors will be added to your Figma variables collection.</p>
           <h3>CSS</h3>
           <p>You can export your palettes as .css files for use in web development projects. This provides a convenient way to apply your color palettes directly to your website's stylesheets.</p>
           <h3>Tailwind</h3>
