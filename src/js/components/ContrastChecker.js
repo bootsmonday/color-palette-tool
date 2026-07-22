@@ -1,10 +1,9 @@
-import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 import store from '../store.js';
 import { ColorModel } from '../models/ColorModel.js';
 
 /**
- * ColorStepsExamples is a custom element that displays a grid of color steps for various colors.
- * It allows users to filter colors and steps, and lock specific colors or steps.
+ * ContrastChecker is a custom element that lets users compare foreground and background
+ * color steps and review their WCAG 2.1 contrast ratio.
  */
 class ContrastChecker extends HTMLElement {
   /**
@@ -28,72 +27,57 @@ class ContrastChecker extends HTMLElement {
   handleEvent(event) {
     if (event.type === 'change') {
       const target = event.target;
+      if (!(target instanceof HTMLInputElement) || !['contrast-foreground', 'contrast-background'].includes(target.name)) {
+        return;
+      }
+
       const workingPalette = store.getState().workingPalette;
-      //      console.log('workingPalette:', workingPalette);
-      console.log('Change event detected:', target.name, target.value, target.checked);
+      const [colorName, rawStepValue] = String(target.value || '').split(':');
+      const stepValue = Number(rawStepValue);
+      const colorCategory = workingPalette?.steps?.find((step) => step.colorName.toLowerCase() === colorName);
+      const colorStep = colorCategory?.colors?.[stepValue];
 
-      const colorName = target.value.split(':')[0];
-      const stepValue = target.value.split(':')[1];
-      const colorCategory = workingPalette.steps.find((step) => step.colorName.toLowerCase() === colorName);
-      const colorStep = colorCategory.colors[stepValue];
+      if (!colorName || !Number.isInteger(stepValue) || !colorCategory || !colorStep) {
+        return;
+      }
 
-      console.log('Color Step:', colorStep);
+      const displayStep = (stepValue + 1) * 10;
+      const contrastForeground = this.querySelector('#contrast-foreground');
+      const contrastBackground = this.querySelector('#contrast-background');
+      const contrastSample = this.querySelector('#contrast-sample');
+      const contrastMath = this.querySelector('#contrast-math');
+      const contrastRatioOutput = this.querySelector('#contrast-ratio');
 
       if (target.name === 'contrast-foreground') {
         this.contrastColors.foreground = new ColorModel(colorStep);
         this.contrastColors.foregroundName = colorCategory.colorName;
-        this.contrastColors.foregroundStep = `${(Number(stepValue) + 1) * 10}`;
-        this.contrastColors.foregroundStyle = `var(--sample-${colorName.toLowerCase()}-${(Number(stepValue) + 1) * 10})`;
-        document.getElementById('contrast-foreground').innerText = `${this.contrastColors.foregroundName} ${this.contrastColors.foregroundStep}`;
-        // document.getElementById('contrast-sample').style.color = `var(--sample-${colorName.toLowerCase()}-${(Number(stepValue) + 1) * 10})`;
+        this.contrastColors.foregroundStep = displayStep;
+        this.contrastColors.foregroundStyle = `var(--sample-${colorName.toLowerCase()}-${displayStep})`;
+        if (contrastForeground) {
+          contrastForeground.innerText = `${this.contrastColors.foregroundName} ${this.contrastColors.foregroundStep}`;
+        }
       }
       if (target.name === 'contrast-background') {
         this.contrastColors.background = new ColorModel(colorStep);
         this.contrastColors.backgroundName = colorCategory.colorName;
-        this.contrastColors.backgroundStep = `${(Number(stepValue) + 1) * 10}`;
-        this.contrastColors.backgroundStyle = `var(--sample-${colorName.toLowerCase()}-${(Number(stepValue) + 1) * 10})`;
-        document.getElementById('contrast-background').innerText = `${this.contrastColors.backgroundName} ${this.contrastColors.backgroundStep}`;
-        //document.getElementById('contrast-sample').style.backgroundColor = `var(--sample-${colorName.toLowerCase()}-${(Number(stepValue) + 1) * 10})`;
+        this.contrastColors.backgroundStep = displayStep;
+        this.contrastColors.backgroundStyle = `var(--sample-${colorName.toLowerCase()}-${displayStep})`;
+        if (contrastBackground) {
+          contrastBackground.innerText = `${this.contrastColors.backgroundName} ${this.contrastColors.backgroundStep}`;
+        }
       }
-      if (this.contrastColors.foreground && this.contrastColors.background) {
-        document.getElementById('contrast-sample').style.color = this.contrastColors.foregroundStyle;
-        document.getElementById('contrast-sample').style.backgroundColor = this.contrastColors.backgroundStyle;
+
+      if (this.contrastColors.foreground && this.contrastColors.background && contrastSample && contrastMath && contrastRatioOutput) {
+        contrastSample.style.color = this.contrastColors.foregroundStyle;
+        contrastSample.style.backgroundColor = this.contrastColors.backgroundStyle;
         if (this.contrastColors.foregroundStep > this.contrastColors.backgroundStep) {
-          document.getElementById('contrast-math').innerText = `${this.contrastColors.foregroundStep} - ${this.contrastColors.backgroundStep} = ${Number(this.contrastColors.foregroundStep) - Number(this.contrastColors.backgroundStep)}`;
+          contrastMath.innerText = `${this.contrastColors.foregroundStep} - ${this.contrastColors.backgroundStep} = ${this.contrastColors.foregroundStep - this.contrastColors.backgroundStep}`;
         } else {
-          document.getElementById('contrast-math').innerText = `${this.contrastColors.backgroundStep} - ${this.contrastColors.foregroundStep} = ${Number(this.contrastColors.backgroundStep) - Number(this.contrastColors.foregroundStep)}`;
+          contrastMath.innerText = `${this.contrastColors.backgroundStep} - ${this.contrastColors.foregroundStep} = ${this.contrastColors.backgroundStep - this.contrastColors.foregroundStep}`;
         }
         const contrastRatio = this.contrastColors.foreground.getColor().contrast(this.contrastColors.background.getColor(), 'WCAG21');
-        // document.getElementById('contrast-ratio').innerText = `Contrast Ratio: ${contrastRatio.toFixed(2)}`;
-        // document.getElementById('contrast-text-normal').innerText = contrastRatio >= 4.5 ? 'Pass' : 'Fail';
-        // document.getElementById('contrast-text-large').innerText = contrastRatio >= 3 ? 'Pass' : 'Fail';
-
-        document.getElementById('contrast-ratio').innerText = `Contrast Ratio: ${contrastRatio.toFixed(2)} - ${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)`;
-        // document.getElementById('contrast-math').innerText = `${this.contrastColors.foregroundStep} - ${this.contrastColors.backgroundStep} = ${Number(this.contrastColors.foregroundStep) - Number(this.contrastColors.backgroundStep)}`;
-        // document.getElementById('contrast-foreground').innerText = `${this.contrastColors.foregroundName}-${this.contrastColors.foregroundStep}`;
-        // document.getElementById('contrast-background').innerText = `${this.contrastColors.backgroundName}-${this.contrastColors.backgroundStep}`;
-        // const contrastRatio = this.calculateContrastRatio(this.contrastColors.foreground, this.contrastColors.background);
-        //const contrastRatio = this.calculateContrastRatio(this.contrastColors.foreground, this.contrastColors.background);
-        // console.log('Contrast Ratio:', contrastRatio);
-        // document.getElementById('contrast-text-normal').innerText = contrastRatio >= 4.5 ? 'Pass' : 'Fail';
-        // document.getElementById('contrast-text-large').innerText = contrastRatio >= 3 ? 'Pass' : 'Fail';
+        contrastRatioOutput.innerText = `Contrast Ratio: ${contrastRatio.toFixed(2)} - ${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)`;
       }
-
-      // workingPalette.
-      // if (target.name === 'contrast-forground') {
-      //   store.setState({ contrastForground: { color: colorName, step: stepValue } });
-      // }
-
-      // document.querySelectorAll('.color-step-preview').forEach((step) => {
-      //   const checkbox = step.querySelector('input[type="checkbox"]');
-      //   if (checkbox) {
-      //     if (target.name === 'filter-color') {
-      //       step.style.display = target.checked && checkbox.value.split(':')[0] !== target.value ? 'none' : '';
-      //     } else if (target.name === 'filter-step') {
-      //       step.style.display = target.checked && checkbox.value.split(':')[1] !== target.value ? 'none' : '';
-      //     }
-      //   }
-      // });
     }
   }
 
@@ -136,7 +120,7 @@ class ContrastChecker extends HTMLElement {
       foregroundStep.id = `foreground-${contrastId}`;
       foregroundStep.name = 'contrast-foreground';
       foregroundStep.value = `${color.toLowerCase()}:${stepValue}`;
-      foregroundStep.ariaLabel = `foreground contrast check for ${color} ${stepValue}`;
+      foregroundStep.ariaLabel = `foreground contrast check for ${color} ${(i + 1) * 10}`;
       foregroundStep.classList.add('corn-assistive-text');
 
       const foregroundLabel = document.createElement('label');
@@ -152,7 +136,7 @@ class ContrastChecker extends HTMLElement {
       backgroundStep.id = `background-${contrastId}`;
       backgroundStep.name = 'contrast-background';
       backgroundStep.value = `${color.toLowerCase()}:${stepValue}`;
-      backgroundStep.ariaLabel = `background contrast check for ${color} ${stepValue}`;
+      backgroundStep.ariaLabel = `background contrast check for ${color} ${(i + 1) * 10}`;
       backgroundStep.classList.add('corn-assistive-text');
 
       const backgroundLabel = document.createElement('label');

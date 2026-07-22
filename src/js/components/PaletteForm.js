@@ -672,7 +672,6 @@ class PaletteForm extends HTMLElement {
           <div class="corn-row">
             <div class="corn-col-12">
               <div class="corn-header-bar">
-              
               <h2 class="corn-heading">Palette</h2>
               <corn-button-bar class="corn-button-bar corn-button-bar--toolbar">
                 <div class="corn-popover--anchor">
