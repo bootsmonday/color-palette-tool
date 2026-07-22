@@ -82,7 +82,7 @@ class ContrastChecker extends HTMLElement {
   }
 
   /**
-   * @description Creates a row in the color steps grid for the specified color, including a color preview, label, and contrast selection controls. It is displayed as a column in the grid layout.
+   * @description Generates a row of color steps for a given color, including radio buttons for selecting foreground and background colors.
    * @param {string} color - The name of the color for which to generate the row.
    */
   generateColorRow(color) {
@@ -152,6 +152,9 @@ class ContrastChecker extends HTMLElement {
     this.innerHTML = `<h2 id="contrast-checker">WCAG 2.1 Contrast Checker</h2>`;
   }
 
+  /**
+   * @description Renders the contrast results section, including a sample preview and contrast ratio output, allowing users to see the results of their selected foreground and background colors.
+   */
   renderContrastResults() {
     const resultsContainer = document.createElement('div');
     resultsContainer.innerHTML = `<div class="corn-row">
@@ -185,7 +188,20 @@ class ContrastChecker extends HTMLElement {
     this.container = document.createElement('div');
     this.container.classList.add('color-contrast-examples', 'corn-margin-bottom');
     this.appendChild(this.container);
+    const row = document.createElement('div');
+    row.classList.add('color-contrast-row');
+    this.container.appendChild(row);
+    const color = document.createElement('div');
+    color.classList.add('color-step-preview');
+    color.innerHTML = `Color`;
+    row.appendChild(color);
 
+    for (let i = 0; i < 10; i++) {
+      const step = document.createElement('div');
+      step.classList.add('color-step-preview', 'corn-col-1');
+      step.innerHTML = `${(i + 1) * 10}`;
+      row.appendChild(step);
+    }
     this.colorSteps.forEach((color) => {
       this.generateColorRow(color);
     });
