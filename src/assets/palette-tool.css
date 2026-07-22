@@ -45,6 +45,51 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
+.color-contrast-examples {
+  display: grid;
+  gap: var(--cc-size--5);
+}
+
+.contrast-results {
+  .corn-col-6 {
+    display: flex;
+    flex-direction: column;
+  }
+  .corn-col-6 > .corn-panel {
+    flex: 1 1 auto;
+  }
+}
+
+.color-contrast-row {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: var(--cc-size--5);
+  .color-step-preview {
+    border-radius: var(--cc-border--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 2rem;
+    gap: var(--cc-size--5);
+    label {
+      background-color: rgb(from var(--cc-gray-90) r g b / 10.2%);
+      /* display: flex;
+      align-items: center;
+      justify-content: center; */
+      /* flex: 1;
+      height: 2rem; */
+    }
+    input[name='contrast-foreground']:checked + label,
+    input[name='contrast-background']:checked + label {
+      box-shadow: inset 0 0 0 2px var(--cc-white), 0 0 0 1px var(--cc-gray-90);
+    }
+    &:first-of-type {
+      padding-left: var(--cc-size--4);
+      justify-content: flex-start;
+    }
+  }
+}
 .corn-slider input[type=range] {
   --cc-slider--thumb--background--border:transparent;
   --cc-slider--thumb--background: transparent;
@@ -78,6 +123,7 @@ h1, h2, h3, h4, h5, h6 {
   top: var(--cc-size--4);
   right: var(--cc-size--5);
 }
+
 input[name="color-lock"]:checked + .lock-icon {
   display: block;
 }
