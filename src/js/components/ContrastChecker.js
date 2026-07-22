@@ -91,19 +91,14 @@ class ContrastChecker extends HTMLElement {
     const row = document.createElement('div');
     row.classList.add('color-contrast-row');
     this.container.appendChild(row);
-    //Add Color Label
     const colorPreview = document.createElement('div');
 
     colorPreview.classList.add('color-step-preview');
     const colorLabel = document.createElement('div');
     colorLabel.innerHTML = `${color}`;
-    // colorPreview.appendChild(colorCheckbox);
-
     colorPreview.appendChild(colorLabel);
-    // colorPreview.innerText = color;
     colorPreview.style.boxShadow = `inset 0 0 0 2px var(--sample-${color.toLowerCase()}-50)`;
     row.appendChild(colorPreview);
-    // Add Color Step Examples
     for (let i = 0; i < 10; i++) {
       const step = document.createElement('div');
       const stepValue = i;
@@ -177,10 +172,6 @@ class ContrastChecker extends HTMLElement {
         </div>
       </div>
     </div>`;
-    //     <div>Normal Text: <span id="contrast-text-normal">Normal</span></div>
-    // <div>Large Text: <span id="contrast-text-large">Normal</span></div>
-    // <div>Large text is defined as 14 point (typically 18.66px) and bold or larger, or 18 point (typically 24px) or larger</div>
-    //
 
     resultsContainer.classList.add('contrast-results');
     this.appendChild(resultsContainer);
@@ -204,8 +195,6 @@ class ContrastChecker extends HTMLElement {
 
     this.renderContrastResults();
     this.addEventListeners();
-    // this.updateAllColorLockStates();
-    // this.updateFormValue();
   }
   /**
    * @description Cleans up event listeners when the component is disconnected from the DOM.
