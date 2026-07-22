@@ -51,7 +51,8 @@ class PalettePage extends HTMLElement {
           ${pageType === 'edit' ? `<h1 id="page-title">Edit ${paletteName}</h1>` : `<h1 id="page-title">Create Palette</h1>`}
           ${
             pageType === 'edit'
-              ? `              <div class="corn-margin-bottom"><a href="#template-samples">Template Samples</a> | <a href="#contrast-checker">Contrast Checker</a> | <a href="#tokens">Tokens</a>
+              ? `<div class="corn-margin-bottom">
+                <a href="#template-samples">Template Samples</a> | <a href="#contrast-checker">Contrast Checker</a> | <a href="#tokens">Tokens</a>
               </div>`
               : ``
           }

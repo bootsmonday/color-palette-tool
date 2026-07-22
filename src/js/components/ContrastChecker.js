@@ -82,10 +82,8 @@ class ContrastChecker extends HTMLElement {
   }
 
   /**
+   * @description Creates a row in the color steps grid for the specified color, including a color preview, label, and contrast selection controls. It is displayed as a column in the grid layout.
    * @param {string} color - The name of the color for which to generate the row.
-   * This function creates a row in the color steps grid for the specified color,
-   * including a color preview, label, and checkboxes for locking the color.
-   * It is displayed as a column in the grid layout.
    */
   generateColorRow(color) {
     const row = document.createElement('div');
@@ -117,14 +115,14 @@ class ContrastChecker extends HTMLElement {
       foregroundStep.id = `foreground-${contrastId}`;
       foregroundStep.name = 'contrast-foreground';
       foregroundStep.value = `${color.toLowerCase()}:${stepValue}`;
-      foregroundStep.setAttribute('aria-label', `foreground contrast check for ${color} ${(i + 1) * 10}`);
+      foregroundStep.setAttribute('aria-label', `Select ${color} ${(i + 1) * 10} as foreground color`);
       foregroundStep.classList.add('corn-assistive-text');
 
       const foregroundLabel = document.createElement('label');
       foregroundLabel.classList.add('corn-button', 'corn-button--icon', 'corn-button--xs');
       foregroundLabel.style.color = stepLabelColor;
       foregroundLabel.setAttribute('for', `foreground-${contrastId}`);
-      foregroundLabel.innerHTML = `F`; //` ${stepValue}`;
+      foregroundLabel.innerHTML = `F`;
       step.appendChild(foregroundStep);
       step.appendChild(foregroundLabel);
 
@@ -133,14 +131,14 @@ class ContrastChecker extends HTMLElement {
       backgroundStep.id = `background-${contrastId}`;
       backgroundStep.name = 'contrast-background';
       backgroundStep.value = `${color.toLowerCase()}:${stepValue}`;
-      backgroundStep.setAttribute('aria-label', `background contrast check for ${color} ${(i + 1) * 10}`);
+      backgroundStep.setAttribute('aria-label', `Select ${color} ${(i + 1) * 10} as background color`);
       backgroundStep.classList.add('corn-assistive-text');
 
       const backgroundLabel = document.createElement('label');
       backgroundLabel.classList.add('corn-button', 'corn-button--icon', 'corn-button--xs');
       backgroundLabel.setAttribute('for', `background-${contrastId}`);
       backgroundLabel.style.color = stepLabelColor;
-      backgroundLabel.innerHTML = `B`; //` ${stepValue}`;
+      backgroundLabel.innerHTML = `B`;
       step.appendChild(backgroundStep);
       step.appendChild(backgroundLabel);
       row.appendChild(step);
@@ -158,15 +156,15 @@ class ContrastChecker extends HTMLElement {
     const resultsContainer = document.createElement('div');
     resultsContainer.innerHTML = `<div class="corn-row">
       <div class="corn-col-6">
-        <div id="contrast-sample" class="corn-panel" role="region" aria-live="polite" aria-atomic="true" aria-label="Contrast Checker Sample">
+        <div id="contrast-sample" class="corn-panel" aria-live="polite" aria-atomic="true" aria-label="Color contrast sample preview">
           <div class="corn-margin-bottom" id="contrast-foreground">Choose a (F)oreground Color</div>
           <div id="contrast-background">Choose a (B)ackground Color</div>
           <div id="contrast-math"></div>
         </div>
       </div>
       <div class="corn-col-6">
-        <div class="corn-panel contrast-score" role="region" aria-live="polite" aria-atomic="true" aria-label="Contrast Checker Results">
-          <div id="contrast-ratio" class="corn-margin-bottom">For WCAG2.1 compliance: </div>
+        <div class="corn-panel contrast-score" aria-live="polite" aria-atomic="true" aria-label="WCAG contrast ratio results and compliance status">
+          <div id="contrast-ratio" class="corn-margin-bottom">Contrast ratio will be displayed here after selecting colors.</div>
           <div>AA: 4.5:1</div>
           <div>AAA: 7:1</div>
         </div>
