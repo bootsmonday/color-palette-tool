@@ -170,7 +170,6 @@ class ContrastChecker extends HTMLElement {
         </div>
       </div>
     </div>`;
-
     resultsContainer.classList.add('contrast-results');
     this.appendChild(resultsContainer);
   }
