@@ -49,6 +49,12 @@ class PalettePage extends HTMLElement {
       <div class="corn-row">
         <div class="corn-col-12">
           ${pageType === 'edit' ? `<h1 id="page-title">Edit ${paletteName}</h1>` : `<h1 id="page-title">Create Palette</h1>`}
+          ${
+            pageType === 'edit'
+              ? `              <div class="corn-margin-bottom"><a href="#template-samples">Template Samples</a> | <a href="#contrast-checker">Contrast Checker</a> | <a href="#tokens">Tokens</a>
+              </div>`
+              : ``
+          }
         </div>
       </div>
       <div class="corn-row">
@@ -58,7 +64,7 @@ class PalettePage extends HTMLElement {
             <hr />
             <div class="corn-row">
               <div class="corn-col-12">
-                <h2>Template Samples</h2>
+                <h2 id="template-samples">Template Samples</h2>
               </div>
               <div class="corn-col-6">
                 <h3>CornCob Sample</h3>
@@ -69,7 +75,15 @@ class PalettePage extends HTMLElement {
                 <tailwind-template></tailwind-template>
               </div>              
             </div>
-            ${pageType === 'edit' ? `<hr /><color-tokens></color-tokens><hr />` : ``}
+            ${
+              pageType === 'edit'
+                ? `
+              <hr />
+              <contrast-checker></contrast-checker>
+              <hr />
+              <color-tokens></color-tokens>`
+                : ``
+            }
           </div>
         </div>
       </div>

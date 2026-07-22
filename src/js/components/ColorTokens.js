@@ -173,7 +173,7 @@ class ColorTokens extends HTMLElement {
     this.innerHTML += `
       <div class="corn-row">
         <div class="corn-col-12">
-          <h2>Tokens</h2>
+          <h2 id="tokens">Tokens</h2>
           <div class="corn-form">
             <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="token-format">
               <legend id="token-format">Token Format</legend>
