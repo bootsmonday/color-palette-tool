@@ -82,8 +82,10 @@ class ContrastChecker extends HTMLElement {
   }
 
   /**
-   *
-   * @param {string} color - The name of the color for which to generate the row. This function creates a row in the color steps grid for the specified color, including a color preview, label, and checkboxes for locking the color.It is displayed as a Column in the grid layout.
+   * @param {string} color - The name of the color for which to generate the row.
+   * This function creates a row in the color steps grid for the specified color,
+   * including a color preview, label, and checkboxes for locking the color.
+   * It is displayed as a column in the grid layout.
    */
   generateColorRow(color) {
     const row = document.createElement('div');
@@ -120,7 +122,7 @@ class ContrastChecker extends HTMLElement {
       foregroundStep.id = `foreground-${contrastId}`;
       foregroundStep.name = 'contrast-foreground';
       foregroundStep.value = `${color.toLowerCase()}:${stepValue}`;
-      foregroundStep.ariaLabel = `foreground contrast check for ${color} ${(i + 1) * 10}`;
+      foregroundStep.setAttribute('aria-label', `foreground contrast check for ${color} ${(i + 1) * 10}`);
       foregroundStep.classList.add('corn-assistive-text');
 
       const foregroundLabel = document.createElement('label');
@@ -136,7 +138,7 @@ class ContrastChecker extends HTMLElement {
       backgroundStep.id = `background-${contrastId}`;
       backgroundStep.name = 'contrast-background';
       backgroundStep.value = `${color.toLowerCase()}:${stepValue}`;
-      backgroundStep.ariaLabel = `background contrast check for ${color} ${(i + 1) * 10}`;
+      backgroundStep.setAttribute('aria-label', `background contrast check for ${color} ${(i + 1) * 10}`);
       backgroundStep.classList.add('corn-assistive-text');
 
       const backgroundLabel = document.createElement('label');
