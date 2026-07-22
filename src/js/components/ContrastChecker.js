@@ -163,14 +163,14 @@ class ContrastChecker extends HTMLElement {
     const resultsContainer = document.createElement('div');
     resultsContainer.innerHTML = `<div class="corn-row">
       <div class="corn-col-6">
-        <div id="contrast-sample" class="corn-panel" aria-live="polite" aria-atomic="true" aria-label="Contrast Checker Sample">
+        <div id="contrast-sample" class="corn-panel" role="region" aria-live="polite" aria-atomic="true" aria-label="Contrast Checker Sample">
           <div class="corn-margin-bottom" id="contrast-foreground">Choose a (F)oreground Color</div>
           <div id="contrast-background">Choose a (B)ackground Color</div>
           <div id="contrast-math"></div>
         </div>
       </div>
       <div class="corn-col-6">
-        <div class="corn-panel contrast-score" aria-live="polite" aria-atomic="true" aria-label="Contrast Checker Results">
+        <div class="corn-panel contrast-score" role="region" aria-live="polite" aria-atomic="true" aria-label="Contrast Checker Results">
           <div id="contrast-ratio" class="corn-margin-bottom">For WCAG2.1 compliance: </div>
           <div>AA: 4.5:1</div>
           <div>AAA: 7:1</div>
