@@ -19,6 +19,19 @@
     <link rel="stylesheet" href="/src/assets/palette-tool.css" />
     <link rel="stylesheet" href="node_modules/@bootsmonday/corncob-design-language/dist/corncob-design-language.css" />
     <script type="module" src="node_modules/@bootsmonday/corncob-design-language/dist/corncob-design-language.esm.js"></script>
+    <script type="module" is:inline>
+      let saved;
+      try {
+        saved = localStorage.getItem('theme');
+      } catch {
+        saved = 'light';
+      }
+
+      const theme = saved === 'dark' || saved === 'light' ? saved : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+      document.documentElement.style.setProperty('color-scheme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
   </head>
   <body class="corn-body">
     <app-root></app-root>

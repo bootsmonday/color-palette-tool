@@ -2,7 +2,7 @@ import { store } from './store.js';
 import { createEmptyPalette } from './store.js';
 import { router } from './router.js';
 import toolstyles from '../assets/palette-tool.css?inline';
-
+import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 /**
  * The AppRoot class represents the root component of the Color Palette Tool application. It is a custom HTML element that manages the overall layout, including the header, navigation, and main content area. The component listens for changes in the application's state, particularly the current route, and updates the displayed page accordingly. It also handles navigation events and initializes the router with the defined routes.
  */
@@ -27,6 +27,9 @@ class AppRoot extends HTMLElement {
   connectedCallback() {
     this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
     this.render();
+    if (typeof window !== 'undefined') {
+      window.setTheme = AppRoot.setTheme;
+    }
   }
 
   /**
@@ -64,6 +67,31 @@ class AppRoot extends HTMLElement {
     store.setState({ pageType: pageTag.pageType });
     this.querySelector('#current-page').innerHTML = `<${router.routes[normalizedRoute]?.componentName || 'home-page'}></${router.routes[normalizedRoute]?.componentName || 'home-page'}>`;
   }
+  static setTheme(theme) {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    if (!theme) {
+      theme = newTheme;
+    }
+
+    const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+
+    if (normalizedTheme === 'dark') {
+      html.setAttribute('data-theme', 'dark');
+      html.style.setProperty('color-scheme', 'dark');
+    } else {
+      html.setAttribute('data-theme', 'light');
+      html.style.setProperty('color-scheme', 'light');
+    }
+
+    try {
+      localStorage.setItem('theme', normalizedTheme);
+    } catch (_) {
+      // storage unavailable (private browsing, sandboxed, or quota exceeded)
+    }
+  }
 
   /**
    * This method renders the initial HTML structure of the AppRoot component. It sets the innerHTML of the component to include a header with navigation links and a main content area where the current page will be displayed. The method also attaches event listeners to the navigation links to handle click events, preventing the default behavior and using the router to navigate to the specified route instead. This setup allows for dynamic navigation within the application, as users can move between different pages and see the corresponding content without needing to reload the entire application.
@@ -87,6 +115,9 @@ class AppRoot extends HTMLElement {
           <a href="${router.toAppPath('/about')}" class="corn-button corn-button--sm" data-link data-route="/about">About</a>
         </corn-button-bar>
       </nav>
+      <div class="corn-header--actions">
+        <button type="button" onclick="setTheme()" class="corn-button corn-button--icon corn-button--xs" aria-label="Toggle dark / light mode"> <svg class="corn-icon docs-icon-dark" aria-hidden="true"><use href="${bootstrapIconsSprite}#moon"></use></svg><svg class="corn-icon docs-icon-light" aria-hidden="true"><use href="${bootstrapIconsSprite}#sun"></use></svg> </button> 
+        <a href="https://github.com/bootsmonday/color-palette-tool" class="corn-button corn-button--icon corn-button--xs" aria-label="Corncob Design Language GitHub Repository"> <svg class="corn-icon"><use href="${bootstrapIconsSprite}#github"></use></svg></a> </div>
     </header>
 
       <main class="corn-main corn-container corn-container--fluid" id="current-page">
