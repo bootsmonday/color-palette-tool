@@ -24,7 +24,7 @@
       try {
         saved = localStorage.getItem('theme');
       } catch {
-        saved = 'light';
+        saved = null;
       }
 
       const theme = saved === 'dark' || saved === 'light' ? saved : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

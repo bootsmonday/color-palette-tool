@@ -15,7 +15,7 @@ class CornCobTemplate extends HTMLElement {
     .corn-form {
       gap: var(--cc-size-2);
     }
-    :host, :root {
+    :host {
     --cc-green-10: var(--sample-green-10);
     --cc-green-20: var(--sample-green-20);
     --cc-green-30: var(--sample-green-30);

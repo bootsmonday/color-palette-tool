@@ -76,7 +76,13 @@ class ContrastChecker extends HTMLElement {
           contrastMath.innerText = `${this.contrastColors.backgroundStep} - ${this.contrastColors.foregroundStep} = ${this.contrastColors.backgroundStep - this.contrastColors.foregroundStep}`;
         }
         const contrastRatio = this.contrastColors.foreground.getColor().contrast(this.contrastColors.background.getColor(), 'WCAG21');
-        contrastRatioOutput.innerHTML = `<div>Contrast Ratio: ${contrastRatio.toFixed(2)}</div><div> ${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)</div>`;
+        contrastRatioOutput.replaceChildren();
+        const ratioLine = document.createElement('div');
+        ratioLine.textContent = `Contrast Ratio: ${contrastRatio.toFixed(2)}`;
+        const passFailLine = document.createElement('div');
+        passFailLine.textContent = `${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)`;
+        contrastRatioOutput.appendChild(ratioLine);
+        contrastRatioOutput.appendChild(passFailLine);
       }
     }
   }
