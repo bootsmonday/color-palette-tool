@@ -28,6 +28,10 @@ class AppRoot extends HTMLElement {
     this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
     this.render();
 
+    // Ensure runtime theme state also drives Lightning CSS helper vars in production builds.
+    const initialTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    this.setTheme(initialTheme);
+
     this.querySelector('#toggle-theme').addEventListener('click', () => {
       this.setTheme();
     });
@@ -82,9 +86,13 @@ class AppRoot extends HTMLElement {
     if (normalizedTheme === 'dark') {
       html.setAttribute('data-theme', 'dark');
       html.style.setProperty('color-scheme', 'dark');
+      html.style.setProperty('--lightningcss-light', ' ');
+      html.style.setProperty('--lightningcss-dark', 'initial');
     } else {
       html.setAttribute('data-theme', 'light');
       html.style.setProperty('color-scheme', 'light');
+      html.style.setProperty('--lightningcss-light', 'initial');
+      html.style.setProperty('--lightningcss-dark', ' ');
     }
 
     try {
