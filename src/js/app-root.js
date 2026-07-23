@@ -27,11 +27,9 @@ class AppRoot extends HTMLElement {
   connectedCallback() {
     this.unsubscribe = store.subscribeTo('currentRoute', () => this.storeUpdate());
     this.render();
-    if (typeof window !== 'undefined') {
-      window.setTheme = AppRoot.setTheme;
-    }
+
     this.querySelector('#toggle-theme').addEventListener('click', () => {
-      AppRoot.setTheme();
+      this.setTheme();
     });
   }
 
@@ -70,7 +68,7 @@ class AppRoot extends HTMLElement {
     store.setState({ pageType: pageTag.pageType });
     this.querySelector('#current-page').innerHTML = `<${router.routes[normalizedRoute]?.componentName || 'home-page'}></${router.routes[normalizedRoute]?.componentName || 'home-page'}>`;
   }
-  static setTheme(theme) {
+  setTheme(theme) {
     const html = document.documentElement;
     const currentTheme = html.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
