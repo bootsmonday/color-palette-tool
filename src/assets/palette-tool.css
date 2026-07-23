@@ -1,7 +1,9 @@
 .corn-margin-bottom, .corn-panel p {
   margin-bottom: var(--cc-size-0);
 }
-
+.corn-margin-bottom--sm{
+  margin-bottom: var(--cc-size--4);
+}
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
@@ -44,6 +46,17 @@ h1, h2, h3, h4, h5, h6 {
   
 }
 
+.docs-icon-dark {
+    display: flex
+}
+
+.docs-icon-light,[data-theme=dark] .docs-icon-dark {
+    display: none
+}
+
+[data-theme=dark] .docs-icon-light {
+    display: flex
+}
 
 .color-contrast-examples {
   display: grid;

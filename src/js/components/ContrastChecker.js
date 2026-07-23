@@ -54,7 +54,7 @@ class ContrastChecker extends HTMLElement {
         this.contrastColors.foregroundStep = displayStep;
         this.contrastColors.foregroundStyle = `var(--sample-${colorName.toLowerCase()}-${displayStep})`;
         if (contrastForeground) {
-          contrastForeground.innerText = `${this.contrastColors.foregroundName} ${this.contrastColors.foregroundStep}`;
+          contrastForeground.innerText = `Foreground: ${this.contrastColors.foregroundName} ${this.contrastColors.foregroundStep}`;
         }
       }
       if (target.name === 'contrast-background') {
@@ -63,7 +63,7 @@ class ContrastChecker extends HTMLElement {
         this.contrastColors.backgroundStep = displayStep;
         this.contrastColors.backgroundStyle = `var(--sample-${colorName.toLowerCase()}-${displayStep})`;
         if (contrastBackground) {
-          contrastBackground.innerText = `${this.contrastColors.backgroundName} ${this.contrastColors.backgroundStep}`;
+          contrastBackground.innerText = `Background: ${this.contrastColors.backgroundName} ${this.contrastColors.backgroundStep}`;
         }
       }
 
@@ -76,7 +76,13 @@ class ContrastChecker extends HTMLElement {
           contrastMath.innerText = `${this.contrastColors.backgroundStep} - ${this.contrastColors.foregroundStep} = ${this.contrastColors.backgroundStep - this.contrastColors.foregroundStep}`;
         }
         const contrastRatio = this.contrastColors.foreground.getColor().contrast(this.contrastColors.background.getColor(), 'WCAG21');
-        contrastRatioOutput.innerText = `Contrast Ratio: ${contrastRatio.toFixed(2)} - ${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)`;
+        contrastRatioOutput.replaceChildren();
+        const ratioLine = document.createElement('div');
+        ratioLine.textContent = `Contrast Ratio: ${contrastRatio.toFixed(2)}`;
+        const passFailLine = document.createElement('div');
+        passFailLine.textContent = `${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)`;
+        contrastRatioOutput.appendChild(ratioLine);
+        contrastRatioOutput.appendChild(passFailLine);
       }
     }
   }
@@ -160,8 +166,8 @@ class ContrastChecker extends HTMLElement {
     resultsContainer.innerHTML = `<div class="corn-row">
       <div class="corn-col-6">
         <div id="contrast-sample" class="corn-panel" aria-live="polite" aria-atomic="true" aria-label="Color contrast sample preview">
-          <div class="corn-margin-bottom" id="contrast-foreground">Choose a (F)oreground Color</div>
-          <div id="contrast-background">Choose a (B)ackground Color</div>
+          <div class="corn-margin-bottom--sm" id="contrast-foreground">Choose a (F)oreground Color</div>
+          <div id="contrast-background" class="corn-margin-bottom">Choose a (B)ackground Color</div>
           <div id="contrast-math"></div>
         </div>
       </div>

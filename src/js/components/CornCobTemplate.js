@@ -1,8 +1,5 @@
 import style from '@bootsmonday/corncob-design-language/style.css?inline';
 
-/**
- * CornCobTemplate is a custom web component that represents a form for account setup. It includes various input fields, toggles, checkboxes, and status messages for success and error states. The component uses Shadow DOM to encapsulate its styles and structure, ensuring that it does not interfere with other elements on the page. The styles are imported from the CornCob Design Language and applied to the component's shadow root.
- */
 class CornCobTemplate extends HTMLElement {
   constructor() {
     super();
@@ -62,91 +59,92 @@ class CornCobTemplate extends HTMLElement {
     --cc-blue-80: var(--sample-blue-80);
     --cc-blue-90: var(--sample-blue-90);
     --cc-blue-100: var(--sample-blue-100); 
-    
+
   }
   </style>
-
-  <div class="corn-panel">
-    <!-- Title -->
-    <h2>Account Setup</h2>
-    <p>Please fill out the details below.</p>
-    <div>
-    
-    <!-- Form -->
-    <form class="corn-form color-example-form" action="#" method="POST">
-
-      <!-- Success Status Message -->
-      <div class="corn-message corn-message--success">
-        <div class="corn-message--status">
-            <svg class="corn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        </div>
-        <div class="corn-message--content">
-          <p class="corn-message--title">Success! Your account has been created.</p>
-        </div>
-      </div>    
+  <div class="corn-body">
+    <div class="corn-panel">
+      <!-- Title -->
+      <h2>Account Setup</h2>
+      <p>Please fill out the details below.</p>
+      <div>
       
-      <!-- Error Status Message -->
-      <div class="corn-message corn-message--error">
-        <div class="corn-message--status">
+      <!-- Form -->
+      <form class="corn-form color-example-form" action="#" method="POST">
+
+        <!-- Success Status Message -->
+        <div class="corn-message corn-message--success">
+          <div class="corn-message--status">
               <svg class="corn-icon" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                </svg>
-        </div>
-        <div class="corn-message--content">
-          <p class="corn-message--title">Error: Email address is already in use.</p>
-        </div>
-      </div>        
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          </div>
+          <div class="corn-message--content">
+            <p class="corn-message--title">Success! Your account has been created.</p>
+          </div>
+        </div>    
         
-      <!-- Name Input -->
-      <div class="corn-form--item">
-        <div class="corn-text-input">
-          <input id="input--md--default" name="input" placeholder="Enter Full Name..." />
-          <label for="input--md--default">What is your name?</label>
-        </div>
-      </div>
-
-      <!-- Email Input -->
-      <div class="corn-form--item">
-        <div class="corn-text-input">
-          <input type="email" id="email" name="email" placeholder="Enter Email Address..." required />
-          <label for="email">What is your email address?</label>
-        </div>
-      </div>
-
-      <!-- Toggles -->
-      <fieldset class="corn-form--item corn-toggle-group corn-toggle--md" aria-labelledby="role-legend">
-        <legend id="role-legend">Role</legend>
-        <div class="corn-toggles">
-          <div class="corn-toggle">
-            <input type="radio" id="example-developer" name="example-role" value="developer" checked />
-            <label for="example-developer">Developer</label>
+        <!-- Error Status Message -->
+        <div class="corn-message corn-message--error">
+          <div class="corn-message--status">
+                <svg class="corn-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
           </div>
-          <div class="corn-toggle">
-            <input type="radio" id="example-designer" name="example-role" value="designer" />
-            <label for="example-designer">Designer</label>
+          <div class="corn-message--content">
+            <p class="corn-message--title">Error: Email address is already in use.</p>
           </div>
-          <div class="corn-toggle">
-            <input type="radio" id="example-manager" name="example-role" value="manager" />
-            <label for="example-manager">Manager</label>
+        </div>        
+          
+        <!-- Name Input -->
+        <div class="corn-form--item">
+          <div class="corn-text-input">
+            <input id="input--md--default" name="input" placeholder="Enter Full Name..." />
+            <label for="input--md--default">What is your name?</label>
           </div>
         </div>
-      </fieldset>
 
-      <!-- Checkbox -->
-      <fieldset class="corn-form--item corn-checkbox-group">
-        <div class="corn-checkbox">
-          <input type="checkbox" id="cc-privacy-policy" name="cc-privacy-policy" />
-          <label for="cc-privacy-policy">I agree to the privacy policy</label>
+        <!-- Email Input -->
+        <div class="corn-form--item">
+          <div class="corn-text-input">
+            <input type="email" id="email" name="email" placeholder="Enter Email Address..." required />
+            <label for="email">What is your email address?</label>
+          </div>
         </div>
-      </fieldset>
 
-      <!-- Submit Button -->
-      <div class="corn-button-group">
-        <button class="corn-button corn-button--md">Submit Application</button>
-      </div>
-    </form>
+        <!-- Toggles -->
+        <fieldset class="corn-form--item corn-toggle-group corn-toggle--md" aria-labelledby="role-legend">
+          <legend id="role-legend">Role</legend>
+          <div class="corn-toggles">
+            <div class="corn-toggle">
+              <input type="radio" id="example-developer" name="example-role" value="developer" checked />
+              <label for="example-developer">Developer</label>
+            </div>
+            <div class="corn-toggle">
+              <input type="radio" id="example-designer" name="example-role" value="designer" />
+              <label for="example-designer">Designer</label>
+            </div>
+            <div class="corn-toggle">
+              <input type="radio" id="example-manager" name="example-role" value="manager" />
+              <label for="example-manager">Manager</label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Checkbox -->
+        <fieldset class="corn-form--item corn-checkbox-group">
+          <div class="corn-checkbox">
+            <input type="checkbox" id="cc-privacy-policy" name="cc-privacy-policy" />
+            <label for="cc-privacy-policy">I agree to the privacy policy</label>
+          </div>
+        </fieldset>
+
+        <!-- Submit Button -->
+        <div class="corn-button-group">
+          <button class="corn-button corn-button--md">Submit Application</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
     `;
