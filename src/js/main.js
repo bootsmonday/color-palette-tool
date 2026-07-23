@@ -1,3 +1,5 @@
+import './routing/github-pages-spa.js';
+
 // Import all components to register them
 import '@bootsmonday/corncob-design-language/style.css';
 import './app-root.js';
