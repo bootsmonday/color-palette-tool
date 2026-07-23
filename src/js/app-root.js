@@ -30,6 +30,9 @@ class AppRoot extends HTMLElement {
     if (typeof window !== 'undefined') {
       window.setTheme = AppRoot.setTheme;
     }
+    this.querySelector('#toggle-theme').addEventListener('click', () => {
+      AppRoot.setTheme();
+    });
   }
 
   /**
@@ -116,7 +119,7 @@ class AppRoot extends HTMLElement {
         </corn-button-bar>
       </nav>
       <div class="corn-header--actions">
-        <button type="button" onclick="setTheme()" class="corn-button corn-button--icon corn-button--xs" aria-label="Toggle dark / light mode"> <svg class="corn-icon docs-icon-dark" aria-hidden="true"><use href="${bootstrapIconsSprite}#moon"></use></svg><svg class="corn-icon docs-icon-light" aria-hidden="true"><use href="${bootstrapIconsSprite}#sun"></use></svg> </button> 
+        <button type="button" id="toggle-theme" class="corn-button corn-button--icon corn-button--xs" aria-label="Toggle dark / light mode"> <svg class="corn-icon docs-icon-dark" aria-hidden="true"><use href="${bootstrapIconsSprite}#moon"></use></svg><svg class="corn-icon docs-icon-light" aria-hidden="true"><use href="${bootstrapIconsSprite}#sun"></use></svg> </button> 
         <a href="https://github.com/bootsmonday/color-palette-tool" class="corn-button corn-button--icon corn-button--xs" aria-label="Color Palette Tool GitHub Repository"> <svg class="corn-icon"><use href="${bootstrapIconsSprite}#github"></use></svg></a> </div>
     </header>
 
