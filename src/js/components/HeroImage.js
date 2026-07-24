@@ -23,7 +23,7 @@ class HeroImage extends HTMLElement {
       const row = document.createElement('div');
       row.classList.add('hero-color-row');
       this.container.appendChild(row);
-      step.colors.forEach((color, i) => {
+      step.colors.forEach((color) => {
         const stepDiv = document.createElement('div');
         const colorModel = new ColorModel(color);
         stepDiv.classList.add('hero-color-step');
