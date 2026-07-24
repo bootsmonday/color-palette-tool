@@ -19,8 +19,6 @@ class HeroImage extends HTMLElement {
   }
 
   renderExamples(steps) {
-    console.log('Setting sample color tokens:', steps);
-    // return; // Early return to prevent execution of the following code
     steps.forEach((step) => {
       const row = document.createElement('div');
       row.classList.add('hero-color-row');
