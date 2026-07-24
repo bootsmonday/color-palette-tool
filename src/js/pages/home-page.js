@@ -42,6 +42,7 @@ class HomePage extends HTMLElement {
         <div class="corn-panel">
           <a href="${router.toAppPath('/new-palette')}" class="corn-link" data-link data-route="/new-palette" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
           <hero-image></hero-image>
+            <hr />
             <p>This tool allows you to create perceptually uniform, accessible color palettes. These palettes are set up to quickly calculate accessible color combinations.</p>
             <p>Palette data is stored in your browser's local storage, so it will persist across sessions.</p>
             <p> You can export your palettes in Figma format for use in your design projects. This allows you to easily integrate your color palettes into your design workflow.
