@@ -351,14 +351,11 @@ fieldset.corn-checkbox-group--inline {
 }
 .hero-color-row {
   display: grid;
-  grid-template-rows: repeat(11, 1fr);
-  gap: var(--cc-size--5);
-} 
-.hero-color-step {
-  display: grid;
   grid-template-rows: repeat(10, 1fr);
+  gap: var(--cc-size--5);
+}
+.hero-color-step {
   height: var(--cc-size-2);
-  
 }
 
 h1 {
