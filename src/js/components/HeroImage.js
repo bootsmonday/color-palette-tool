@@ -112,8 +112,6 @@ class HeroImage extends HTMLElement {
     // this.container.classList.add('color-contrast-examples', 'corn-margin-bottom');
     this.appendChild(this.container);
     this.renderExamples(demoPalette.steps);
-    const row = document.createElement('div');
-    // row.classList.add('color-contrast-row');
     // this.container.appendChild(row);
     // const color = document.createElement('div');
     // color.classList.add('color-step-preview');
