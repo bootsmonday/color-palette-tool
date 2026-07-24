@@ -41,15 +41,15 @@ class HomePage extends HTMLElement {
         <h1>Color Palette Tool</h1>
         <div class="corn-panel">
           <a href="${router.toAppPath('/new-palette')}" class="corn-link" data-link data-route="/new-palette" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
-            <p>This tool allows you to create accessible color palettes. These palettes are set up to quickly calculate accessible color combinations.</p>
-            <p>You can create a new palette, edit existing ones, and view sample images based on your palettes.</p>
+          <hero-image></hero-image>
+            <hr />
+            <p>This tool allows you to create perceptually uniform, accessible color palettes. These palettes are set up to quickly calculate accessible color combinations.</p>
             <p>Palette data is stored in your browser's local storage, so it will persist across sessions.</p>
-            <p>To edit a palette, click on the sample image of the palette you want to modify. This will take you to the edit page where you can adjust the colors and save your changes.</p>
             <p> You can export your palettes in Figma format for use in your design projects. This allows you to easily integrate your color palettes into your design workflow.
             You can also export your palettes as .css files for use in web development projects. This provides a convenient way to apply your color palettes directly to your website's stylesheets.
             </p>
             <p>To get started, click on "Create New Palette" to design your first color palette.</p>
-            <h2>Current Palettes</h2>
+            ${store.getState().paletteCollection.length !== 0 ? `<h2>Current Palettes</h2>` : ''}
             <a href="${router.toAppPath('/new-palette')}" class="corn-link" data-link data-route="/new-palette" style="margin-bottom: var(--cc-size-4);display: inline-block;">Create New Palette</a>
             ${store.getState().paletteCollection.length === 0 ? `<p>No palettes saved yet. Create a new palette to get started!</p>` : ''}
           </div>

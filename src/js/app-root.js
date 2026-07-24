@@ -3,6 +3,7 @@ import { createEmptyPalette } from './store.js';
 import { router } from './router.js';
 import toolstyles from '../assets/palette-tool.css?inline';
 import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
+import bootsmondayLogo from '../assets/bootsmonday-colorized.png';
 /**
  * The AppRoot class represents the root component of the Color Palette Tool application. It is a custom HTML element that manages the overall layout, including the header, navigation, and main content area. The component listens for changes in the application's state, particularly the current route, and updates the displayed page accordingly. It also handles navigation events and initializes the router with the defined routes.
  */
@@ -113,7 +114,7 @@ class AppRoot extends HTMLElement {
     <header class="corn-header">
       <div class="corn-company">
         <div class="corn-company--logo">
-          <img src="https://bootsmonday.github.io/corncob-design-language/_astro/corncob-colorized.BW4_Irv9_Z39pkX.webp" alt="Company Logo" />
+          <img src="${bootsmondayLogo}" alt="BootsMonday" />
         </div>
       </div>
       <div class="corn-header--title">Color Palette Tool</div>

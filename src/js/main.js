@@ -11,6 +11,7 @@ import './components/HexPreview.js';
 import './components/ColorTokens.js';
 import './components/PaletteForm.js';
 import './components/ContrastChecker.js';
+import './components/HeroImage.js';
 import './pages/palette.js';
 import './pages/home-page.js';
 import './pages/about.js';

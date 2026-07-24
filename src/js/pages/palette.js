@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 /**
  * The PalettePage class represents the palette creation and editing page of the Color Palette Tool application. It is a custom HTML element that displays a form for creating or editing a color palette, along with sample images based on the palette's color steps. The component retrieves the working palette and page type (create or edit) from the application's state store and dynamically updates the page title accordingly. It also subscribes to changes in the relevant state properties to ensure that the displayed information remains up-to-date as users interact with the form and modify the palette.
  */
@@ -76,6 +77,27 @@ class PalettePage extends HTMLElement {
                 <tailwind-template></tailwind-template>
               </div>              
             </div>
+            ${
+              pageType === 'new'
+                ? `<hr />
+              <div class="corn-row">
+                <div class="corn-col-12">
+                  <div class="corn-panel">
+<div class="corn-message corn-message--info">
+  <div class="corn-message--status">
+    <svg xmlns="http://www.w3.org/2000/svg" class="corn-icon" aria-hidden="true"><use href="${bootstrapIconsSprite}#info"></use></svg>
+  </div>
+  <div class="corn-message--content">
+    <p class="corn-message--title">Save your palette to see the contrast checker and export color tokens.</p>
+  </div>
+</div>                            
+                    
+                  </div>
+                </div>
+              </div>
+              `
+                : ''
+            }
             ${
               pageType === 'edit'
                 ? `

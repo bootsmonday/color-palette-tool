@@ -1,0 +1,171 @@
+{
+  "id": "palette-e4bdeb17",
+  "name": "Test Palette",
+  "colorSpace": "okhsl",
+  "createdAt": "2026-07-20T19:33:32.073Z",
+  "userColor": { "id": "color-04679252", "colorSpace": "okhsl", "hue": 291.71, "saturation": 65.49, "lightness": 47.5, "locked": false },
+  "steps": [
+    {
+      "id": "steps-0e86850f",
+      "colorName": "Red",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-937b0a68", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 97, "locked": true },
+        { "id": "color-20e71f45", "colorSpace": "okhsl", "hue": 30.12, "saturation": 92.54, "lightness": 90, "locked": true },
+        { "id": "color-1d584f07", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 82, "locked": true },
+        { "id": "color-0436e176", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 72, "locked": true },
+        { "id": "color-0717b577", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 59.04, "locked": true },
+        { "id": "color-3e53d22f", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 47.5, "locked": true },
+        { "id": "color-a1a2c57a", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 37, "locked": true },
+        { "id": "color-4e825e77", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 28, "locked": true },
+        { "id": "color-59a5a55b", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 20, "locked": true },
+        { "id": "color-85a694f3", "colorSpace": "okhsl", "hue": 20.49, "saturation": 81.23, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-71049170",
+      "colorName": "Orange",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-20552198", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 97, "locked": true },
+        { "id": "color-92a8f33a", "colorSpace": "okhsl", "hue": 63.54, "saturation": 80.8, "lightness": 90, "locked": true },
+        { "id": "color-19ff0e26", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 82, "locked": true },
+        { "id": "color-0d82d8ef", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 72, "locked": true },
+        { "id": "color-4d98ca6d", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 59.04, "locked": true },
+        { "id": "color-7f161994", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 47.5, "locked": true },
+        { "id": "color-d4f14530", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 37, "locked": true },
+        { "id": "color-1853270b", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 28, "locked": true },
+        { "id": "color-30b25409", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 20, "locked": true },
+        { "id": "color-bfba854a", "colorSpace": "okhsl", "hue": 62.67, "saturation": 67.89, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-c9bb2007",
+      "colorName": "Yellow",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-26f455a1", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 97, "locked": true },
+        { "id": "color-a4ba25e8", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 90, "locked": true },
+        { "id": "color-e7ec6ff0", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 82, "locked": true },
+        { "id": "color-cf038201", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 72, "locked": true },
+        { "id": "color-c54edf97", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 59.04, "locked": true },
+        { "id": "color-7a37b99d", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 47.5, "locked": true },
+        { "id": "color-029b74aa", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 37, "locked": true },
+        { "id": "color-d8c4d507", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 28, "locked": true },
+        { "id": "color-d878467f", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 20, "locked": true },
+        { "id": "color-4c15bb93", "colorSpace": "okhsl", "hue": 104.68, "saturation": 68.42, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-8e1b1530",
+      "colorName": "Green",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-f84030e1", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 97, "locked": true },
+        { "id": "color-7cebdb31", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 90, "locked": true },
+        { "id": "color-925a41f4", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 82, "locked": true },
+        { "id": "color-0d0db0bd", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 72, "locked": true },
+        { "id": "color-1d0c0a1c", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 59.04, "locked": true },
+        { "id": "color-8a6b6b08", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 47.5, "locked": true },
+        { "id": "color-586a5f8f", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 37, "locked": true },
+        { "id": "color-6ee6da14", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 28, "locked": true },
+        { "id": "color-669b49c8", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 20, "locked": true },
+        { "id": "color-70312f45", "colorSpace": "okhsl", "hue": 151.81, "saturation": 60.32, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-5bad5075",
+      "colorName": "Teal",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-83220c21", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 97, "locked": true },
+        { "id": "color-f654a858", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 90, "locked": true },
+        { "id": "color-80daff9f", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 82, "locked": true },
+        { "id": "color-387cae8c", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 72, "locked": true },
+        { "id": "color-4bbc993c", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 59.04, "locked": true },
+        { "id": "color-ba0ffb79", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 47.5, "locked": true },
+        { "id": "color-7e099abf", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 37, "locked": true },
+        { "id": "color-1d37673f", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 28, "locked": true },
+        { "id": "color-3f8fb2f2", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 20, "locked": true },
+        { "id": "color-50b46e67", "colorSpace": "okhsl", "hue": 178.67, "saturation": 65.49, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-46921472",
+      "colorName": "Blue",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-ba22c50b", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 97, "locked": true },
+        { "id": "color-4127383c", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 90, "locked": true },
+        { "id": "color-d3bcafc1", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 82, "locked": true },
+        { "id": "color-d1cf0cd8", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 72, "locked": true },
+        { "id": "color-c306eb52", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 59.04, "locked": true },
+        { "id": "color-88a39cce", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 47.5, "locked": true },
+        { "id": "color-896083ea", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 37, "locked": true },
+        { "id": "color-b48b009d", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 28, "locked": true },
+        { "id": "color-57d27f53", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 20, "locked": true },
+        { "id": "color-2ebf6fe9", "colorSpace": "okhsl", "hue": 229.75, "saturation": 65.49, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-a20efef4",
+      "colorName": "Purple",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-f8c26905", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 97, "locked": true },
+        { "id": "color-56883334", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 90, "locked": true },
+        { "id": "color-9d1ec055", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 82, "locked": true },
+        { "id": "color-d21b7baa", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 72, "locked": true },
+        { "id": "color-af59704f", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 59.04, "locked": true },
+        { "id": "color-eacef779", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 47.5, "locked": true },
+        { "id": "color-fc994506", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 37, "locked": true },
+        { "id": "color-da123398", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 28, "locked": true },
+        { "id": "color-9b054120", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 20, "locked": true },
+        { "id": "color-211d72b2", "colorSpace": "okhsl", "hue": 293.33, "saturation": 80, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-c6ec07ce",
+      "colorName": "Magenta",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-c7624b77", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 97, "locked": true },
+        { "id": "color-deeb9a2e", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 90, "locked": true },
+        { "id": "color-6796fb48", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 82, "locked": true },
+        { "id": "color-0fdf9280", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 72, "locked": true },
+        { "id": "color-1d9424ea", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 59.04, "locked": true },
+        { "id": "color-a4b8e65f", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 47.5, "locked": true },
+        { "id": "color-09a7b254", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 37, "locked": true },
+        { "id": "color-ae855afe", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 28, "locked": true },
+        { "id": "color-f6f72495", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 20, "locked": true },
+        { "id": "color-5e033046", "colorSpace": "okhsl", "hue": 336.67, "saturation": 80, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    },
+    {
+      "id": "steps-52b5a695",
+      "colorName": "Gray",
+      "colorSpace": "okhsl",
+      "colors": [
+        { "id": "color-756eed80", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 97, "locked": true },
+        { "id": "color-a90a7dd4", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 90, "locked": true },
+        { "id": "color-974542fd", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 82, "locked": true },
+        { "id": "color-50a2324a", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 72, "locked": true },
+        { "id": "color-7c289d08", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 59.04, "locked": true },
+        { "id": "color-ddfb848f", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 47.5, "locked": true },
+        { "id": "color-ce9dfb27", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 37, "locked": true },
+        { "id": "color-0fd81512", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 28, "locked": true },
+        { "id": "color-ba4240d9", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 20, "locked": true },
+        { "id": "color-71c17203", "colorSpace": "okhsl", "hue": 180, "saturation": 0, "lightness": 13, "locked": true }
+      ],
+      "locked": true
+    }
+  ]
+}
