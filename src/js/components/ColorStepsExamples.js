@@ -214,7 +214,7 @@ class ColorStepsExamples extends HTMLElement {
           <div class="corn-row">
           <div class="corn-col-12 corn-col-sm-6">
             <fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
-            <legend>Colors</legend>
+            <legend>Show Color Columns</legend>
             <div class="corn-checkbox corn-checkbox--sm">
               <input type="checkbox" id="filter-red" name="filter-color" checked/>
               <label for="filter-red">Red</label>
@@ -255,7 +255,7 @@ class ColorStepsExamples extends HTMLElement {
           </div>
           <div class="corn-col-12 corn-col-sm-6">
             <fieldset class="corn-form--item corn-checkbox-group corn-checkbox-group--inline">
-              <legend>Steps</legend>
+              <legend>Show Step Rows</legend>
               <div class="corn-checkbox corn-checkbox--sm">
                 <input type="checkbox" value="1" id="filter-steps-1" name="filter-step" checked/>
                 <label for="filter-steps-1">10</label>

@@ -344,6 +344,19 @@ fieldset.corn-checkbox-group--inline {
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
 
+.contrast-ratio-results{
+  display:flex;
+  gap: var(--cc-size--5);
+  align-items: center;
+}
+.contrast-success {
+  color: var(--cc-status--success--color);
+}
+.contrast-fail {
+  color: var(--cc-status--error--color);
+}
+
+
 .hero-image {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
@@ -370,6 +383,11 @@ h3 {
   font-size: 1.25rem;
   font-weight: 600;
 }
+h4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
   /* --cc-form--item--size--xs: var(--cc-size-2);
   --cc-form--item--size--sm: var(--cc-size-4);
   --cc-form--item--size--md: var(--cc-size-5);
