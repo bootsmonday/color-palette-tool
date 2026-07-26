@@ -100,7 +100,7 @@ class ColorTokens extends HTMLElement {
         tokensCode += `/* Color Tokens for Palette: ${workingPalette.name} */\n`;
         tokensCode += `/* Design System: ${tokenType} */\n\n`;
         if (tokenType === 'tailwind') {
-          tokensCode += `/* Tailwind CSS Tokens are limited to 10 steps per color, so step 50 and 100 are the same value in order to preserve the scale */\n`;
+          tokensCode += `/* Tailwind uses a 50–950 scale (11 steps). This tool maps the first palette step to 50 and the last to 950 to preserve the scale. */\n`;
         }
         tokensCode += `:root, :host {\n`;
         if (colorScheme === 'light-dark') {
