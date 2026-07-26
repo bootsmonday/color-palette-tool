@@ -98,8 +98,10 @@ class ColorTokens extends HTMLElement {
     if (tokenFormat === 'css') {
       if (workingPalette && workingPalette.steps) {
         tokensCode += `/* Color Tokens for Palette: ${workingPalette.name} */\n`;
-        tokensCode += `/* Color Space: ${cssColorSpace} */\n`;
         tokensCode += `/* Design System: ${tokenType} */\n\n`;
+        if (tokenType === 'tailwind') {
+          tokensCode += `/* Tailwind CSS Tokens are limited to 10 steps per color, so step 50 and 100 are the same value in order to preserve the scale */\n`;
+        }
         tokensCode += `:root, :host {\n`;
         if (colorScheme === 'light-dark') {
           tokensCode += `\n\tcolor-scheme: light dark;\n`;
@@ -164,6 +166,11 @@ class ColorTokens extends HTMLElement {
       tokensCode += `}\n`;
     }
     tokenContainer.textContent = tokensCode;
+
+    this.querySelector('#token-usage-example').innerHTML = `<pre><code>body {
+  background-color: var(${tokenPrefix}-blue-${4 * stepMultiplier});
+  color: var(${tokenPrefix}-blue-${9 * stepMultiplier});
+}</code></pre>`;
   }
 
   /**
@@ -176,7 +183,7 @@ class ColorTokens extends HTMLElement {
           <h2 id="tokens">Tokens</h2>
           <div class="corn-form">
             <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="token-format">
-              <legend id="token-format">Token Format</legend>
+              <legend id="token-format">Token Prefix and Format</legend>
               <div class="corn-toggles">
                 <div class="corn-toggle">
                   <input type="radio" id="corncob-tokens" name="token-type" value="corncob" checked />
@@ -193,7 +200,7 @@ class ColorTokens extends HTMLElement {
               </div>
             </fieldset>
             <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="color-space">
-              <legend id="color-space">CSS Color Space:</legend>
+              <legend id="color-space">Color Value:</legend>
               <div class="corn-toggles">
                 <div class="corn-toggle">
                   <input type="radio" id="hex-color-space" name="color-space" value="hex" checked />
@@ -244,11 +251,18 @@ class ColorTokens extends HTMLElement {
                 </button>
               </div>                        
             <div id="copy-tokens-container" class="corn-form--item">
-
-              <xmp id="color-tokens" class="palette-tokens">tokens will go here</xmp>
+              <xmp id="color-tokens" class="palette-tokens corn-margin-bottom">tokens will go here</xmp>
             </div>
             
-                       
+            <h3 id="tokens-usage">Tokens Usage</h3>
+            <h4>CSS</h4>
+            <p>To use the generated CSS tokens in your project, include the following line in your CSS file:</p>
+            <div class="corn-panel corn-margin-bottom"><pre><code>@import url('path/to/your/generated-tokens.css');</code></pre></div>
+            <p>Then, you can use the tokens in your CSS like this:</p>
+            <div id="token-usage-example" class="corn-panel corn-margin-bottom"></div>
+            <h4>Figma</h4>
+            <p>To use the generated Figma tokens, you can import the JSON file into your Figma project, by choosing Variables --> Collection --> Import</p>
+            <p>Once imported, you can apply the tokens to your Figma components and styles. They will be located in the Libraries tab of your Figma color picker.</p>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { store } from '../store.js';
 import { ColorModel } from '../models/ColorModel.js';
+import bootstrapIconsSprite from 'bootstrap-icons/bootstrap-icons.svg';
 
 /**
  * ContrastChecker is a custom element that lets users compare foreground and background
@@ -80,7 +81,10 @@ class ContrastChecker extends HTMLElement {
         const ratioLine = document.createElement('div');
         ratioLine.textContent = `Contrast Ratio: ${contrastRatio.toFixed(2)}`;
         const passFailLine = document.createElement('div');
-        passFailLine.textContent = `${contrastRatio >= 4.5 ? 'Pass' : 'Fail'} (Normal Text), ${contrastRatio >= 3 ? 'Pass' : 'Fail'} (Large Text)`;
+        passFailLine.classList.add('contrast-ratio-results');
+        const passIcon = `<svg class="corn-icon contrast-success" aria-hidden="true"><use href="${bootstrapIconsSprite}#check-circle-fill"></use></svg>`;
+        const failIcon = `<svg class="corn-icon contrast-fail" aria-hidden="true"><use href="${bootstrapIconsSprite}#x-circle-fill"></use></svg>`;
+        passFailLine.innerHTML = `${contrastRatio >= 4.5 ? passIcon + ' Pass' : failIcon + ' Fail'} (Normal Text), ${contrastRatio >= 3 ? passIcon + ' Pass' : failIcon + ' Fail'} (Large Text)`;
         contrastRatioOutput.appendChild(ratioLine);
         contrastRatioOutput.appendChild(passFailLine);
       }
