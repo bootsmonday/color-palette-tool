@@ -1,7 +1,8 @@
 import { store } from '../store.js';
 import Color from 'colorjs.io';
 import { ColorModel } from '../models/ColorModel.js';
-
+import figmaImportImage from '../../assets/images/figma-import.png';
+import figmaLibraryImage from '../../assets/images/figma-library.png';
 /**
  * @class ColorTokens
  * @description A custom web component that generates and displays color tokens based on the current working palette. It allows users to select token formats, color spaces, and color schemes, and provides options to copy or download the generated tokens.
@@ -261,8 +262,10 @@ class ColorTokens extends HTMLElement {
             <p>Then, you can use the tokens in your CSS like this:</p>
             <div id="token-usage-example" class="corn-panel corn-margin-bottom"></div>
             <h4>Figma</h4>
-            <p>To use the generated Figma tokens, you can import the JSON file into your Figma project, by choosing Variables --> Collection --> Import</p>
+            <p>To use the generated Figma tokens, you can import the JSON file into your Figma project, by choosing Variables > Collection > Import</p>
+            <img src="${figmaImportImage}" alt="" />
             <p>Once imported, you can apply the tokens to your Figma components and styles. They will be located in the Libraries tab of your Figma color picker.</p>
+            <img src="${figmaLibraryImage}" alt="" width="250" />
           </div>
         </div>
       </div>

@@ -102,6 +102,16 @@ class AboutPage extends HTMLElement {
             <li class="corn-margin-bottom"><a href="https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl">OKLCH in CSS: why we moved from RGB and HSL</a></li>
            
           </ul>
+          <hr />
+          <h2>Special Thanks</h2>
+          <ul>
+            <li class="corn-margin-bottom">
+              <a href="https://www.ryanmerritt.design/" class="corn-link">ryanmerritt.design</a>
+            </li>
+            <li class="corn-margin-bottom">
+              <a href="https://www.craigmorris.art/" class="corn-link">craigmorris.art</a>
+            </li>
+          </ul>
         </div>
       </div>
     `;

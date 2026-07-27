@@ -130,9 +130,38 @@ class AppRoot extends HTMLElement {
         <a href="https://github.com/bootsmonday/color-palette-tool" class="corn-button corn-button--icon corn-button--xs" aria-label="Color Palette Tool GitHub Repository"> <svg class="corn-icon"><use href="${bootstrapIconsSprite}#github"></use></svg></a> </div>
     </header>
 
-      <main class="corn-main corn-container corn-container--fluid" id="current-page">
-       
-      </main>
+    <main class="corn-main corn-container corn-container--fluid" id="current-page">
+      
+    </main>
+
+    <footer class="corn-footer">
+      <div class="corn-footer--intro">Thanks BootsMonday!</div>
+      <div class="corn-footer--content">
+        <div class="corn-footer--content--section">
+          <h3>Thanks</h3>
+          <ul>
+            <li>
+              <a href="https://matt.vrt.is" class="corn-link">matt.vrt.is </a>
+            </li>
+            <li>
+              <a href="https://github.com/bootsmonday" class="corn-link">BootsMonday Projects </a>
+            </li>
+          </ul>
+        </div>
+        <div class="corn-footer--content--section">
+          <h3>Support</h3>
+          <ul>
+            <li>
+              <a href="https://github.com/bootsmonday/color-palette-tool/discussions" class="corn-link"> Github Discussions </a>
+            </li>
+            <li>
+              <a href="${router.toAppPath('/about')}" class="corn-link" data-link data-route="/about"> About </a>
+            </li>      
+          </ul>
+        </div>
+      </div>
+      <div class="corn-footer--copyright">&copy; 2026 BootsMonday. All rights reserved.</div>
+    </footer>      
     `;
 
     // Handle navigation links
