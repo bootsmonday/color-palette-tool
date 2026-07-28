@@ -57,6 +57,7 @@ export const router = {
     const normalizedRoute = this.normalizeRoutePath(path);
     history.pushState({}, '', this.toAppPath(normalizedRoute));
     store.setState({ currentRoute: normalizedRoute, pageType: this.routes[normalizedRoute]?.pageType || 'home' });
+    window.scrollTo(0, 0); // Scroll to top on navigation
   },
 
   /**

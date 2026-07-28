@@ -87,20 +87,31 @@ class AboutPage extends HTMLElement {
           <h3>CSS</h3>
           <p>You can export your palettes as .css files for use in web development projects. This provides a convenient way to apply your color palettes directly to your website's stylesheets.</p>
           <h3>Tailwind</h3>
-          <p>Tailwind variables are limited to 10 colors of the 11 that Tailwind supports. The first color is a duplicate of the second color because Tailwind's color system starts at 50, while this tool's color system starts at 10. This ensures that the exported Tailwind variables are consistent with the other color variable variations and can be used interchangeably in your projects.</p>
-
+          <p>Tailwind Palettes created are limited to 10 colors of the 11 <a href="https://tailwindcss.com/docs/colors">Tailwind Core Colors</a>. This maintains the integrity of the 5+ step separation in calculating accessibility. Step 50 is the same value as step 100 and is included in the export for Tailwind palettes.</p>
+          <h3>Corncob Design Language</h3>
+          <p>Corncob Design Language is a design system created by BootsMonday. You can export your palettes as .css  using the Corncob prefix option for use in your Corncob Design Language projects. This allows you to easily integrate your color palettes into your Corncob-based designs.</p>
+          <h3>Getting Started</h3>
           <p>To get started, click on "<a href="${router.toAppPath('/new-palette')}" class="corn-link" data-link data-route="/new-palette">Create New Palette</a>" to design your first color palette.</p>
 
           <hr />
-          <h2>Additional Resources</h2>
+          <h2>Additional Color Resources</h2>
           <ul>
-          
             <li class="corn-margin-bottom"><a href="https://www.w3.org/TR/WCAG21/#contrast-minimum">WCAG 2.1 AA Contrast Standards</a></li>
             <li class="corn-margin-bottom"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch">oklch() on MDN</a></li>
             <li class="corn-margin-bottom"><a href="https://www.w3.org/TR/css-color-4/#oklch">W3.org CSS Color Module Level 4</a></li>            
             <li class="corn-margin-bottom"><a href="https://stripe.com/blog/accessible-color-systems">Designing accessible color systems</a></li>
             <li class="corn-margin-bottom"><a href="https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl">OKLCH in CSS: why we moved from RGB and HSL</a></li>
-           
+          </ul>
+          <hr />
+          <h2>Tech Stack</h2>
+          <ul>
+            <li class="corn-margin-bottom"><a href="https://developer.mozilla.org/en-US/docs/Web/HTML">HTML</a></li>
+            <li class="corn-margin-bottom"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS">CSS</a></li>
+            <li class="corn-margin-bottom"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a></li>
+            <li class="corn-margin-bottom"><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry">Web Components</a></li>
+            <li class="corn-margin-bottom"><a href="https://vitejs.dev/">Vite</a></li>
+            <li class="corn-margin-bottom"><a href="https://colorjs.io/">Color.js</a></li>
+            <li class="corn-margin-bottom"><a href="https://bootsmonday.github.io/corncob-design-language/">Corncob Design Language</a></li>
           </ul>
           <hr />
           <h2>Special Thanks</h2>

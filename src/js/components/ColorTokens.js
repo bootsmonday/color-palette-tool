@@ -187,17 +187,17 @@ class ColorTokens extends HTMLElement {
               <legend id="token-format">Token Prefix and Format</legend>
               <div class="corn-toggles">
                 <div class="corn-toggle">
-                  <input type="radio" id="corncob-tokens" name="token-type" value="corncob" checked />
-                  <label for="corncob-tokens">Corncob</label>
-                </div>
+                  <input type="radio" id="generic-tokens" name="token-type" value="generic" checked />
+                  <label for="generic-tokens">Generic</label>
+                </div>   
                 <div class="corn-toggle">
                   <input type="radio" id="tailwind-tokens" name="token-type" value="tailwind" />
                   <label for="tailwind-tokens">Tailwind</label>
                 </div>
                 <div class="corn-toggle">
-                  <input type="radio" id="generic-tokens" name="token-type" value="generic" />
-                  <label for="generic-tokens">Generic</label>
-                </div>                              
+                  <input type="radio" id="corncob-tokens" name="token-type" value="corncob" />
+                  <label for="corncob-tokens">Corncob</label>
+                </div>                   
               </div>
             </fieldset>
             <fieldset class="corn-form--item corn-toggle-group corn-toggle--sm" aria-labelledby="color-space">
