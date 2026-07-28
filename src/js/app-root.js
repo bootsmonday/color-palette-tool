@@ -141,10 +141,10 @@ class AppRoot extends HTMLElement {
           <h3>Thanks</h3>
           <ul>
             <li>
-              <a href="https://matt.vrt.is" class="corn-link">matt.vrt.is </a>
+              <a href="https://matt.vrt.is" class="corn-link">matt.vrt.is</a>
             </li>
             <li>
-              <a href="https://github.com/bootsmonday" class="corn-link">BootsMonday Projects </a>
+              <a href="https://github.com/bootsmonday" class="corn-link">BootsMonday Projects</a>
             </li>
           </ul>
         </div>
