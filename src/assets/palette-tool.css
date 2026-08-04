@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .corn-margin-bottom, .corn-panel p {
   margin-bottom: var(--cc-size-0);
 }
@@ -20,7 +24,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .islight .hex-preview {
   color: var(--cc-gray-90);
-  
 }
 
 .isdark .hex-preview {
